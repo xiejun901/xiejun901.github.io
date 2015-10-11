@@ -28,7 +28,7 @@
 
 
 
-  <meta name="keywords" content="Hexo,next" />
+  <meta name="keywords" content="algorithm,c++,hihocoder,trie树,字典树," />
 
 
 
@@ -37,15 +37,19 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
 
 
-<meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="It's Me">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="##输入输入的第一行为一个正整数n，表示词典的大小，其后n行，每一行一个单词（不保证是英文单词，也有可能是火星文单词哦），单词由不超过10个的小写英文字母组成，可能存在相同的单词，此时应将其视作不同的单词。接下来的一行为一个正整数m，表示询问的次数，其后m行，每一行一个字符串，该字符串由不超过10个的小写英文字母组成，表示一个询问。
+##输出对于每一个询问，输出一个整数Ans,表示词典中以询问给出">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hihocoder算法练习之trie树">
+<meta property="og:url" content="http://yoursite.com/2015/10/11/hihocoder-trie/index.html">
 <meta property="og:site_name" content="It's Me">
-<meta property="og:description">
+<meta property="og:description" content="##输入输入的第一行为一个正整数n，表示词典的大小，其后n行，每一行一个单词（不保证是英文单词，也有可能是火星文单词哦），单词由不超过10个的小写英文字母组成，可能存在相同的单词，此时应将其视作不同的单词。接下来的一行为一个正整数m，表示询问的次数，其后m行，每一行一个字符串，该字符串由不超过10个的小写英文字母组成，表示一个询问。
+##输出对于每一个询问，输出一个整数Ans,表示词典中以询问给出">
+<meta property="og:updated_time" content="2015-10-11T07:55:15.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="It's Me">
-<meta name="twitter:description">
+<meta name="twitter:title" content="hihocoder算法练习之trie树">
+<meta name="twitter:description" content="##输入输入的第一行为一个正整数n，表示词典的大小，其后n行，每一行一个单词（不保证是英文单词，也有可能是火星文单词哦），单词由不超过10个的小写英文字母组成，可能存在相同的单词，此时应将其视作不同的单词。接下来的一行为一个正整数m，表示询问的次数，其后m行，每一行一个字符串，该字符串由不超过10个的小写英文字母组成，表示一个询问。
+##输出对于每一个询问，输出一个整数Ans,表示词典中以询问给出">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -55,7 +59,7 @@
   };
 </script>
 
-  <title> It's Me </title>
+  <title> hihocoder算法练习之trie树 | It's Me </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -73,9 +77,7 @@
 
 
 
-  <div class="container one-column 
-   page-home 
-">
+  <div class="container one-column page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -159,9 +161,9 @@
     <main id="main" class="main">
       <div class="main-inner">
         <div id="content" class="content"> 
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
@@ -172,158 +174,7 @@
           
           
             
-              <a class="post-title-link" href="/2015/10/11/hihocoder-kmp/" itemprop="url">
-                hihocoder算法练习之kmp算法
-              </a>
-            
-          
-        </h1>
-      
-
-      <div class="post-meta">
-        <span class="post-time">
-          发表于
-          <time itemprop="dateCreated" datetime="2015-10-11T15:53:09+08:00" content="2015-10-11">
-            2015-10-11
-          </time>
-        </span>
-
-        
-          <span class="post-category" >
-            &nbsp; | &nbsp; 分类于
-            
-              <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                <a href="/categories/algorithm/" itemprop="url" rel="index">
-                  <span itemprop="name">algorithm</span>
-                </a>
-              </span>
-
-              
-              
-
-            
-          </span>
-        
-
-        
-          
-            <span class="post-comments-count">
-              &nbsp; | &nbsp;
-              <a href="/2015/10/11/hihocoder-kmp/#comments" itemprop="discussionUrl">
-                <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/11/hihocoder-kmp/" itemprop="commentsCount"></span>
-              </a>
-            </span>
-          
-        
-      </div>
-    </header>
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <span itemprop="articleBody"><p>##输入</p>
-<p>第一行一个整数N，表示测试数据组数。接下来的N*2行，每两行表示一个测试数据。在每一个测试数据中，第一行为模式串，由不超过10^4个大写字母组成，第二行为原串，由不超过10^6个大写字母组成。其中N&lt;=20</p>
-<p>##输出<br>对于每一个测试数据，按照它们在输入中出现的顺序输出一行Ans，表示模式串在原串中出现的次数。</p>
-<p>##样例输入</p>
-<pre><code><span class="number">5</span>
-<span class="label">HA</span>
-<span class="label">HAHAHA</span>
-<span class="label">WQN</span>
-<span class="label">WQN</span>
-<span class="label">ADA</span>
-<span class="label">ADADADA</span>
-<span class="keyword">BABABB
-</span><span class="keyword">BABABABABABABABABB
-</span><span class="label">DAD</span>
-<span class="keyword">ADDAADAADDAAADAAD</span>
-</code></pre><p>##样例输出</p>
-<pre><code><span class="number">3</span>
-<span class="number">1</span>
-<span class="number">3</span>
-<span class="number">1</span>
-<span class="number">0</span>
-</code></pre><p>##说明</p>
-<p>判断给出的一串字符串（原串）中是否含有特定的字符串（模式串），对于原串s=”bababababababababb”，模式串p=”bababb”，按照最普通的匹配方法</p>
-<p>当匹配到i=5,j=5时候无法匹配</p>
-<pre><code><span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">b</span>
-<span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> b
-</code></pre><p>此时需要使i=1,j=0;</p>
-<pre><code><span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">b</span>
-  <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> b
-</code></pre><p>继续失配一直到i=2,j=0又能继续搭配上：</p>
-<pre><code><span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">b</span>
-    <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> b
-</code></pre><p>我们可以观察到p0p1p2==p2p3p4;所以当匹配到i=5,j=5失配时，因为这个时候有p0p1p2p3p4=s0s1s2s3s4,所以此时应该用p0去与s2对齐进行匹配，即在i=5,j=5之后下一个需要匹配的是i=5,j=3;</p>
-<pre><code><span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">b</span>
-    <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> <span class="tag">a</span> <span class="tag">b</span> b
-</code></pre><p>即在匹配到失配时，i保持不变等于5，j取”p0p1p2p3p4”前缀与后缀相等的最长长度，3。 对于字符串”bababb”有：next[4]==3;</p>
-<p>##KMP算法<br>    首先对字符串进行匹配，在原串的位置i，模式串的位置j,发现失配了。此时i保持不变，j=next[j-1],由nex数组性质可以得到p0p1…p[j-1]是跟原串能完全匹配上的，所以只需要继续匹配p[j]与s[i]即行。</p>
-<p>##next数组求解<br>求解next数组可以采用递归的方法，对于”bababb”，</p>
-<pre><code>i<span class="number">=1</span>,j<span class="number">=0</span><span class="comment">;</span>
-<span class="keyword">b </span>a <span class="keyword">b </span>a
-  <span class="keyword">b
-</span>不等且j<span class="number">=0</span><span class="comment">;因此next[1]=0;然后继续求解下一个next</span>
-i<span class="number">=2</span>,j<span class="number">=0</span><span class="comment">;</span>
-<span class="keyword">b </span>a <span class="keyword">b </span>a 
-    <span class="keyword">b
-</span>匹配上了，j++,next[<span class="number">2</span>]<span class="label">=j</span><span class="number">=1</span><span class="comment">;继续求解下一个next</span>
-i<span class="number">=3</span>,j<span class="number">=1</span><span class="comment">;</span>
-<span class="keyword">b </span>a <span class="keyword">b </span>a <span class="keyword">b </span><span class="keyword">b
-</span>    <span class="keyword">b </span>a
-匹配上了，j++,next[<span class="number">3</span>]<span class="label">=j</span><span class="number">=2</span><span class="comment">;继续求解下一个next</span>
-i<span class="number">=4</span>,j<span class="number">=2</span><span class="comment">;</span>
-<span class="keyword">b </span>a <span class="keyword">b </span>a <span class="keyword">b </span><span class="keyword">b
-</span>    <span class="keyword">b </span>a <span class="keyword">b
-</span>匹配上了，j++,next[<span class="number">3</span>]<span class="label">=j</span><span class="number">=3</span><span class="comment">;继续求解下一个next</span>
-i<span class="number">=5</span>,j<span class="number">=3</span><span class="comment">;</span>
-<span class="keyword">b </span>a <span class="keyword">b </span>a <span class="keyword">b </span><span class="keyword">b
-</span>    <span class="keyword">b </span>a <span class="keyword">b </span>a 
-失配，j<span class="label">=next</span>[j-<span class="number">1</span>]<span class="number">=1</span>,继续匹配
-<span class="keyword">b </span>a <span class="keyword">b </span>a <span class="keyword">b </span><span class="keyword">b </span>
-        <span class="keyword">b </span>a
-失配，j<span class="label">=next</span>[j-<span class="number">1</span>]<span class="number">=0</span>,继续匹配 
-<span class="keyword">b </span>a <span class="keyword">b </span>a <span class="keyword">b </span><span class="keyword">b
-</span>          <span class="keyword">b
-</span>匹配上了，j++，next[<span class="number">5</span>]<span class="number">=1</span>。(这儿如果是匹配不上的话，因为j<span class="number">=0</span>，所以会直接得到next[<span class="number">5</span>]<span class="number">=0</span>)
-</code></pre><p>以上为一个求解过程的示例</p>
-<p>##代码</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">getnext</span><span class="params">(<span class="built_in">string</span> s, <span class="keyword">int</span> * next)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span><br><span class="line"></span>&#123;</span><br><span class="line">	<span class="built_in">string</span> s;</span><br><span class="line">	<span class="built_in">string</span> p;</span><br><span class="line">	<span class="keyword">int</span> n;</span><br><span class="line">	<span class="keyword">int</span> i, j, count;</span><br><span class="line">	<span class="built_in">cin</span>&gt;&gt;n;</span><br><span class="line">	<span class="keyword">while</span> (n--)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">cin</span> &gt;&gt; p &gt;&gt; s;</span><br><span class="line">		<span class="keyword">int</span> * next = <span class="keyword">new</span> <span class="keyword">int</span>[p.length()];</span><br><span class="line">		getnext(p, next);</span><br><span class="line">		i = <span class="number">0</span>;</span><br><span class="line">		j = <span class="number">0</span>;</span><br><span class="line">		count = <span class="number">0</span>;</span><br><span class="line">		<span class="keyword">while</span> (i &lt; s.length())</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">while</span> (j != <span class="number">0</span> &amp;&amp; s[i] != p[j])</span><br><span class="line">			&#123;</span><br><span class="line">				j = next[j - <span class="number">1</span>];</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> (s[i] == p[j])</span><br><span class="line">			&#123;</span><br><span class="line">				<span class="keyword">if</span> (j == p.length() - <span class="number">1</span>)</span><br><span class="line">				&#123;</span><br><span class="line">					j = next[j]; </span><br><span class="line">					count++;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">else</span></span><br><span class="line">					j++;</span><br><span class="line">			&#125;</span><br><span class="line">			i++;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; count &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">getnext</span><span class="params">(<span class="built_in">string</span> s, <span class="keyword">int</span> * next)</span></span><br><span class="line"></span>&#123;</span><br><span class="line"></span><br><span class="line">	next[<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span> i = <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">int</span> j = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">while</span> (i &lt; s.length())</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">while</span> ((j != <span class="number">0</span>) &amp;&amp; (s[i] != s[j]))</span><br><span class="line">			j = next[j-<span class="number">1</span>];</span><br><span class="line">		<span class="keyword">if</span> (s[i] == s[j])</span><br><span class="line">			j++;</span><br><span class="line">		next[i] = j;</span><br><span class="line">		i++;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></span>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      
-      
-        <h1 class="post-title" itemprop="name headline">
-          
-          
-            
-              <a class="post-title-link" href="/2015/10/11/hihocoder-trie/" itemprop="url">
-                hihocoder算法练习之trie树
-              </a>
+              hihocoder算法练习之trie树
             
           
         </h1>
@@ -373,8 +224,7 @@ i<span class="number">=5</span>,j<span class="number">=3</span><span class="comm
       
 
       
-        
-          <span itemprop="articleBody"><p>##输入<br>输入的第一行为一个正整数n，表示词典的大小，其后n行，每一行一个单词（不保证是英文单词，也有可能是火星文单词哦），单词由不超过10个的小写英文字母组成，可能存在相同的单词，此时应将其视作不同的单词。接下来的一行为一个正整数m，表示询问的次数，其后m行，每一行一个字符串，该字符串由不超过10个的小写英文字母组成，表示一个询问。</p>
+        <span itemprop="articleBody"><p>##输入<br>输入的第一行为一个正整数n，表示词典的大小，其后n行，每一行一个单词（不保证是英文单词，也有可能是火星文单词哦），单词由不超过10个的小写英文字母组成，可能存在相同的单词，此时应将其视作不同的单词。接下来的一行为一个正整数m，表示询问的次数，其后m行，每一行一个字符串，该字符串由不超过10个的小写英文字母组成，表示一个询问。</p>
 <p>##输出<br>对于每一个询问，输出一个整数Ans,表示词典中以询问给出的字符串为前缀的单词的个数。</p>
 <p>##样例输入</p>
 <pre><code><span class="number">5</span>
@@ -397,31 +247,64 @@ i<span class="number">=5</span>,j<span class="number">=3</span><span class="comm
 <span class="number">0</span>
 </code></pre><p>##代码</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">include</span> <span class="string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> trie_node&#123;</span><br><span class="line">	<span class="keyword">int</span> m;</span><br><span class="line">	trie_node * next[<span class="number">26</span>];</span><br><span class="line">&#125; trie_node;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span><br><span class="line"></span>&#123;</span><br><span class="line">	trie_node * root=<span class="keyword">new</span> trie_node;</span><br><span class="line">	trie_node * current;</span><br><span class="line">	trie_node * newnode;</span><br><span class="line">	<span class="keyword">int</span> n;</span><br><span class="line">	<span class="keyword">int</span> i;</span><br><span class="line">	<span class="keyword">int</span> flag=<span class="number">0</span>;</span><br><span class="line">	<span class="built_in">string</span> s1;</span><br><span class="line">	<span class="built_in">memset</span>(root-&gt;next, <span class="number">0</span>, <span class="keyword">sizeof</span>(root-&gt;next));</span><br><span class="line">	root-&gt;m = <span class="number">1</span>;</span><br><span class="line">	<span class="built_in">cin</span> &gt;&gt; n;</span><br><span class="line">	<span class="keyword">while</span> (n--)</span><br><span class="line">	&#123;</span><br><span class="line">		current = root;</span><br><span class="line">		<span class="built_in">cin</span> &gt;&gt; s1;</span><br><span class="line">		<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; s1.length(); i++)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">if</span> (current-&gt;next[s1[i] - <span class="string">'a'</span>] == <span class="literal">NULL</span>)</span><br><span class="line">			&#123;</span><br><span class="line">				newnode = <span class="keyword">new</span> trie_node;</span><br><span class="line">				<span class="built_in">memset</span>(newnode-&gt;next, <span class="number">0</span>, <span class="keyword">sizeof</span>(newnode-&gt;next));</span><br><span class="line">				newnode-&gt;m = <span class="number">1</span>;</span><br><span class="line">				current-&gt;next[s1[i] - <span class="string">'a'</span>] = newnode;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">				((current-&gt;next[s1[i] - <span class="string">'a'</span>])-&gt;m)++;</span><br><span class="line">			current = current-&gt;next[s1[i] - <span class="string">'a'</span>];</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">cin</span> &gt;&gt; n;</span><br><span class="line">	<span class="keyword">while</span> (n--)</span><br><span class="line">	&#123;</span><br><span class="line">		current = root;</span><br><span class="line">		flag = <span class="number">0</span>;</span><br><span class="line">		<span class="built_in">cin</span> &gt;&gt; s1;</span><br><span class="line">		<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; s1.length(); i++)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">if</span> (current-&gt;next[s1[i] - <span class="string">'a'</span>] == <span class="literal">NULL</span>)</span><br><span class="line">			&#123;</span><br><span class="line">				flag = <span class="number">1</span>;</span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">				current = current-&gt;next[s1[i] - <span class="string">'a'</span>];</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (flag)</span><br><span class="line">			<span class="built_in">cout</span> &lt;&lt; <span class="number">0</span> &lt;&lt; endl;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">			<span class="built_in">cout</span> &lt;&lt; current-&gt;m &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></span>
-        
       
     </div>
 
     <footer class="post-footer">
       
-
+        <div class="post-tags">
+          
+            <a href="/tags/algorithm/" rel="tag">#algorithm</a>
+          
+            <a href="/tags/c/" rel="tag">#c++</a>
+          
+            <a href="/tags/hihocoder/" rel="tag">#hihocoder</a>
+          
+            <a href="/tags/trie树/" rel="tag">#trie树</a>
+          
+            <a href="/tags/字典树/" rel="tag">#字典树</a>
+          
+        </div>
       
 
       
+        <div class="post-nav">
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/10/11/hihocoder-kmp/" rel="prev">hihocoder算法练习之kmp算法</a>
+            
+          </div>
+
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+        </div>
       
-        <div class="post-eof"></div>
+
+      
       
     </footer>
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
  </div>
 
         
 
+        
+          <div class="comments" id="comments">
+            
+              <div class="ds-thread" data-thread-key="2015/10/11/hihocoder-trie/"
+                   data-title="hihocoder算法练习之trie树" data-url="http://yoursite.com/2015/10/11/hihocoder-trie/">
+              </div>
+            
+          </div>
         
       </div>
 
@@ -438,6 +321,15 @@ i<span class="number">=5</span>,j<span class="number">=3</span><span class="comm
   <aside id="sidebar" class="sidebar">
     <div class="sidebar-inner">
 
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
       
 
       <section class="site-overview">
@@ -485,6 +377,17 @@ i<span class="number">=5</span>,j<span class="number">=3</span><span class="comm
 
       </section>
 
+      
+        <section class="post-toc-wrap sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <p class="post-toc-empty">此文章未包含目录</p>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
       
 
     </div>
@@ -569,6 +472,165 @@ i<span class="number">=5</span>,j<span class="number">=3</span><span class="comm
   <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
 
   
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.1" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 0.4 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    var $tocContent = $('.post-toc-content');
+    if (isDesktop() && CONFIG.sidebar === 'post') {
+      if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+        displaySidebar();
+      }
+    }
+  });
+</script>
+
+
 
   <script type="text/javascript">
     $(document).ready(function () {
