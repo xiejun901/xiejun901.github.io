@@ -30,7 +30,7 @@
 
 
 
-  <meta name="keywords" content="algorithm,c++,hihocoder,trie树,字典树," />
+  <meta name="keywords" content="c++,design pattern,singleton,单例模式,设计模式," />
 
 
 
@@ -39,19 +39,22 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
 
 
-<meta name="description" content="##输入输入的第一行为一个正整数n，表示词典的大小，其后n行，每一行一个单词（不保证是英文单词，也有可能是火星文单词哦），单词由不超过10个的小写英文字母组成，可能存在相同的单词，此时应将其视作不同的单词。接下来的一行为一个正整数m，表示询问的次数，其后m行，每一行一个字符串，该字符串由不超过10个的小写英文字母组成，表示一个询问。
-##输出对于每一个询问，输出一个整数Ans,表示词典中以询问给出">
+<meta name="description" content="单例模式是一种常见的面向对象设计模式，这里大概总结一下c++中单例模式的实现
+在C++中，单例模式通常采用模板实现
+1234567891011121314151617template&amp;lt;typename T&amp;gt;class singleton &amp;#123;public:    static T *instance() &amp;#123;        if (_instance == nullpt">
 <meta property="og:type" content="article">
-<meta property="og:title" content="hihocoder算法练习之trie树">
-<meta property="og:url" content="http://yoursite.com/2015/10/11/hihocoder-trie/index.html">
+<meta property="og:title" content="singleton 单例模式">
+<meta property="og:url" content="http://yoursite.com/2015/10/12/singleton/index.html">
 <meta property="og:site_name" content="It's Me">
-<meta property="og:description" content="##输入输入的第一行为一个正整数n，表示词典的大小，其后n行，每一行一个单词（不保证是英文单词，也有可能是火星文单词哦），单词由不超过10个的小写英文字母组成，可能存在相同的单词，此时应将其视作不同的单词。接下来的一行为一个正整数m，表示询问的次数，其后m行，每一行一个字符串，该字符串由不超过10个的小写英文字母组成，表示一个询问。
-##输出对于每一个询问，输出一个整数Ans,表示词典中以询问给出">
-<meta property="og:updated_time" content="2015-10-11T11:22:53.000Z">
+<meta property="og:description" content="单例模式是一种常见的面向对象设计模式，这里大概总结一下c++中单例模式的实现
+在C++中，单例模式通常采用模板实现
+1234567891011121314151617template&amp;lt;typename T&amp;gt;class singleton &amp;#123;public:    static T *instance() &amp;#123;        if (_instance == nullpt">
+<meta property="og:updated_time" content="2015-10-12T14:04:33.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="hihocoder算法练习之trie树">
-<meta name="twitter:description" content="##输入输入的第一行为一个正整数n，表示词典的大小，其后n行，每一行一个单词（不保证是英文单词，也有可能是火星文单词哦），单词由不超过10个的小写英文字母组成，可能存在相同的单词，此时应将其视作不同的单词。接下来的一行为一个正整数m，表示询问的次数，其后m行，每一行一个字符串，该字符串由不超过10个的小写英文字母组成，表示一个询问。
-##输出对于每一个询问，输出一个整数Ans,表示词典中以询问给出">
+<meta name="twitter:title" content="singleton 单例模式">
+<meta name="twitter:description" content="单例模式是一种常见的面向对象设计模式，这里大概总结一下c++中单例模式的实现
+在C++中，单例模式通常采用模板实现
+1234567891011121314151617template&amp;lt;typename T&amp;gt;class singleton &amp;#123;public:    static T *instance() &amp;#123;        if (_instance == nullpt">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -61,7 +64,7 @@
   };
 </script>
 
-  <title> hihocoder算法练习之trie树 | It's Me </title>
+  <title> singleton 单例模式 | It's Me </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -207,7 +210,7 @@
           
           
             
-              hihocoder算法练习之trie树
+              singleton 单例模式
             
           
         </h1>
@@ -216,8 +219,8 @@
       <div class="post-meta">
         <span class="post-time">
           发表于
-          <time itemprop="dateCreated" datetime="2015-10-11T12:07:05+08:00" content="2015-10-11">
-            2015-10-11
+          <time itemprop="dateCreated" datetime="2015-10-12T21:07:59+08:00" content="2015-10-12">
+            2015-10-12
           </time>
         </span>
 
@@ -226,8 +229,8 @@
             &nbsp; | &nbsp; 分类于
             
               <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                <a href="/categories/hihocoder/" itemprop="url" rel="index">
-                  <span itemprop="name">hihocoder</span>
+                <a href="/categories/design-pattern/" itemprop="url" rel="index">
+                  <span itemprop="name">design pattern</span>
                 </a>
               </span>
 
@@ -242,8 +245,8 @@
           
             <span class="post-comments-count">
               &nbsp; | &nbsp;
-              <a href="/2015/10/11/hihocoder-trie/#comments" itemprop="discussionUrl">
-                <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/11/hihocoder-trie/" itemprop="commentsCount"></span>
+              <a href="/2015/10/12/singleton/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/12/singleton/" itemprop="commentsCount"></span>
               </a>
             </span>
           
@@ -257,29 +260,38 @@
       
 
       
-        <span itemprop="articleBody"><p>##输入<br>输入的第一行为一个正整数n，表示词典的大小，其后n行，每一行一个单词（不保证是英文单词，也有可能是火星文单词哦），单词由不超过10个的小写英文字母组成，可能存在相同的单词，此时应将其视作不同的单词。接下来的一行为一个正整数m，表示询问的次数，其后m行，每一行一个字符串，该字符串由不超过10个的小写英文字母组成，表示一个询问。</p>
-<p>##输出<br>对于每一个询问，输出一个整数Ans,表示词典中以询问给出的字符串为前缀的单词的个数。</p>
-<p>##样例输入</p>
-<pre><code><span class="number">5</span>
-<span class="keyword">babaab
-</span><span class="keyword">babbbaaaa
-</span><span class="label">abba</span>
-<span class="label">aaaaabaa</span>
-<span class="keyword">babaababb
-</span><span class="number">5</span>
-<span class="keyword">babb
-</span><span class="keyword">baabaaa
-</span><span class="keyword">bab
-</span><span class="keyword">bb
-</span><span class="keyword">bbabbaab</span>
-</code></pre><p>##样例输出</p>
-<pre><code><span class="number">1</span>
-<span class="number">0</span>
-<span class="number">3</span>
-<span class="number">0</span>
-<span class="number">0</span>
-</code></pre><p>##代码</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">include</span> <span class="string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> trie_node&#123;</span><br><span class="line">	<span class="keyword">int</span> m;</span><br><span class="line">	trie_node * next[<span class="number">26</span>];</span><br><span class="line">&#125; trie_node;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span><br><span class="line"></span>&#123;</span><br><span class="line">	trie_node * root=<span class="keyword">new</span> trie_node;</span><br><span class="line">	trie_node * current;</span><br><span class="line">	trie_node * newnode;</span><br><span class="line">	<span class="keyword">int</span> n;</span><br><span class="line">	<span class="keyword">int</span> i;</span><br><span class="line">	<span class="keyword">int</span> flag=<span class="number">0</span>;</span><br><span class="line">	<span class="built_in">string</span> s1;</span><br><span class="line">	<span class="built_in">memset</span>(root-&gt;next, <span class="number">0</span>, <span class="keyword">sizeof</span>(root-&gt;next));</span><br><span class="line">	root-&gt;m = <span class="number">1</span>;</span><br><span class="line">	<span class="built_in">cin</span> &gt;&gt; n;</span><br><span class="line">	<span class="keyword">while</span> (n--)</span><br><span class="line">	&#123;</span><br><span class="line">		current = root;</span><br><span class="line">		<span class="built_in">cin</span> &gt;&gt; s1;</span><br><span class="line">		<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; s1.length(); i++)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">if</span> (current-&gt;next[s1[i] - <span class="string">'a'</span>] == <span class="literal">NULL</span>)</span><br><span class="line">			&#123;</span><br><span class="line">				newnode = <span class="keyword">new</span> trie_node;</span><br><span class="line">				<span class="built_in">memset</span>(newnode-&gt;next, <span class="number">0</span>, <span class="keyword">sizeof</span>(newnode-&gt;next));</span><br><span class="line">				newnode-&gt;m = <span class="number">1</span>;</span><br><span class="line">				current-&gt;next[s1[i] - <span class="string">'a'</span>] = newnode;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">				((current-&gt;next[s1[i] - <span class="string">'a'</span>])-&gt;m)++;</span><br><span class="line">			current = current-&gt;next[s1[i] - <span class="string">'a'</span>];</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">cin</span> &gt;&gt; n;</span><br><span class="line">	<span class="keyword">while</span> (n--)</span><br><span class="line">	&#123;</span><br><span class="line">		current = root;</span><br><span class="line">		flag = <span class="number">0</span>;</span><br><span class="line">		<span class="built_in">cin</span> &gt;&gt; s1;</span><br><span class="line">		<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; s1.length(); i++)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">if</span> (current-&gt;next[s1[i] - <span class="string">'a'</span>] == <span class="literal">NULL</span>)</span><br><span class="line">			&#123;</span><br><span class="line">				flag = <span class="number">1</span>;</span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">				current = current-&gt;next[s1[i] - <span class="string">'a'</span>];</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (flag)</span><br><span class="line">			<span class="built_in">cout</span> &lt;&lt; <span class="number">0</span> &lt;&lt; endl;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">			<span class="built_in">cout</span> &lt;&lt; current-&gt;m &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></span>
+        <span itemprop="articleBody"><p>单例模式是一种常见的面向对象设计模式，这里大概总结一下c++中单例模式的实现</p>
+<p>在C++中，单例模式通常采用模板实现</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> singleton &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">static</span> T *<span class="title">instance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (_instance == <span class="literal">nullptr</span>)</span><br><span class="line">            _instance = <span class="keyword">new</span> T();</span><br><span class="line">        <span class="keyword">return</span> _instance;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">static</span> T *_instance;</span><br><span class="line">    singleton() = <span class="keyword">delete</span>;</span><br><span class="line">    ~singleton() = <span class="keyword">delete</span>;</span><br><span class="line">    singleton(<span class="keyword">const</span> singleton &amp;) = <span class="keyword">delete</span>;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">static</span> T * singleton&lt;T&gt;::_instance=<span class="literal">nullptr</span>;</span><br></pre></td></tr></table></figure>
+<p>使用方法为 singleton<widget>::instance-&gt;fun(); 但是这个方法是非线程安全的，下面给出一个带锁的DCL版本</widget></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> singleton &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">static</span> T *<span class="title">instance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="literal">nullptr</span> == _instance) &#123;</span><br><span class="line">            pthread_mutex_lock(_mutex);</span><br><span class="line">            <span class="keyword">if</span>(<span class="literal">nullptr</span> == _instance) &#123;</span><br><span class="line">                _instance = <span class="keyword">new</span> T();</span><br><span class="line">            &#125;</span><br><span class="line">            pthread_mutex_unlock(_mutex);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> _instance;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">pthread_mutex_t</span> _mutex;</span><br><span class="line">    <span class="keyword">static</span> T *_instance;</span><br><span class="line">    singleton() = <span class="keyword">delete</span>;</span><br><span class="line">    ~singleton() = <span class="keyword">delete</span>;</span><br><span class="line">    singleton(<span class="keyword">const</span> singleton &amp;) = <span class="keyword">delete</span>;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">static</span> T * singleton&lt;T&gt;::_instance=<span class="literal">nullptr</span>;</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">pthread_mutex_t</span> singleton&lt;T&gt;::_mutex=PTHREAD_MUTEX_INIT;</span><br></pre></td></tr></table></figure>
+<p>但是由于乱序执行的影响，DCL也不能完全保证线程安全，(1. 陈硕：LINUX多线程服务端编程 2. <a href="http://www.cs.wustl.edu/~schmidt/PDF/DC-Locking.pdf" target="_blank" rel="external">http://www.cs.wustl.edu/~schmidt/PDF/DC-Locking.pdf</a>)</p>
+<p>如下给出一个通过pthread_once来实现的线程安全的单例模式</p>
+<pre><code class="c++">
+<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;
+<span class="keyword">class</span> singleton {
+<span class="keyword">public</span>:
+    <span class="function"><span class="keyword">static</span> T *<span class="title">instance</span><span class="params">()</span> </span>{
+        pthread_once(&amp;_once, &amp;singleton::init)
+        <span class="keyword">return</span> _instance;
+    }
+<span class="keyword">private</span>:
+    <span class="keyword">static</span> <span class="keyword">pthread_once_t</span> _once;
+    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span></span>{
+        _instance = <span class="keyword">new</span> T();
+    }
+
+    <span class="keyword">static</span> T *_instance;
+    singleton() = <span class="keyword">delete</span>;
+    ~singleton() = <span class="keyword">delete</span>;
+    singleton(<span class="keyword">const</span> singleton &amp;) = <span class="keyword">delete</span>;
+};
+<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;
+<span class="keyword">static</span> T * singleton&lt;T&gt;::_instance=<span class="literal">nullptr</span>;
+<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;
+<span class="keyword">static</span> <span class="keyword">pthread_once_t</span> singleton&lt;T&gt;::_once=PTHREAD_ONCE_INIT;
+</code></pre>
+</span>
       
     </div>
 
@@ -287,15 +299,15 @@
       
         <div class="post-tags">
           
-            <a href="/tags/algorithm/" rel="tag">#algorithm</a>
-          
             <a href="/tags/c/" rel="tag">#c++</a>
           
-            <a href="/tags/hihocoder/" rel="tag">#hihocoder</a>
+            <a href="/tags/design-pattern/" rel="tag">#design pattern</a>
           
-            <a href="/tags/trie树/" rel="tag">#trie树</a>
+            <a href="/tags/singleton/" rel="tag">#singleton</a>
           
-            <a href="/tags/字典树/" rel="tag">#字典树</a>
+            <a href="/tags/单例模式/" rel="tag">#单例模式</a>
+          
+            <a href="/tags/设计模式/" rel="tag">#设计模式</a>
           
         </div>
       
@@ -304,11 +316,13 @@
         <div class="post-nav">
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2015/10/11/hihocoder-kmp/" rel="prev">hihocoder算法练习之kmp算法</a>
+              <a href="/2015/10/12/DeducingType/" rel="prev">C++ 类型推导</a>
             
           </div>
 
           <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/10/11/hihocoder-binarygraph/" rel="next">hihocoder算法练习之二分图</a>
             
           </div>
         </div>
@@ -333,8 +347,8 @@
         
           <div class="comments" id="comments">
             
-              <div class="ds-thread" data-thread-key="2015/10/11/hihocoder-trie/"
-                   data-title="hihocoder算法练习之trie树" data-url="http://yoursite.com/2015/10/11/hihocoder-trie/">
+              <div class="ds-thread" data-thread-key="2015/10/12/singleton/"
+                   data-title="singleton 单例模式" data-url="http://yoursite.com/2015/10/12/singleton/">
               </div>
             
           </div>
