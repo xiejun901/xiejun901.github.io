@@ -41,20 +41,24 @@
 
 <meta name="description" content="本篇大概记录一下看Effective Modern C++这本书时对于类型推导这一部分内容。
 如何查看类型推导要了解类型推导首先应该是知道如何查看类型推导，下面简要介绍几种查看类型推导的方法
-通过编译器">
+编译期查看通过IDE提供的信息查看以下是通过vs来查看auto的类型推断截图
+通过错误提示信息查看这方法也是罪了,如下代码123456789template&amp;lt;typename T&amp;gt;class D;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="C++ 类型推导">
 <meta property="og:url" content="http://yoursite.com/2015/10/12/DeducingType/index.html">
 <meta property="og:site_name" content="It's Me">
 <meta property="og:description" content="本篇大概记录一下看Effective Modern C++这本书时对于类型推导这一部分内容。
 如何查看类型推导要了解类型推导首先应该是知道如何查看类型推导，下面简要介绍几种查看类型推导的方法
-通过编译器">
-<meta property="og:updated_time" content="2015-10-12T14:24:46.000Z">
+编译期查看通过IDE提供的信息查看以下是通过vs来查看auto的类型推断截图
+通过错误提示信息查看这方法也是罪了,如下代码123456789template&amp;lt;typename T&amp;gt;class D;">
+<meta property="og:image" content="http://7q5fny.com1.z0.glb.clouddn.com/blogtype_deduced.jpg">
+<meta property="og:updated_time" content="2015-10-13T14:22:48.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="C++ 类型推导">
 <meta name="twitter:description" content="本篇大概记录一下看Effective Modern C++这本书时对于类型推导这一部分内容。
 如何查看类型推导要了解类型推导首先应该是知道如何查看类型推导，下面简要介绍几种查看类型推导的方法
-通过编译器">
+编译期查看通过IDE提供的信息查看以下是通过vs来查看auto的类型推断截图
+通过错误提示信息查看这方法也是罪了,如下代码123456789template&amp;lt;typename T&amp;gt;class D;">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -262,7 +266,31 @@
       
         <span itemprop="articleBody"><p>本篇大概记录一下看Effective Modern C++这本书时对于类型推导这一部分内容。</p>
 <h2 id="如何查看类型推导">如何查看类型推导</h2><p>要了解类型推导首先应该是知道如何查看类型推导，下面简要介绍几种查看类型推导的方法</p>
-<h3 id="通过编译器">通过编译器</h3></span>
+<h3 id="编译期查看">编译期查看</h3><h4 id="通过IDE提供的信息查看">通过IDE提供的信息查看</h4><p>以下是通过vs来查看auto的类型推断截图<br><img src="http://7q5fny.com1.z0.glb.clouddn.com/blogtype_deduced.jpg" alt=""></p>
+<h4 id="通过错误提示信息查看">通过错误提示信息查看</h4><p>这方法也是罪了,如下代码<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> D;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span><br><span class="line"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> x;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> &amp;y = x;</span><br><span class="line">    D&lt;<span class="keyword">decltype</span>(x)&gt; xType;</span><br><span class="line">    D&lt;<span class="keyword">decltype</span>(y)&gt; yType;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>编译提示信息：</p>
+<pre><code><span class="number">1</span>&gt;source2.cpp(<span class="number">7</span>)<span class="symbol">:</span> error <span class="constant">C2079</span><span class="symbol">:</span> <span class="string">'xType'</span> uses undefined <span class="class"><span class="keyword">class</span> '<span class="title">D</span><span class="inheritance">&lt;<span class="parent">int</span></span>&gt;'</span>
+<span class="number">1</span>&gt;source2.cpp(<span class="number">8</span>)<span class="symbol">:</span> error <span class="constant">C2079</span><span class="symbol">:</span> <span class="string">'yType'</span> uses undefined <span class="class"><span class="keyword">class</span> '<span class="title">D</span><span class="inheritance">&lt;<span class="parent">const</span></span> <span class="title">int</span> &amp;&gt;'</span>
+</code></pre><p>通过错误信息可以很清楚的看到 x 和 y 的类型</p>
+<h3 id="运行期查看">运行期查看</h3><p>先介绍一个类 type_info，这个类是用来保存类的类型信息的，有一个成员name是来表示类型的名字的，可以通过typeid和type_info来在运行期获取类型的信息，<br>不过由于type_info处理类型信息时是值传递的，所以显示信息会不太准，一些引用特性和常量特性会被消除，具体哪些会被消除可以根据后边会介绍的模板类型来知道。我们可以通过boost::typeindex来获得更准确类型信息</p>
+<h2 id="模板的类型推导">模板的类型推导</h2><p>后边通过如下一段伪代码来举例, 我们需要得到ParamType 和 T</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">f</span><span class="params">(ParamType param)</span></span>;</span><br><span class="line"></span><br><span class="line">f(expr);</span><br></pre></td></tr></table></figure>
+<p>ParamType 通过expr的类型推断而来，T的类型由ParamType 和 expr的类型共同得出<br>具体可以分三种情况来看：</p>
+<ol>
+<li>ParamType 是指针或者引用但是不是universal reference(没搞懂这个怎么翻译)</li>
+<li>ParamType 是universal reference</li>
+<li>ParamType 既不是指针也不是引用</li>
+</ol>
+<h3 id="ParamType_是指针或者引用但是不是universal_reference">ParamType 是指针或者引用但是不是universal reference</h3><p>对于这种情况，类型推导的原则是</p>
+<ol>
+<li>如果expr是引用类型，忽视掉引用部分</li>
+<li>然后通过expr的类型去匹配ParamType 来 得出T</li>
+</ol>
+<p>例如<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">f</span><span class="params">(T&amp; param)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> x=<span class="number">27</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> cx=x;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span>&amp; rx=x;</span><br><span class="line"></span><br><span class="line">f(x);   <span class="comment">//T的类型是int,        param 的类型是 int&amp;</span></span><br><span class="line">f(cx);  <span class="comment">//T的类型是const int,  param 的类型是 const int&amp;</span></span><br><span class="line">f(rx);  <span class="comment">//T的类型是const int,  param 的类型是 const int&amp;</span></span><br></pre></td></tr></table></figure></p>
+<p>改变一下ParamType 再看！</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">f</span><span class="params">(<span class="keyword">const</span> T&amp; param)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> x=<span class="number">27</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> cx=x;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span>&amp; rx=x;</span><br><span class="line"></span><br><span class="line">f(x);   <span class="comment">//T的类型是int,        param 的类型是 const int&amp;</span></span><br><span class="line">f(cx);  <span class="comment">//T的类型是int,        param 的类型是 const int&amp;</span></span><br><span class="line">f(rx);  <span class="comment">//T的类型是int,        param 的类型是 const int&amp;</span></span><br></pre></td></tr></table></figure>
+<p>指针类型原则是一样的，就不再细说了</p>
+<h3 id="ParamType_是_universal_reference">ParamType 是 universal reference</h3></span>
       
     </div>
 
@@ -401,7 +429,7 @@
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#如何查看类型推导"><span class="nav-number">1.</span> <span class="nav-text">如何查看类型推导</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#通过编译器"><span class="nav-number">1.1.</span> <span class="nav-text">通过编译器</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#如何查看类型推导"><span class="nav-number">1.</span> <span class="nav-text">如何查看类型推导</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#编译期查看"><span class="nav-number">1.1.</span> <span class="nav-text">编译期查看</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#通过IDE提供的信息查看"><span class="nav-number">1.1.1.</span> <span class="nav-text">通过IDE提供的信息查看</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#通过错误提示信息查看"><span class="nav-number">1.1.2.</span> <span class="nav-text">通过错误提示信息查看</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行期查看"><span class="nav-number">1.2.</span> <span class="nav-text">运行期查看</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模板的类型推导"><span class="nav-number">2.</span> <span class="nav-text">模板的类型推导</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ParamType_是指针或者引用但是不是universal_reference"><span class="nav-number">2.1.</span> <span class="nav-text">ParamType 是指针或者引用但是不是universal reference</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ParamType_是_universal_reference"><span class="nav-number">2.2.</span> <span class="nav-text">ParamType 是 universal reference</span></a></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>
