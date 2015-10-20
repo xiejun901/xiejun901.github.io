@@ -30,7 +30,7 @@
 
 
 
-  <meta name="keywords" content="algorithm,c++,hihocoder,trie树,字典树," />
+  <meta name="keywords" content="C++,RVO,返回值优化," />
 
 
 
@@ -39,19 +39,16 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
 
 
-<meta name="description" content="输入输入的第一行为一个正整数n，表示词典的大小，其后n行，每一行一个单词（不保证是英文单词，也有可能是火星文单词哦），单词由不超过10个的小写英文字母组成，可能存在相同的单词，此时应将其视作不同的单词。接下来的一行为一个正整数m，表示询问的次数，其后m行，每一行一个字符串，该字符串由不超过10个的小写英文字母组成，表示一个询问。
-输出对于每一个询问，输出一个整数Ans,表示词典中以询问给出的字符串">
+<meta name="description" content="之前面试的时候被问到过C++返回值优化的问题，然后发现自己没有理得很清楚，因此仔细去看一下理解一下并且写一篇博客记录一下记录的大部分内容应该会来源于RVO V.S. std::move–Zhao Wu以及知乎网友的一些讨论">
 <meta property="og:type" content="article">
-<meta property="og:title" content="hihocoder算法练习之trie树">
-<meta property="og:url" content="http://yoursite.com/2015/10/11/hihocoder-trie/index.html">
+<meta property="og:title" content="C++中的返回值优化">
+<meta property="og:url" content="http://yoursite.com/2015/10/20/cpp-rvo/index.html">
 <meta property="og:site_name" content="It's Me">
-<meta property="og:description" content="输入输入的第一行为一个正整数n，表示词典的大小，其后n行，每一行一个单词（不保证是英文单词，也有可能是火星文单词哦），单词由不超过10个的小写英文字母组成，可能存在相同的单词，此时应将其视作不同的单词。接下来的一行为一个正整数m，表示询问的次数，其后m行，每一行一个字符串，该字符串由不超过10个的小写英文字母组成，表示一个询问。
-输出对于每一个询问，输出一个整数Ans,表示词典中以询问给出的字符串">
-<meta property="og:updated_time" content="2015-10-12T14:29:28.000Z">
+<meta property="og:description" content="之前面试的时候被问到过C++返回值优化的问题，然后发现自己没有理得很清楚，因此仔细去看一下理解一下并且写一篇博客记录一下记录的大部分内容应该会来源于RVO V.S. std::move–Zhao Wu以及知乎网友的一些讨论">
+<meta property="og:updated_time" content="2015-10-20T13:18:17.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="hihocoder算法练习之trie树">
-<meta name="twitter:description" content="输入输入的第一行为一个正整数n，表示词典的大小，其后n行，每一行一个单词（不保证是英文单词，也有可能是火星文单词哦），单词由不超过10个的小写英文字母组成，可能存在相同的单词，此时应将其视作不同的单词。接下来的一行为一个正整数m，表示询问的次数，其后m行，每一行一个字符串，该字符串由不超过10个的小写英文字母组成，表示一个询问。
-输出对于每一个询问，输出一个整数Ans,表示词典中以询问给出的字符串">
+<meta name="twitter:title" content="C++中的返回值优化">
+<meta name="twitter:description" content="之前面试的时候被问到过C++返回值优化的问题，然后发现自己没有理得很清楚，因此仔细去看一下理解一下并且写一篇博客记录一下记录的大部分内容应该会来源于RVO V.S. std::move–Zhao Wu以及知乎网友的一些讨论">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -61,7 +58,7 @@
   };
 </script>
 
-  <title> hihocoder算法练习之trie树 | It's Me </title>
+  <title> C++中的返回值优化 | It's Me </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -207,7 +204,7 @@
           
           
             
-              hihocoder算法练习之trie树
+              C++中的返回值优化
             
           
         </h1>
@@ -216,8 +213,8 @@
       <div class="post-meta">
         <span class="post-time">
           发表于
-          <time itemprop="dateCreated" datetime="2015-10-11T12:07:05+08:00" content="2015-10-11">
-            2015-10-11
+          <time itemprop="dateCreated" datetime="2015-10-20T21:11:01+08:00" content="2015-10-20">
+            2015-10-20
           </time>
         </span>
 
@@ -226,8 +223,8 @@
             &nbsp; | &nbsp; 分类于
             
               <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                <a href="/categories/hihocoder/" itemprop="url" rel="index">
-                  <span itemprop="name">hihocoder</span>
+                <a href="/categories/C/" itemprop="url" rel="index">
+                  <span itemprop="name">C++</span>
                 </a>
               </span>
 
@@ -242,8 +239,8 @@
           
             <span class="post-comments-count">
               &nbsp; | &nbsp;
-              <a href="/2015/10/11/hihocoder-trie/#comments" itemprop="discussionUrl">
-                <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/11/hihocoder-trie/" itemprop="commentsCount"></span>
+              <a href="/2015/10/20/cpp-rvo/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/20/cpp-rvo/" itemprop="commentsCount"></span>
               </a>
             </span>
           
@@ -257,26 +254,8 @@
       
 
       
-        <span itemprop="articleBody"><h2 id="输入">输入</h2><p>输入的第一行为一个正整数n，表示词典的大小，其后n行，每一行一个单词（不保证是英文单词，也有可能是火星文单词哦），单词由不超过10个的小写英文字母组成，可能存在相同的单词，此时应将其视作不同的单词。接下来的一行为一个正整数m，表示询问的次数，其后m行，每一行一个字符串，该字符串由不超过10个的小写英文字母组成，表示一个询问。</p>
-<h2 id="输出">输出</h2><p>对于每一个询问，输出一个整数Ans,表示词典中以询问给出的字符串为前缀的单词的个数。</p>
-<h2 id="样例输入">样例输入</h2><pre><code><span class="number">5</span>
-<span class="keyword">babaab
-</span><span class="keyword">babbbaaaa
-</span><span class="label">abba</span>
-<span class="label">aaaaabaa</span>
-<span class="keyword">babaababb
-</span><span class="number">5</span>
-<span class="keyword">babb
-</span><span class="keyword">baabaaa
-</span><span class="keyword">bab
-</span><span class="keyword">bb
-</span><span class="keyword">bbabbaab</span>
-</code></pre><h2 id="样例输出">样例输出</h2><pre><code><span class="number">1</span>
-<span class="number">0</span>
-<span class="number">3</span>
-<span class="number">0</span>
-<span class="number">0</span>
-</code></pre><h2 id="代码">代码</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">include</span> <span class="string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> trie_node&#123;</span><br><span class="line">	<span class="keyword">int</span> m;</span><br><span class="line">	trie_node * next[<span class="number">26</span>];</span><br><span class="line">&#125; trie_node;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span><br><span class="line"></span>&#123;</span><br><span class="line">	trie_node * root=<span class="keyword">new</span> trie_node;</span><br><span class="line">	trie_node * current;</span><br><span class="line">	trie_node * newnode;</span><br><span class="line">	<span class="keyword">int</span> n;</span><br><span class="line">	<span class="keyword">int</span> i;</span><br><span class="line">	<span class="keyword">int</span> flag=<span class="number">0</span>;</span><br><span class="line">	<span class="built_in">string</span> s1;</span><br><span class="line">	<span class="built_in">memset</span>(root-&gt;next, <span class="number">0</span>, <span class="keyword">sizeof</span>(root-&gt;next));</span><br><span class="line">	root-&gt;m = <span class="number">1</span>;</span><br><span class="line">	<span class="built_in">cin</span> &gt;&gt; n;</span><br><span class="line">	<span class="keyword">while</span> (n--)</span><br><span class="line">	&#123;</span><br><span class="line">		current = root;</span><br><span class="line">		<span class="built_in">cin</span> &gt;&gt; s1;</span><br><span class="line">		<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; s1.length(); i++)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">if</span> (current-&gt;next[s1[i] - <span class="string">'a'</span>] == <span class="literal">NULL</span>)</span><br><span class="line">			&#123;</span><br><span class="line">				newnode = <span class="keyword">new</span> trie_node;</span><br><span class="line">				<span class="built_in">memset</span>(newnode-&gt;next, <span class="number">0</span>, <span class="keyword">sizeof</span>(newnode-&gt;next));</span><br><span class="line">				newnode-&gt;m = <span class="number">1</span>;</span><br><span class="line">				current-&gt;next[s1[i] - <span class="string">'a'</span>] = newnode;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">				((current-&gt;next[s1[i] - <span class="string">'a'</span>])-&gt;m)++;</span><br><span class="line">			current = current-&gt;next[s1[i] - <span class="string">'a'</span>];</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">cin</span> &gt;&gt; n;</span><br><span class="line">	<span class="keyword">while</span> (n--)</span><br><span class="line">	&#123;</span><br><span class="line">		current = root;</span><br><span class="line">		flag = <span class="number">0</span>;</span><br><span class="line">		<span class="built_in">cin</span> &gt;&gt; s1;</span><br><span class="line">		<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; s1.length(); i++)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">if</span> (current-&gt;next[s1[i] - <span class="string">'a'</span>] == <span class="literal">NULL</span>)</span><br><span class="line">			&#123;</span><br><span class="line">				flag = <span class="number">1</span>;</span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">				current = current-&gt;next[s1[i] - <span class="string">'a'</span>];</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (flag)</span><br><span class="line">			<span class="built_in">cout</span> &lt;&lt; <span class="number">0</span> &lt;&lt; endl;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">			<span class="built_in">cout</span> &lt;&lt; current-&gt;m &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></span>
+        <span itemprop="articleBody"><p>之前面试的时候被问到过C++返回值优化的问题，然后发现自己没有理得很清楚，因此仔细去看一下理解一下并且写一篇博客记录一下<br>记录的大部分内容应该会来源于<a href="https://www.ibm.com/developerworks/community/blogs/5894415f-be62-4bc0-81c5-3956e82276f3/entry/RVO_V_S_std_move?lang=en" target="_blank" rel="external">RVO V.S. std::move–Zhao Wu</a>以及<a href="http://www.zhihu.com/question/29511959" target="_blank" rel="external">知乎网友的一些讨论</a></p>
+</span>
       
     </div>
 
@@ -284,15 +263,11 @@
       
         <div class="post-tags">
           
-            <a href="/tags/algorithm/" rel="tag">#algorithm</a>
+            <a href="/tags/C/" rel="tag">#C++</a>
           
-            <a href="/tags/c/" rel="tag">#c++</a>
+            <a href="/tags/RVO/" rel="tag">#RVO</a>
           
-            <a href="/tags/hihocoder/" rel="tag">#hihocoder</a>
-          
-            <a href="/tags/trie树/" rel="tag">#trie树</a>
-          
-            <a href="/tags/字典树/" rel="tag">#字典树</a>
+            <a href="/tags/返回值优化/" rel="tag">#返回值优化</a>
           
         </div>
       
@@ -301,11 +276,11 @@
         <div class="post-nav">
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2015/10/11/hihocoder-kmp/" rel="prev">hihocoder算法练习之kmp算法</a>
-            
           </div>
 
           <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/10/12/DeducingType/" rel="next">C++ 类型推导</a>
             
           </div>
         </div>
@@ -330,8 +305,8 @@
         
           <div class="comments" id="comments">
             
-              <div class="ds-thread" data-thread-key="2015/10/11/hihocoder-trie/"
-                   data-title="hihocoder算法练习之trie树" data-url="http://yoursite.com/2015/10/11/hihocoder-trie/">
+              <div class="ds-thread" data-thread-key="2015/10/20/cpp-rvo/"
+                   data-title="C++中的返回值优化" data-url="http://yoursite.com/2015/10/20/cpp-rvo/">
               </div>
             
           </div>
@@ -413,7 +388,7 @@
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#输入"><span class="nav-number">1.</span> <span class="nav-text">输入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出"><span class="nav-number">2.</span> <span class="nav-text">输出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#样例输入"><span class="nav-number">3.</span> <span class="nav-text">样例输入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#样例输出"><span class="nav-number">4.</span> <span class="nav-text">样例输出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码"><span class="nav-number">5.</span> <span class="nav-text">代码</span></a></li></ol></div>
+              <p class="post-toc-empty">此文章未包含目录</p>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>
