@@ -54,7 +54,7 @@ C/C++栈帧介绍先介绍一下x86-64中的16个64位寄存器
 %rax: 作为函数返回值使用
 %rdi，%rsi，%rdx，%rcx，%r8">
 <meta property="og:image" content="http://7q5fny.com1.z0.glb.clouddn.com/blogx86-64寄存器2.png">
-<meta property="og:updated_time" content="2015-10-27T15:11:11.000Z">
+<meta property="og:updated_time" content="2015-10-31T05:22:38.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="C++中的返回值优化">
 <meta name="twitter:description" content="之前面试的时候被问到过C++返回值优化的问题，然后发现自己没有理得很清楚，因此仔细去看一下理解一下并且写一篇博客记录一下记录的大部分内容应该会来源于RVO V.S. std::move–Zhao Wu以及知乎网友的一些讨论
@@ -280,7 +280,8 @@ C/C++栈帧介绍先介绍一下x86-64中的16个64位寄存器
 </code></pre><p>对于以下一段程序，用g++ 编译成汇编</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">fun</span><span class="params">(<span class="keyword">int</span> i)</span></span><br><span class="line"></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> i*<span class="number">2</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span><br><span class="line"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> i=<span class="number">10</span>;</span><br><span class="line">    <span class="keyword">int</span> j=fun(i);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#10;&#9;.file&#9;&#34;test_stackfram.cpp&#34;&#10;&#9;.text&#10;&#9;.globl&#9;_Z3funi&#10;&#9;.type&#9;_Z3funi, @function&#10;_Z3funi:&#10;.LFB0:&#10;&#9;.cfi_startproc&#10;&#9;pushq&#9;%rbp&#10;&#9;.cfi_def_cfa_offset 16&#10;&#9;.cfi_offset 6, -16&#10;&#9;movq&#9;%rsp, %rbp&#10;&#9;.cfi_def_cfa_register 6&#10;&#9;movl&#9;%edi, -4(%rbp)&#10;&#9;movl&#9;-4(%rbp), %eax&#10;&#9;addl&#9;%eax, %eax&#10;&#9;popq&#9;%rbp&#10;&#9;.cfi_def_cfa 7, 8&#10;&#9;ret&#10;&#9;.cfi_endproc&#10;.LFE0:&#10;&#9;.size&#9;_Z3funi, .-_Z3funi&#10;&#9;.globl&#9;main&#10;&#9;.type&#9;main, @function&#10;main:&#10;.LFB1:&#10;&#9;.cfi_startproc&#10;&#9;pushq&#9;%rbp&#10;&#9;.cfi_def_cfa_offset 16&#10;&#9;.cfi_offset 6, -16&#10;&#9;movq&#9;%rsp, %rbp&#10;&#9;.cfi_def_cfa_register 6&#10;&#9;subq&#9;$16, %rsp&#10;&#9;movl&#9;$10, -4(%rbp)&#10;&#9;movl&#9;-4(%rbp), %eax&#10;&#9;movl&#9;%eax, %edi&#10;&#9;call&#9;_Z3funi&#10;&#9;movl&#9;%eax, -8(%rbp)&#10;&#9;movl&#9;$0, %eax&#10;&#9;leave&#10;&#9;.cfi_def_cfa 7, 8&#10;&#9;ret&#10;&#9;.cfi_endproc&#10;.LFE1:&#10;&#9;.size&#9;main, .-main&#10;&#9;.ident&#9;&#34;GCC: (GNU) 5.2.0&#34;&#10;&#9;.section&#9;.note.GNU-stack,&#34;&#34;,@progbits</span><br></pre></td></tr></table></figure>
-<p>从main函数看，首先进入main函数将%rbp入栈，然后将%rsp的值赋给%rbp，开始一个新的栈帧，此时帧顶栈底在同一个位置，表示了main函数的栈</p>
+<p>从main函数看，首先进入main函数将%rbp入栈，然后将%rsp的值赋给%rbp，开始一个新的栈帧，此时帧顶栈底在同一个位置，表示了main函数的栈<br>接下来会把局部i=10存在main函数的栈帧中，然后是通过寄存器%edi来传递参数调用fun函数，函数返回值会存在eax中，然后再将函数返回值置于main函数栈帧中的j局部变量，i位于(%rbp-4)的位置,位于j(%rbp-8)的位置</p>
+<p>看下fun函数，进入fun函数之后，会首先保存%rbp，即保存好调用方的栈帧的栈底指针，然后会将%rbp赋值为%rsp，开始一个新的栈帧，这个栈帧会用来存放fun函数的局部变量等等，如果再有一层调用，在被调用方会继续保存fun函数的堆栈底指针，并开辟新的栈帧</p>
 </span>
       
     </div>
@@ -305,6 +306,8 @@ C/C++栈帧介绍先介绍一下x86-64中的16个64位寄存器
       
         <div class="post-nav">
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/10/31/special-member-function/" rel="prev">C++中特殊的成员函数</a>
             
           </div>
 
@@ -376,7 +379,7 @@ C/C++栈帧介绍先介绍一下x86-64中的16个64位寄存器
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">7</span>
+              <span class="site-state-item-count">8</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
