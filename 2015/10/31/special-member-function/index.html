@@ -53,7 +53,9 @@
 移动赋值运算符
 
 这些函数在你自己未进行申明的时候可能会被编译器自动生成，按照以下规则
-如果自己定义了那个函数，则编译器则不再会为你生成默认的，比如自行定义了构造函数，编译器就不会在生成默认的构">
+总结一下编译器会为生成默认的成员函数的条件
+构造函数
+无自定义的构造函数(包括拷贝构造函数和移动构造函数)">
 <meta property="og:type" content="article">
 <meta property="og:title" content="C++中特殊的成员函数">
 <meta property="og:url" content="http://yoursite.com/2015/10/31/special-member-function/index.html">
@@ -72,8 +74,10 @@
 移动赋值运算符
 
 这些函数在你自己未进行申明的时候可能会被编译器自动生成，按照以下规则
-如果自己定义了那个函数，则编译器则不再会为你生成默认的，比如自行定义了构造函数，编译器就不会在生成默认的构">
-<meta property="og:updated_time" content="2015-10-31T08:36:28.000Z">
+总结一下编译器会为生成默认的成员函数的条件
+构造函数
+无自定义的构造函数(包括拷贝构造函数和移动构造函数)">
+<meta property="og:updated_time" content="2015-11-01T09:06:33.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="C++中特殊的成员函数">
 <meta name="twitter:description" content="本篇大概介绍一下C++中特殊的成员函数的生成规则
@@ -90,7 +94,9 @@
 移动赋值运算符
 
 这些函数在你自己未进行申明的时候可能会被编译器自动生成，按照以下规则
-如果自己定义了那个函数，则编译器则不再会为你生成默认的，比如自行定义了构造函数，编译器就不会在生成默认的构">
+总结一下编译器会为生成默认的成员函数的条件
+构造函数
+无自定义的构造函数(包括拷贝构造函数和移动构造函数)">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -310,9 +316,28 @@
 <li>移动赋值运算符</li>
 </ol>
 <p>这些函数在你自己未进行申明的时候可能会被编译器自动生成，按照以下规则</p>
-<h4 id="如果自己定义了那个函数，则编译器则不再会为你生成默认的，比如自行定义了构造函数，编译器就不会在生成默认的构造函数">如果自己定义了那个函数，则编译器则不再会为你生成默认的，比如自行定义了构造函数，编译器就不会在生成默认的构造函数</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> Widget &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Widget(<span class="keyword">int</span> x, <span class="keyword">int</span> y) &#123;&#125;;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span><br><span class="line"></span>&#123;</span><br><span class="line">    Widget w1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>会报错<br>    error C2512: ‘Widget’: no appropriate default constructor available</p>
-<h4 id="如果自行定义了拷贝构造函数，则编译器不会为你生成默认的拷贝构造函数，移动构造函数，移动赋值运算符和构造函数。">如果自行定义了拷贝构造函数，则编译器不会为你生成默认的拷贝构造函数，移动构造函数，移动赋值运算符和构造函数。</h4><h4 id="如果自行定义了拷贝赋值运算符，则编译器不会为你生成默认的移动构造函数，移动赋值运算符。">如果自行定义了拷贝赋值运算符，则编译器不会为你生成默认的移动构造函数，移动赋值运算符。</h4></span>
+<p>总结一下编译器会为生成默认的成员函数的条件</p>
+<h4 id="构造函数">构造函数</h4><ol>
+<li>无自定义的构造函数(包括拷贝构造函数和移动构造函数)</li>
+</ol>
+<h4 id="拷贝构造函数">拷贝构造函数</h4><ol>
+<li>无自定义的拷贝构造函数</li>
+<li>无自定义的移动构造函数和移动赋值运算符</li>
+</ol>
+<h4 id="拷贝赋值运算符">拷贝赋值运算符</h4><ol>
+<li>无自定义的拷贝构造运算符</li>
+<li>无自定义的移动构造函数和移动赋值运算符</li>
+</ol>
+<h4 id="移动构造函数和移动赋值运算符">移动构造函数和移动赋值运算符</h4><p>移动构造函数和移动赋值运算符是一块的，只要自定定义了其中一个，编译器就不会生成默认的移动构造函数或者移动赋值运算符</p>
+<ol>
+<li>无自定义的移动构造函数和移动赋值运算符</li>
+<li>无自定义的拷贝构造函数和拷贝赋值运算符</li>
+<li>无自定义析构函数</li>
+</ol>
+<h4 id="析构函数">析构函数</h4><ol>
+<li>无自定义的析构函数</li>
+</ol>
+</span>
       
     </div>
 
@@ -451,7 +476,7 @@
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#如果自己定义了那个函数，则编译器则不再会为你生成默认的，比如自行定义了构造函数，编译器就不会在生成默认的构造函数"><span class="nav-number">1.</span> <span class="nav-text">如果自己定义了那个函数，则编译器则不再会为你生成默认的，比如自行定义了构造函数，编译器就不会在生成默认的构造函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#如果自行定义了拷贝构造函数，则编译器不会为你生成默认的拷贝构造函数，移动构造函数，移动赋值运算符和构造函数。"><span class="nav-number">2.</span> <span class="nav-text">如果自行定义了拷贝构造函数，则编译器不会为你生成默认的拷贝构造函数，移动构造函数，移动赋值运算符和构造函数。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#如果自行定义了拷贝赋值运算符，则编译器不会为你生成默认的移动构造函数，移动赋值运算符。"><span class="nav-number">3.</span> <span class="nav-text">如果自行定义了拷贝赋值运算符，则编译器不会为你生成默认的移动构造函数，移动赋值运算符。</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#构造函数"><span class="nav-number">1.</span> <span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#拷贝构造函数"><span class="nav-number">2.</span> <span class="nav-text">拷贝构造函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#拷贝赋值运算符"><span class="nav-number">3.</span> <span class="nav-text">拷贝赋值运算符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#移动构造函数和移动赋值运算符"><span class="nav-number">4.</span> <span class="nav-text">移动构造函数和移动赋值运算符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#析构函数"><span class="nav-number">5.</span> <span class="nav-text">析构函数</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>
