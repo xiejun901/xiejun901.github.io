@@ -77,7 +77,7 @@
 总结一下编译器会为生成默认的成员函数的条件
 构造函数
 无自定义的构造函数(包括拷贝构造函数和移动构造函数)">
-<meta property="og:updated_time" content="2015-11-01T09:06:33.000Z">
+<meta property="og:updated_time" content="2015-11-04T02:30:33.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="C++中特殊的成员函数">
 <meta name="twitter:description" content="本篇大概介绍一下C++中特殊的成员函数的生成规则
@@ -337,6 +337,7 @@
 <h4 id="析构函数">析构函数</h4><ol>
 <li>无自定义的析构函数</li>
 </ol>
+<h4 id="三/五法则">三/五法则</h4><p>三：对于C++98，对于拷贝构造函数，拷贝赋值运算符，析构函数这三者，只要定义了其中一个，那么这三个都应该一起被定义，因为一旦牵涉到其中一个，就牵涉到资源管理，那么另外两个通常也不能按照编译器生成的默认行为进行。<br>五：对于C++11，又多了两个，移动构造函数，移动赋值运算符。同样的，这两个函数也应该加为一体。由于牵涉到自定义析构，拷贝，那么就牵涉到资源管理，因此移动赋值运算符和移动构造函数也需要自己定义，在这种情况下，由于默认的移动操作基本肯定是有问题的，因此编译器是不会为你生成默认的移动操作函数的。</p>
 </span>
       
     </div>
@@ -476,7 +477,7 @@
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#构造函数"><span class="nav-number">1.</span> <span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#拷贝构造函数"><span class="nav-number">2.</span> <span class="nav-text">拷贝构造函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#拷贝赋值运算符"><span class="nav-number">3.</span> <span class="nav-text">拷贝赋值运算符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#移动构造函数和移动赋值运算符"><span class="nav-number">4.</span> <span class="nav-text">移动构造函数和移动赋值运算符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#析构函数"><span class="nav-number">5.</span> <span class="nav-text">析构函数</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#构造函数"><span class="nav-number">1.</span> <span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#拷贝构造函数"><span class="nav-number">2.</span> <span class="nav-text">拷贝构造函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#拷贝赋值运算符"><span class="nav-number">3.</span> <span class="nav-text">拷贝赋值运算符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#移动构造函数和移动赋值运算符"><span class="nav-number">4.</span> <span class="nav-text">移动构造函数和移动赋值运算符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#析构函数"><span class="nav-number">5.</span> <span class="nav-text">析构函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三/五法则"><span class="nav-number">6.</span> <span class="nav-text">三/五法则</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>
