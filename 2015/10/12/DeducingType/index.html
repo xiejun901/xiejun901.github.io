@@ -52,7 +52,7 @@
 编译期查看通过IDE提供的信息查看以下是通过vs来查看auto的类型推断截图
 通过错误提示信息查看这方法也是罪了,如下代码123456789template&amp;lt;typename T&amp;gt;class D;">
 <meta property="og:image" content="http://7q5fny.com1.z0.glb.clouddn.com/blogtype_deduced.jpg">
-<meta property="og:updated_time" content="2015-10-18T07:48:30.000Z">
+<meta property="og:updated_time" content="2015-11-04T13:54:13.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="C++ 类型推导">
 <meta name="twitter:description" content="本篇大概记录一下看Effective Modern C++这本书时对于类型推导这一部分内容。
@@ -277,7 +277,7 @@
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">f</span><span class="params">(ParamType param)</span></span>;</span><br><span class="line"></span><br><span class="line">f(expr);</span><br></pre></td></tr></table></figure>
 <p>ParamType 通过expr的类型推断而来，T的类型由ParamType 和 expr的类型共同得出<br>具体可以分三种情况来看：</p>
 <ol>
-<li>ParamType 是指针或者引用但是不是universal reference(没搞懂这个怎么翻译)</li>
+<li>ParamType 是指针或者引用但是不是universal reference(好吧，读到后面终于搞懂这个是个啥东西了。。对于type&amp;&amp; 是分两种情况的，一种是只能帮定位右值引用，另一种就随便了，因此被作者称为universal reference)</li>
 <li>ParamType 是universal reference</li>
 <li>ParamType 既不是指针也不是引用</li>
 </ol>
