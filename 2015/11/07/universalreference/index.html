@@ -30,7 +30,7 @@
 
 
 
-  <meta name="keywords" content="C++,C++类型推导,Effective Modern C++,auto,decltype,template," />
+  <meta name="keywords" content="C++,Effective Modern C++,reference,universal reference," />
 
 
 
@@ -39,64 +39,19 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
 
 
-<meta name="description" content="本篇大概介绍一下C++中特殊的成员函数的生成规则
-在C++98中，有几个可能会被编译器自动生成的成员函数
-
-构造函数
-拷贝构造函数
-拷贝赋值运算符
-析构函数
-
-在C++11中，又增加了两个
-
-移动构造函数
-移动赋值运算符
-
-这些函数在你自己未进行申明的时候可能会被编译器自动生成，按照以下规则
-总结一下编译器会为生成默认的成员函数的条件
-构造函数
-无自定义的构造函数(包括拷贝构造函数和移动构造函数)">
+<meta name="description" content="之前看类型推导时，看到了 universal reference 这个词，之前完全不知道这是啥意思，看到后面才知道，按照 Scott Meyers 书上所说，这样称呼的原因如下
+In fact, “T&amp;amp;&amp;amp;” has two different meanings. One is rvalue reference, of course. Such references behave e">
 <meta property="og:type" content="article">
-<meta property="og:title" content="C++中特殊的成员函数">
-<meta property="og:url" content="http://yoursite.com/2015/10/31/special-member-function/index.html">
+<meta property="og:title" content="C++ 中的 universal reference">
+<meta property="og:url" content="http://yoursite.com/2015/11/07/universalreference/index.html">
 <meta property="og:site_name" content="It's Me">
-<meta property="og:description" content="本篇大概介绍一下C++中特殊的成员函数的生成规则
-在C++98中，有几个可能会被编译器自动生成的成员函数
-
-构造函数
-拷贝构造函数
-拷贝赋值运算符
-析构函数
-
-在C++11中，又增加了两个
-
-移动构造函数
-移动赋值运算符
-
-这些函数在你自己未进行申明的时候可能会被编译器自动生成，按照以下规则
-总结一下编译器会为生成默认的成员函数的条件
-构造函数
-无自定义的构造函数(包括拷贝构造函数和移动构造函数)">
-<meta property="og:updated_time" content="2015-11-04T02:30:33.000Z">
+<meta property="og:description" content="之前看类型推导时，看到了 universal reference 这个词，之前完全不知道这是啥意思，看到后面才知道，按照 Scott Meyers 书上所说，这样称呼的原因如下
+In fact, “T&amp;amp;&amp;amp;” has two different meanings. One is rvalue reference, of course. Such references behave e">
+<meta property="og:updated_time" content="2015-11-07T13:55:06.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="C++中特殊的成员函数">
-<meta name="twitter:description" content="本篇大概介绍一下C++中特殊的成员函数的生成规则
-在C++98中，有几个可能会被编译器自动生成的成员函数
-
-构造函数
-拷贝构造函数
-拷贝赋值运算符
-析构函数
-
-在C++11中，又增加了两个
-
-移动构造函数
-移动赋值运算符
-
-这些函数在你自己未进行申明的时候可能会被编译器自动生成，按照以下规则
-总结一下编译器会为生成默认的成员函数的条件
-构造函数
-无自定义的构造函数(包括拷贝构造函数和移动构造函数)">
+<meta name="twitter:title" content="C++ 中的 universal reference">
+<meta name="twitter:description" content="之前看类型推导时，看到了 universal reference 这个词，之前完全不知道这是啥意思，看到后面才知道，按照 Scott Meyers 书上所说，这样称呼的原因如下
+In fact, “T&amp;amp;&amp;amp;” has two different meanings. One is rvalue reference, of course. Such references behave e">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -106,7 +61,7 @@
   };
 </script>
 
-  <title> C++中特殊的成员函数 | It's Me </title>
+  <title> C++ 中的 universal reference | It's Me </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -252,7 +207,7 @@
           
           
             
-              C++中特殊的成员函数
+              C++ 中的 universal reference
             
           
         </h1>
@@ -261,8 +216,8 @@
       <div class="post-meta">
         <span class="post-time">
           发表于
-          <time itemprop="dateCreated" datetime="2015-10-31T16:13:06+08:00" content="2015-10-31">
-            2015-10-31
+          <time itemprop="dateCreated" datetime="2015-11-07T21:34:04+08:00" content="2015-11-07">
+            2015-11-07
           </time>
         </span>
 
@@ -287,8 +242,8 @@
           
             <span class="post-comments-count">
               &nbsp; | &nbsp;
-              <a href="/2015/10/31/special-member-function/#comments" itemprop="discussionUrl">
-                <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/31/special-member-function/" itemprop="commentsCount"></span>
+              <a href="/2015/11/07/universalreference/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2015/11/07/universalreference/" itemprop="commentsCount"></span>
               </a>
             </span>
           
@@ -302,42 +257,8 @@
       
 
       
-        <span itemprop="articleBody"><p>本篇大概介绍一下C++中特殊的成员函数的生成规则</p>
-<p>在C++98中，有几个可能会被编译器自动生成的成员函数</p>
-<ol>
-<li>构造函数</li>
-<li>拷贝构造函数</li>
-<li>拷贝赋值运算符</li>
-<li>析构函数</li>
-</ol>
-<p>在C++11中，又增加了两个</p>
-<ol>
-<li>移动构造函数</li>
-<li>移动赋值运算符</li>
-</ol>
-<p>这些函数在你自己未进行申明的时候可能会被编译器自动生成，按照以下规则</p>
-<p>总结一下编译器会为生成默认的成员函数的条件</p>
-<h4 id="构造函数">构造函数</h4><ol>
-<li>无自定义的构造函数(包括拷贝构造函数和移动构造函数)</li>
-</ol>
-<h4 id="拷贝构造函数">拷贝构造函数</h4><ol>
-<li>无自定义的拷贝构造函数</li>
-<li>无自定义的移动构造函数和移动赋值运算符</li>
-</ol>
-<h4 id="拷贝赋值运算符">拷贝赋值运算符</h4><ol>
-<li>无自定义的拷贝构造运算符</li>
-<li>无自定义的移动构造函数和移动赋值运算符</li>
-</ol>
-<h4 id="移动构造函数和移动赋值运算符">移动构造函数和移动赋值运算符</h4><p>移动构造函数和移动赋值运算符是一块的，只要自定定义了其中一个，编译器就不会生成默认的移动构造函数或者移动赋值运算符</p>
-<ol>
-<li>无自定义的移动构造函数和移动赋值运算符</li>
-<li>无自定义的拷贝构造函数和拷贝赋值运算符</li>
-<li>无自定义析构函数</li>
-</ol>
-<h4 id="析构函数">析构函数</h4><ol>
-<li>无自定义的析构函数</li>
-</ol>
-<h4 id="三/五法则">三/五法则</h4><p>三：对于C++98，对于拷贝构造函数，拷贝赋值运算符，析构函数这三者，只要定义了其中一个，那么这三个都应该一起被定义，因为一旦牵涉到其中一个，就牵涉到资源管理，那么另外两个通常也不能按照编译器生成的默认行为进行。<br>五：对于C++11，又多了两个，移动构造函数，移动赋值运算符。同样的，这两个函数也应该加为一体。由于牵涉到自定义析构，拷贝，那么就牵涉到资源管理，因此移动赋值运算符和移动构造函数也需要自己定义，在这种情况下，由于默认的移动操作基本肯定是有问题的，因此编译器是不会为你生成默认的移动操作函数的。</p>
+        <span itemprop="articleBody"><p>之前看类型推导时，看到了 universal reference 这个词，之前完全不知道这是啥意思，看到后面才知道，按照 Scott Meyers 书上所说，这样称呼的原因如下</p>
+<p><em>In fact, “T&amp;&amp;” has two different meanings. One is rvalue reference, of course. Such references behave exactly the way you expect: they bind only to rvalues, and their primary raison d’être is to identify objects that may be moved from.<br>The other meaning for “T&amp;&amp;” is either rvalue reference or lvalue reference. Such references look like rvalue references in the source code (i.e., “T&amp;&amp;”), but they can behave as if they were lvalue references (i.e., “T&amp;”). Their dual nature permits them to bind to rvalues (like rvalue references) as well as lvalues (like lvalue references). Furthermore, they can bind to const or non-const objects, to volatile or non-volatile objects, even to objects that are both const and volatile. They can bind to virtually anything. Such unprecedentedly flexible references deserve a name of their own. I call them universal references.1</em><br><em>1 Item 25 explains that universal references should almost always have std::forward applied to them, and as this book goes to press, some members of the C++ community have started referring to universal references as forwarding references.</em></p>
 </span>
       
     </div>
@@ -348,15 +269,11 @@
           
             <a href="/tags/C/" rel="tag">#C++</a>
           
-            <a href="/tags/C-类型推导/" rel="tag">#C++类型推导</a>
-          
             <a href="/tags/Effective-Modern-C/" rel="tag">#Effective Modern C++</a>
           
-            <a href="/tags/auto/" rel="tag">#auto</a>
+            <a href="/tags/reference/" rel="tag">#reference</a>
           
-            <a href="/tags/decltype/" rel="tag">#decltype</a>
-          
-            <a href="/tags/template/" rel="tag">#template</a>
+            <a href="/tags/universal-reference/" rel="tag">#universal reference</a>
           
         </div>
       
@@ -365,13 +282,11 @@
         <div class="post-nav">
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2015/11/07/universalreference/" rel="prev">C++ 中的 universal reference</a>
-            
           </div>
 
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/10/20/cpp-rvo/" rel="next">C++中的返回值优化</a>
+              <a href="/2015/10/31/special-member-function/" rel="next">C++中特殊的成员函数</a>
             
           </div>
         </div>
@@ -396,8 +311,8 @@
         
           <div class="comments" id="comments">
             
-              <div class="ds-thread" data-thread-key="2015/10/31/special-member-function/"
-                   data-title="C++中特殊的成员函数" data-url="http://yoursite.com/2015/10/31/special-member-function/">
+              <div class="ds-thread" data-thread-key="2015/11/07/universalreference/"
+                   data-title="C++ 中的 universal reference" data-url="http://yoursite.com/2015/11/07/universalreference/">
               </div>
             
           </div>
@@ -479,7 +394,7 @@
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#构造函数"><span class="nav-number">1.</span> <span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#拷贝构造函数"><span class="nav-number">2.</span> <span class="nav-text">拷贝构造函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#拷贝赋值运算符"><span class="nav-number">3.</span> <span class="nav-text">拷贝赋值运算符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#移动构造函数和移动赋值运算符"><span class="nav-number">4.</span> <span class="nav-text">移动构造函数和移动赋值运算符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#析构函数"><span class="nav-number">5.</span> <span class="nav-text">析构函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三/五法则"><span class="nav-number">6.</span> <span class="nav-text">三/五法则</span></a></li></ol></div>
+              <p class="post-toc-empty">此文章未包含目录</p>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>
