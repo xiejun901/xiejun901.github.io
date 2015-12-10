@@ -41,13 +41,13 @@
 
 <meta name="description" content="多态多态多态(polymorphism)是面向对象的核心思想之一，多态就是说在调用类的方法的时候，由运行时的类型来决定调用的是哪个方法，也可称作后期绑定，动态绑定。在java中，除了 static 和 final 修饰的方法都是动态绑定的(等同于C++中使用virtual修饰)，可以很方便的实现多态.通过多态，我们可以将做什么和怎么做进行解耦，使得代码的扩展能力更强如以下的代码，我们可以看到Tes">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java 学习总结">
+<meta property="og:title" content="Java 学习总结一 多态">
 <meta property="og:url" content="http://yoursite.com/2015/12/01/java-polymorphism/index.html">
 <meta property="og:site_name" content="It's Me">
 <meta property="og:description" content="多态多态多态(polymorphism)是面向对象的核心思想之一，多态就是说在调用类的方法的时候，由运行时的类型来决定调用的是哪个方法，也可称作后期绑定，动态绑定。在java中，除了 static 和 final 修饰的方法都是动态绑定的(等同于C++中使用virtual修饰)，可以很方便的实现多态.通过多态，我们可以将做什么和怎么做进行解耦，使得代码的扩展能力更强如以下的代码，我们可以看到Tes">
-<meta property="og:updated_time" content="2015-12-05T14:41:55.000Z">
+<meta property="og:updated_time" content="2015-12-10T15:25:07.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java 学习总结">
+<meta name="twitter:title" content="Java 学习总结一 多态">
 <meta name="twitter:description" content="多态多态多态(polymorphism)是面向对象的核心思想之一，多态就是说在调用类的方法的时候，由运行时的类型来决定调用的是哪个方法，也可称作后期绑定，动态绑定。在java中，除了 static 和 final 修饰的方法都是动态绑定的(等同于C++中使用virtual修饰)，可以很方便的实现多态.通过多态，我们可以将做什么和怎么做进行解耦，使得代码的扩展能力更强如以下的代码，我们可以看到Tes">
 
 
@@ -58,7 +58,7 @@
   };
 </script>
 
-  <title> Java 学习总结 | It's Me </title>
+  <title> Java 学习总结一 多态 | It's Me </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -204,7 +204,7 @@
           
           
             
-              Java 学习总结
+              Java 学习总结一 多态
             
           
         </h1>
@@ -324,7 +324,7 @@ at TestClass.<span class="function"><span class="title">main</span><span class="
 <p>不过从语法上来看，这些区别除了多继承外，其实差别并不算大，接口和抽象类的主要区别还是在设计上面<br>对于抽象类，我们强调的是它是由一组类的公共部分抽象而来，是满足is a 这种原则的, 比如对于汽车，马车，飞机  它们都是交通工具，因此我们可以抽象出一个交通工具的类出来，汽车 is a 交通工具, 马车 is a 交通工具<br>而对于接口呢，我们强调的是遵循的一个公共接口，比如说对于汽车, 轮船，飞机，他们都能用来装人，那么我们可以抽象出一个装人的接口出来(初略理解)<br>举个简单的例子，以前看algorithm4的时候还不懂java，所以基本只看算法了，对于代码都是略过的，里面提到过一点接口的内容，如以下代码，sort接收一组Comparable[]:</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Quick</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sort</span><span class="params">(Comparable[] a)</span></span><br><span class="line">    </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(Sting[] agrs)</span> </span>&#123;</span><br><span class="line">        Quick quick = <span class="keyword">new</span> Quick();</span><br><span class="line">        SomeClass[] objs = <span class="keyword">new</span> SomeClass[<span class="number">100</span>]; </span><br><span class="line">        quick.sort(objs);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>在这个代码中，Comparable就是一种接口，这种接口的实现都实现了less这个方法，因此可以用来比较大小，在调用的时候就可以将一组对象传入sort这个方法中，在这儿并不强调SomeClass is a Comparable</p>
-<h3 id="Java_中的多重继承">Java 中的多重继承</h3><p>从语言上来讲，Java 并不支持 public class Derive extends Base{} ,但是确是可以实现多个接口的，因此可以靠接口来完成多重继承这个概念，如以下代码</p>
+<h3 id="Java_中的多重继承">Java 中的多重继承</h3><p>从语言上来讲，Java 并不支持 public class Derive extends Base1, base2 {} ,但是却可以实现多个接口的，因此可以靠接口来完成多重继承这个概念，如以下代码</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">public interface CanFight &#123;</span><br><span class="line">    void fight();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public interface CanFly &#123;</span><br><span class="line">    void fly();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public interface CanSwim &#123;</span><br><span class="line">    void swim();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class AcationCharater &#123;</span><br><span class="line">    public void fight()&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class Hero extends AcationCharater</span><br><span class="line">implements CanFight, CanSwim, CanFly&#123;</span><br><span class="line">    public void fly() &#123;&#125;</span><br><span class="line">    public void swim() &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line">值得注意的是，Hero从AcationCharater继承而来的fight方法也成为了接口的实现，编译器并未因为写 Hero 类时并未给出fight方法而报错</span><br><span class="line"></span><br><span class="line">就thinging in java 推荐来看，如果我们要创建不带任何方法定义和成员变量的基类，我们应该选用接口，或者说是在我们知道某事物会成为一个基类，第一选择应该是让它成为一个接口</span><br><span class="line"></span><br><span class="line">### 通过继承来扩展接口 </span><br><span class="line"></span><br><span class="line">通过继承，可以很容易的在接口中添加新的方法，因为接口支持多继承，因此可以通过接口来组合多个接口</span><br><span class="line"></span><br><span class="line">    [修饰符] interface 接口名 [extends 父接口1, 父接口2 ... ] &#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">### 适配接口</span><br><span class="line"></span><br><span class="line">同一个接口，可以允许有多个不同的实现，其中一个体现就是一个接收接口类型的方法，该接口的实现和向该方法传递的对象取决于方法的使用者。</span><br><span class="line"></span><br><span class="line">一个常见常见的用法就是策略模式，我们编写一个执行某些操作的方法，该方法接收一个我们指定的接口。使用者只需要实现这个接口，那么就可以使用这个方法，通过这种原则，可以使得方法更加灵活，通用和更强的可复用性</span><br><span class="line"></span><br><span class="line">举个简单的例子，还是用排序算法来举例,只要使用者的类实现了Comparable，那么久可以将sort作用于它</span><br><span class="line"></span><br><span class="line">```java</span><br><span class="line">public class Quick&#123;</span><br><span class="line">    public static void sort(Comparable[] a)</span><br><span class="line">    &#123;</span><br><span class="line">        //will call a.less()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public interface Comparable &#123;</span><br><span class="line">    bool less();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="接口中的域">接口中的域</h3><p>值得注意的是，接口中的域都是 static 和 final的，可以被非常量表达式初始化</p>
 </span>
@@ -348,7 +348,7 @@ at TestClass.<span class="function"><span class="title">main</span><span class="
         <div class="post-nav">
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2015/12/05/java-exception/" rel="prev">java 中的异常</a>
+              <a href="/2015/12/05/java-exception/" rel="prev">Java 学习总结二  异常</a>
             
           </div>
 
@@ -380,7 +380,7 @@ at TestClass.<span class="function"><span class="title">main</span><span class="
           <div class="comments" id="comments">
             
               <div class="ds-thread" data-thread-key="2015/12/01/java-polymorphism/"
-                   data-title="Java 学习总结" data-url="http://yoursite.com/2015/12/01/java-polymorphism/">
+                   data-title="Java 学习总结一 多态" data-url="http://yoursite.com/2015/12/01/java-polymorphism/">
               </div>
             
           </div>
@@ -420,7 +420,7 @@ at TestClass.<span class="function"><span class="title">main</span><span class="
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">11</span>
+              <span class="site-state-item-count">12</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -434,7 +434,7 @@ at TestClass.<span class="function"><span class="title">main</span><span class="
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">32</span>
+              <span class="site-state-item-count">34</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>

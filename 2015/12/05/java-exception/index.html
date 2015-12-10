@@ -39,22 +39,19 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
 
 
-<meta name="description" content="异常的基本概念为什么需要异常呢？ 在程序运行中，总是会出错的，错误的处理一直以来都是各个程序语言需要处理的问题，在C语言中，错误一般是通过返回值和全局错误标识来进行表示的，这是一种约定俗称的方法，这样的方法比较原始，在比较现代的语言,例如Python， PHP, C++, Java 都支持通过异常来处理错误
-抛出异常抛出异常通过关键字 throw 来实现
-12if(t == null)	throw">
+<meta name="description" content="异常的基本概念为什么需要异常呢？ 在程序运行中，总是会出错的，错误的处理一直以来都是各个程序语言需要处理的问题，在C语言中，错误一般是通过返回值和全局错误标识来进行表示的，这是一种约定俗称的方法，这样的方法比较原始，在比较现代的语言,例如Python， PHP, C++, Java 都支持通过异常来处理错误通过异常，我们可以在错误出现时，实行合适的操作来处理错误
+抛出异常抛出异常通过关键字 thr">
 <meta property="og:type" content="article">
-<meta property="og:title" content="java 中的异常">
+<meta property="og:title" content="Java 学习总结二  异常">
 <meta property="og:url" content="http://yoursite.com/2015/12/05/java-exception/index.html">
 <meta property="og:site_name" content="It's Me">
-<meta property="og:description" content="异常的基本概念为什么需要异常呢？ 在程序运行中，总是会出错的，错误的处理一直以来都是各个程序语言需要处理的问题，在C语言中，错误一般是通过返回值和全局错误标识来进行表示的，这是一种约定俗称的方法，这样的方法比较原始，在比较现代的语言,例如Python， PHP, C++, Java 都支持通过异常来处理错误
-抛出异常抛出异常通过关键字 throw 来实现
-12if(t == null)	throw">
-<meta property="og:updated_time" content="2015-12-05T14:26:39.000Z">
+<meta property="og:description" content="异常的基本概念为什么需要异常呢？ 在程序运行中，总是会出错的，错误的处理一直以来都是各个程序语言需要处理的问题，在C语言中，错误一般是通过返回值和全局错误标识来进行表示的，这是一种约定俗称的方法，这样的方法比较原始，在比较现代的语言,例如Python， PHP, C++, Java 都支持通过异常来处理错误通过异常，我们可以在错误出现时，实行合适的操作来处理错误
+抛出异常抛出异常通过关键字 thr">
+<meta property="og:updated_time" content="2015-12-10T15:43:06.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="java 中的异常">
-<meta name="twitter:description" content="异常的基本概念为什么需要异常呢？ 在程序运行中，总是会出错的，错误的处理一直以来都是各个程序语言需要处理的问题，在C语言中，错误一般是通过返回值和全局错误标识来进行表示的，这是一种约定俗称的方法，这样的方法比较原始，在比较现代的语言,例如Python， PHP, C++, Java 都支持通过异常来处理错误
-抛出异常抛出异常通过关键字 throw 来实现
-12if(t == null)	throw">
+<meta name="twitter:title" content="Java 学习总结二  异常">
+<meta name="twitter:description" content="异常的基本概念为什么需要异常呢？ 在程序运行中，总是会出错的，错误的处理一直以来都是各个程序语言需要处理的问题，在C语言中，错误一般是通过返回值和全局错误标识来进行表示的，这是一种约定俗称的方法，这样的方法比较原始，在比较现代的语言,例如Python， PHP, C++, Java 都支持通过异常来处理错误通过异常，我们可以在错误出现时，实行合适的操作来处理错误
+抛出异常抛出异常通过关键字 thr">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -64,7 +61,7 @@
   };
 </script>
 
-  <title> java 中的异常 | It's Me </title>
+  <title> Java 学习总结二  异常 | It's Me </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -210,7 +207,7 @@
           
           
             
-              java 中的异常
+              Java 学习总结二  异常
             
           
         </h1>
@@ -245,9 +242,24 @@
       
 
       
-        <span itemprop="articleBody"><h3 id="异常的基本概念">异常的基本概念</h3><p>为什么需要异常呢？ 在程序运行中，总是会出错的，错误的处理一直以来都是各个程序语言需要处理的问题，在C语言中，错误一般是通过返回值和全局错误标识来进行表示的，这是一种约定俗称的方法，这样的方法比较原始，在比较现代的语言,例如Python， PHP, C++, Java 都支持通过异常来处理错误</p>
-<h3 id="抛出异常">抛出异常</h3><p>抛出异常通过关键字 throw 来实现</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(t == <span class="keyword">null</span>)</span><br><span class="line">	<span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException()</span><br></pre></td></tr></table></figure></span>
+        <span itemprop="articleBody"><h3 id="异常的基本概念">异常的基本概念</h3><p>为什么需要异常呢？ 在程序运行中，总是会出错的，错误的处理一直以来都是各个程序语言需要处理的问题，在C语言中，错误一般是通过返回值和全局错误标识来进行表示的，这是一种约定俗称的方法，这样的方法比较原始，在比较现代的语言,例如Python， PHP, C++, Java 都支持通过异常来处理错误<br>通过异常，我们可以在错误出现时，实行合适的操作来处理错误</p>
+<h4 id="抛出异常">抛出异常</h4><p>抛出异常通过关键字 throw 来实现</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(t == <span class="keyword">null</span>)</span><br><span class="line">	<span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException()</span><br></pre></td></tr></table></figure>
+<p>在Java中，异常和其他对象一样，通过new 在堆上创建。标准异常类有两个构造器:一个是默认构造器，另外一个是以字符串作为参数，可以将相关信息放入异常对象中</p>
+<p>当抛出异常时，函数会从方法或者作用域中退出(类似于 return的效果)</p>
+<h4 id="异常捕获">异常捕获</h4><p>通过try…catch…finally 来进行异常的捕获和处理</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> exception_sample;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.InputMismatchException;</span><br><span class="line"><span class="keyword">import</span> java.util.Scanner;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestClass</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Scanner input = <span class="keyword">new</span> Scanner(System.in);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">"input a integer"</span>);</span><br><span class="line">            <span class="keyword">int</span> one = input.nextInt();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InputMismatchException e) &#123;</span><br><span class="line">            System.out.println(<span class="string">"input doesn't matche, pliease input ainteger"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="异常匹配">异常匹配</h4><p>抛出异常的时候，异常处理系统会按照代码书写的顺序找出最近的处理程序，找到匹配的处理程序之后，便会认为异常已经得到处理，不再继续查找，查找的时候不要求完全匹配，派生类的对象也可以匹配其积累的处理程序，因此在写catch的时候要将派生类写在前面，基类写在后面</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Annoyance</span> <span class="keyword">extends</span> <span class="title">Exception</span></span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Sneeze</span> <span class="keyword">extends</span> <span class="title">Annoyance</span></span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestClass</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span>&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Sneeze();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Sneeze s) &#123;</span><br><span class="line">            System.out.println(<span class="string">"Caught Sneeze"</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Annoyance a) &#123;</span><br><span class="line">            System.out.println(<span class="string">"Caught Annoyance"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">try</span>&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Sneeze();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Annoyance a) &#123;</span><br><span class="line">            System.out.println(<span class="string">"Caught Annoyance"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="经验总结">经验总结</h4><ol>
+<li>处理运行时异常时候，采用逻辑去合理规避同时辅助try-catch处理</li>
+<li>在多重catch块后面，可以加一个catche(Exception) 来处理可能会被遗漏的异常</li>
+<li>对于不确定的代码，也可以加上try-catch，处理潜在的异常</li>
+<li>尽量去处理异常， 不要只是简单调用printStackTrace()去打印</li>
+<li>具体如何处理异常，要根据不同的业务需求和异常类型去决定</li>
+<li>尽量添加finally语句块去释放占用的资源</li>
+</ol>
+</span>
       
     </div>
 
@@ -266,11 +278,13 @@
         <div class="post-nav">
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2015/12/06/java-string/" rel="prev">Java学习总结三 字符串</a>
+            
           </div>
 
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/12/01/java-polymorphism/" rel="next">Java 学习总结</a>
+              <a href="/2015/12/01/java-polymorphism/" rel="next">Java 学习总结一 多态</a>
             
           </div>
         </div>
@@ -296,7 +310,7 @@
           <div class="comments" id="comments">
             
               <div class="ds-thread" data-thread-key="2015/12/05/java-exception/"
-                   data-title="java 中的异常" data-url="http://yoursite.com/2015/12/05/java-exception/">
+                   data-title="Java 学习总结二  异常" data-url="http://yoursite.com/2015/12/05/java-exception/">
               </div>
             
           </div>
@@ -336,7 +350,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">11</span>
+              <span class="site-state-item-count">12</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -350,7 +364,7 @@
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">32</span>
+              <span class="site-state-item-count">34</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>
@@ -378,7 +392,7 @@
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#异常的基本概念"><span class="nav-number">1.</span> <span class="nav-text">异常的基本概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#抛出异常"><span class="nav-number">2.</span> <span class="nav-text">抛出异常</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#异常的基本概念"><span class="nav-number">1.</span> <span class="nav-text">异常的基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#抛出异常"><span class="nav-number">1.1.</span> <span class="nav-text">抛出异常</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#异常捕获"><span class="nav-number">1.2.</span> <span class="nav-text">异常捕获</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#异常匹配"><span class="nav-number">1.3.</span> <span class="nav-text">异常匹配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#经验总结"><span class="nav-number">1.4.</span> <span class="nav-text">经验总结</span></a></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>
