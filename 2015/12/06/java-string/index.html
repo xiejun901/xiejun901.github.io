@@ -47,7 +47,7 @@
 <meta property="og:site_name" content="It's Me">
 <meta property="og:description" content="不可变StringString对象是不可改变的，String类中看起来能改变字符串内容的方法实际上都是创建了一个新的String对象，原来的对象并未发生改变,如下代码
 123456789public class TestClass &amp;#123;    public static void main(String[] args) &amp;#123;        String s1 = &quot;howdy&quot;;">
-<meta property="og:updated_time" content="2015-12-10T15:54:55.000Z">
+<meta property="og:updated_time" content="2015-12-12T02:15:49.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java学习总结三 字符串">
 <meta name="twitter:description" content="不可变StringString对象是不可改变的，String类中看起来能改变字符串内容的方法实际上都是创建了一个新的String对象，原来的对象并未发生改变,如下代码
@@ -248,7 +248,195 @@
 <pre><code><span class="title">howdy</span>
 HOWDY
 howdy
-</code></pre></span>
+</code></pre><h4 id="StringBuilder">StringBuilder</h4><p>考虑到如下代码<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestClass</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        String s1 = <span class="string">"yeyeyeye"</span>;</span><br><span class="line">        String s2 = <span class="string">"1"</span> + s1 + <span class="string">"2"</span> + <span class="string">"3"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们知道，String对象是不可变的，那么从代码上来看s2的创建过程中,”1”+s1首先会生成一个临时对象，然后再加上“2”会在生成一个临时对象，再加上“3”会生成最后的对象把引用赋给上s2，这过程中产生的临时对下你个是会对效率产生影响的<br>不过对于这种简单的语句，我们编译器是会自动采取优化的，会自动引入StringBuilder类来构造s2，这样就会省略掉这些中间对象<br>对以上代码字节码进行分析  javap -c TestClass</p>
+<pre><code>Compiled from <span class="string">"TestClass.java"</span>
+<span class="keyword">public</span> <span class="keyword">class</span> TestClass {
+<span class="function"><span class="keyword">public</span> <span class="title">TestClass</span><span class="params">()</span></span>;
+    Code:
+    <span class="number">0</span>: aload_0
+    <span class="number">1</span>: invokespecial <span class="preprocessor">#<span class="number">1</span>                  <span class="comment">// Method java/lang/Object."&lt;init&gt;":()V</span></span>
+    <span class="number">4</span>: <span class="keyword">return</span>
+
+<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(java.lang.String[])</span></span>;
+    Code:
+    <span class="number">0</span>: ldc           <span class="preprocessor">#<span class="number">2</span>                  <span class="comment">// String yeyeyeye</span></span>
+    <span class="number">2</span>: astore_1
+    <span class="number">3</span>: <span class="keyword">new</span>           <span class="preprocessor">#<span class="number">3</span>                  <span class="comment">// class java/lang/StringBuilder</span></span>
+    <span class="number">6</span>: dup
+    <span class="number">7</span>: invokespecial <span class="preprocessor">#<span class="number">4</span>                  <span class="comment">// Method java/lang/StringBuilder."&lt;init&gt;":()V</span></span>
+    <span class="number">10</span>: ldc           <span class="preprocessor">#<span class="number">5</span>                  <span class="comment">// String 1</span></span>
+    <span class="number">12</span>: invokevirtual <span class="preprocessor">#<span class="number">6</span>                  <span class="comment">// Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span></span>
+    <span class="number">15</span>: aload_1
+    <span class="number">16</span>: invokevirtual <span class="preprocessor">#<span class="number">6</span>                  <span class="comment">// Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span></span>
+    <span class="number">19</span>: ldc           <span class="preprocessor">#<span class="number">7</span>                  <span class="comment">// String 2</span></span>
+    <span class="number">21</span>: invokevirtual <span class="preprocessor">#<span class="number">6</span>                  <span class="comment">// Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span></span>
+    <span class="number">24</span>: ldc           <span class="preprocessor">#<span class="number">8</span>                  <span class="comment">// String 3</span></span>
+    <span class="number">26</span>: invokevirtual <span class="preprocessor">#<span class="number">6</span>                  <span class="comment">// Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span></span>
+    <span class="number">29</span>: invokevirtual <span class="preprocessor">#<span class="number">9</span>                  <span class="comment">// Method java/lang/StringBuilder.toString:()Ljava/lang/String;</span></span>
+    <span class="number">32</span>: astore_2
+    <span class="number">33</span>: getstatic     <span class="preprocessor">#<span class="number">10</span>                 <span class="comment">// Field java/lang/System.out:Ljava/io/PrintStream;</span></span>
+    <span class="number">36</span>: aload_2
+    <span class="number">37</span>: invokevirtual <span class="preprocessor">#<span class="number">11</span>                 <span class="comment">// Method java/io/PrintStream.println:(Ljava/lang/String;)V</span></span>
+    <span class="number">40</span>: <span class="keyword">return</span>
+}
+</code></pre><p>我们可以看到，生成的字节码中自动引入了StringBuilder类，使用它的append方法来添加新的内容，防止多次构造临时对象，再看看下面一段代码和其生成的字节码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestClass</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">implicit</span><span class="params">(String[] s)</span></span><br><span class="line">    </span>&#123;</span><br><span class="line">        String result = <span class="string">""</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt; s.length; i++) &#123;</span><br><span class="line">            result += s[i];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">explicit</span><span class="params">(String[] s)</span></span><br><span class="line">    </span>&#123;</span><br><span class="line">        StringBuilder result= <span class="keyword">new</span> StringBuilder();</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt; s.length; i++) &#123;</span><br><span class="line">            result.append(s[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result.toString();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code>Compiled from <span class="string">"TestClass.java"</span>
+<span class="keyword">public</span> <span class="keyword">class</span> TestClass {
+<span class="function"><span class="keyword">public</span> <span class="title">TestClass</span><span class="params">()</span></span>;
+    Code:
+    <span class="number">0</span>: aload_0
+    <span class="number">1</span>: invokespecial <span class="preprocessor">#<span class="number">1</span>                  <span class="comment">// Method java/lang/Object."&lt;init&gt;":()V</span></span>
+    <span class="number">4</span>: <span class="keyword">return</span>
+
+<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(java.lang.String[])</span></span>;
+    Code:
+    <span class="number">0</span>: <span class="keyword">return</span>
+
+<span class="keyword">public</span> java.lang.<span class="function">String <span class="title">implicit</span><span class="params">(java.lang.String[])</span></span>;
+    Code:
+    <span class="number">0</span>: ldc           <span class="preprocessor">#<span class="number">2</span>                  <span class="comment">// String</span></span>
+    <span class="number">2</span>: astore_2
+    <span class="number">3</span>: iconst_0
+    <span class="number">4</span>: istore_3
+    <span class="number">5</span>: iload_3
+    <span class="number">6</span>: aload_1
+    <span class="number">7</span>: arraylength
+    <span class="number">8</span>: if_icmpge     <span class="number">38</span>
+    <span class="number">11</span>: <span class="keyword">new</span>           <span class="preprocessor">#<span class="number">3</span>                  <span class="comment">// class java/lang/StringBuilder</span></span>
+    <span class="number">14</span>: dup
+    <span class="number">15</span>: invokespecial <span class="preprocessor">#<span class="number">4</span>                  <span class="comment">// Method java/lang/StringBuilder."&lt;init&gt;":()V</span></span>
+    <span class="number">18</span>: aload_2
+    <span class="number">19</span>: invokevirtual <span class="preprocessor">#<span class="number">5</span>                  <span class="comment">// Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span></span>
+    <span class="number">22</span>: aload_1
+    <span class="number">23</span>: iload_3
+    <span class="number">24</span>: aaload
+    <span class="number">25</span>: invokevirtual <span class="preprocessor">#<span class="number">5</span>                  <span class="comment">// Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span></span>
+    <span class="number">28</span>: invokevirtual <span class="preprocessor">#<span class="number">6</span>                  <span class="comment">// Method java/lang/StringBuilder.toString:()Ljava/lang/String;</span></span>
+    <span class="number">31</span>: astore_2
+    <span class="number">32</span>: iinc          <span class="number">3</span>, <span class="number">1</span>
+    <span class="number">35</span>: <span class="keyword">goto</span>          <span class="number">5</span>
+    <span class="number">38</span>: aload_2
+    <span class="number">39</span>: areturn
+
+<span class="keyword">public</span> java.lang.<span class="function">String <span class="title">explicit</span><span class="params">(java.lang.String[])</span></span>;
+    Code:
+    <span class="number">0</span>: <span class="keyword">new</span>           <span class="preprocessor">#<span class="number">3</span>                  <span class="comment">// class java/lang/StringBuilder</span></span>
+    <span class="number">3</span>: dup
+    <span class="number">4</span>: invokespecial <span class="preprocessor">#<span class="number">4</span>                  <span class="comment">// Method java/lang/StringBuilder."&lt;init&gt;":()V</span></span>
+    <span class="number">7</span>: astore_2
+    <span class="number">8</span>: iconst_0
+    <span class="number">9</span>: istore_3
+    <span class="number">10</span>: iload_3
+    <span class="number">11</span>: aload_1
+    <span class="number">12</span>: arraylength
+    <span class="number">13</span>: if_icmpge     <span class="number">30</span>
+    <span class="number">16</span>: aload_2
+    <span class="number">17</span>: aload_1
+    <span class="number">18</span>: iload_3
+    <span class="number">19</span>: aaload
+    <span class="number">20</span>: invokevirtual <span class="preprocessor">#<span class="number">5</span>                  <span class="comment">// Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span></span>
+    <span class="number">23</span>: pop
+    <span class="number">24</span>: iinc          <span class="number">3</span>, <span class="number">1</span>
+    <span class="number">27</span>: <span class="keyword">goto</span>          <span class="number">10</span>
+    <span class="number">30</span>: aload_2
+    <span class="number">31</span>: invokevirtual <span class="preprocessor">#<span class="number">6</span>                  <span class="comment">// Method java/lang/StringBuilder.toString:()Ljava/lang/String;</span></span>
+    <span class="number">34</span>: areturn
+}
+</code></pre><p>我们可以看到在implicit方法中，每次循环都会将StringBuilder变成String，在explicit方法中，最后再执行的StringBuilder到String的转换，显然显然，explicit方法效率会高很多，因此在我们使用String的时候需要注意这个问题，如果遇到循环，我们可以自己手动使用StringBuilder来优化，防止多次，无用的构造String临时对象<br>StringBuilder 是Java SE5 引入的，在这之前用的是StringBuffer, 后者是线程安全的，同时开销也会大一些</p>
+<h4 id="String_类提供的方法">String 类提供的方法</h4><h5 id="构造器">构造器</h5><p>构造一个 String 对象</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">String s1 = <span class="keyword">new</span> String();</span><br><span class="line">System.out.println(s1);</span><br><span class="line"><span class="keyword">byte</span>[] bytes = &#123; <span class="number">97</span>, <span class="number">98</span>, <span class="number">99</span>, <span class="number">100</span>, <span class="number">101</span>&#125;;</span><br><span class="line">String s2 = <span class="keyword">new</span> String(bytes);</span><br><span class="line">System.out.println(s2);</span><br><span class="line"><span class="keyword">char</span>[] chars = &#123;<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>, <span class="string">'d'</span>, <span class="string">'e'</span>&#125;;</span><br><span class="line">String s3 = <span class="keyword">new</span> String(chars);</span><br><span class="line">System.out.println(s3);</span><br><span class="line"><span class="keyword">int</span>[] codePoints = &#123;<span class="number">97</span>, <span class="number">98</span>, <span class="number">99</span>, <span class="number">100</span>, <span class="number">101</span>&#125;;</span><br><span class="line">String s4 = <span class="keyword">new</span> String(chars);</span><br><span class="line">System.out.println(s4);</span><br><span class="line">StringBuilder sb = <span class="keyword">new</span> StringBuilder();</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;<span class="number">6</span>;i++) &#123;</span><br><span class="line">    sb.append(i);</span><br><span class="line">&#125;</span><br><span class="line">String s5 = <span class="keyword">new</span> String(sb);</span><br><span class="line">System.out.println(s5);</span><br><span class="line">StringBuffer sbuffer = <span class="keyword">new</span> StringBuffer();</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">6</span>;i&lt;<span class="number">11</span>;i++) &#123;</span><br><span class="line">    sbuffer.append(i);</span><br><span class="line">&#125;</span><br><span class="line">String s6 = <span class="keyword">new</span> String(sbuffer);</span><br><span class="line">System.out.println(s6);</span><br></pre></td></tr></table></figure>
+<h5 id="length()">length()</h5><p>获取 String 对象的长度<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">length</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String s1 = <span class="string">"xyzwaaa"</span>;</span><br><span class="line">System.out.println(s1.length()); <span class="comment">// 将会输出 7</span></span><br></pre></td></tr></table></figure>
+<h5 id="charAt()">charAt()</h5><p>获取指定位置的char<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">char</span> <span class="title">charAt</span><span class="params">(<span class="keyword">int</span> index)</span></span>;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String s = <span class="string">"ABCDEFGHIJKLM"</span>;</span><br><span class="line"><span class="keyword">char</span> ch = s.charAt(<span class="number">4</span>);  <span class="comment">//char 为 'E'</span></span><br></pre></td></tr></table></figure>
+<h5 id="getChars(),_getBytes()">getChars(), getBytes()</h5><p>复制chars或者bytes到一个数组</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getChars</span><span class="params">(<span class="keyword">int</span> srcBegin, <span class="keyword">int</span> srcEnd, <span class="keyword">char</span>[] dst, <span class="keyword">int</span> destBegin)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getBytes</span><span class="params">(<span class="keyword">int</span> srcBegin, <span class="keyword">int</span> srcEnd, <span class="keyword">byte</span>[] dst, <span class="keyword">int</span> destBegin)</span></span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String s = <span class="string">"ABCDEFGHIJKLM"</span>;</span><br><span class="line"><span class="keyword">char</span>[] dest1 =<span class="keyword">new</span> <span class="keyword">char</span>[<span class="number">10</span>];</span><br><span class="line">s.getChars(<span class="number">0</span>,<span class="number">5</span>,dest1,<span class="number">0</span>);  <span class="comment">//dest1: &#123;A, B, C, D, E, , , , ,&#125;</span></span><br><span class="line"><span class="keyword">byte</span>[] dest2 = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">10</span>];</span><br><span class="line">s.getBytes(<span class="number">5</span>,<span class="number">10</span>,dest2,<span class="number">5</span>); <span class="comment">//dest2: &#123;0, 0, 0, 0, 0, 70, 71, 72, 73, 74&#125;</span></span><br></pre></td></tr></table></figure>
+<h5 id="toCharArray()">toCharArray()</h5><p>转换为一个char[]的数组</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">char</span>[] toCharArray()</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String s= <span class="string">"ABCDEF"</span>;</span><br><span class="line"><span class="keyword">char</span>[] chars = s.toCharArray(); <span class="comment">// CHARS: &#123;A, B, C, D, E, F&#125;</span></span><br></pre></td></tr></table></figure>
+<h5 id="equals(),_equalsIgnoreCase()">equals(), equalsIgnoreCase()</h5><p>检测是否相等(内容而不是引用)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object anObject)</span></span>; <span class="comment">//比较和另外一个对象是否相 当且仅当参数不为null且为一个序列相等的String对象的时候返回true</span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">equalsIgnoreCase</span><span class="params">(String anotherString)</span></span>; <span class="comment">//比较和另外一个string是否相等，忽略大小写</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span>[] chars = &#123;<span class="string">'A'</span>, <span class="string">'b'</span>, <span class="string">'C'</span>, <span class="string">'d'</span>&#125;;</span><br><span class="line">String s1 = <span class="keyword">new</span> String(chars);</span><br><span class="line">String s2 = <span class="keyword">new</span> String(chars);</span><br><span class="line">String s3 = <span class="string">"ABCD"</span>;</span><br><span class="line">System.out.println(s1 == s2); <span class="comment">//false</span></span><br><span class="line">System.out.println(s1.equals(s2));  <span class="comment">// true</span></span><br><span class="line">System.out.println(s1.equals(chars)); <span class="comment">//false</span></span><br><span class="line">System.out.println(s1.equals(s3)); <span class="comment">//false</span></span><br><span class="line">System.out.println(s1.equalsIgnoreCase(s3)); <span class="comment">//true</span></span><br></pre></td></tr></table></figure>
+<h5 id="compareTo(),_compareToIgnoreCase()">compareTo(), compareToIgnoreCase()</h5><p>与另外String进行比较，返回-1,0,1</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compareTo</span><span class="params">(String anotherString)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compareToIgnoreCase</span><span class="params">(String anotherString)</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">String s1 = <span class="string">"abcde"</span>;</span><br><span class="line">String s2 = <span class="string">"abcde"</span>;</span><br><span class="line">String s3 = <span class="string">"bbcde"</span>;</span><br><span class="line">System.out.println(s1.compareTo(s2)); <span class="comment">//  0</span></span><br><span class="line">System.out.println(s1.compareTo(s3)); <span class="comment">// -1</span></span><br><span class="line">System.out.println(s3.compareTo(s1)); <span class="comment">// 1</span></span><br></pre></td></tr></table></figure>
+<h4 id="更多方法，_参考String">更多方法， 参考<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html" target="_blank" rel="external">String</a></h4><p><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html" target="_blank" rel="external">oracle String 文档</a></p>
+<h4 id="格式化输出">格式化输出</h4><h5 id="printf()">printf()</h5><p>Java也支持同C类似的printf</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.out.printf(<span class="string">"%d,%d,%c"</span>, <span class="number">10</span>,<span class="number">20</span>,<span class="string">'A'</span>);</span><br></pre></td></tr></table></figure>
+<h5 id="format()">format()</h5><p>fromat 和 printf是等价的，作用于PringStream或PrintWritter对象</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.out.format(<span class="string">"%d,%d,%c"</span>, <span class="number">10</span>,<span class="number">20</span>,<span class="string">'A'</span>);</span><br></pre></td></tr></table></figure>
+<h5 id="Formatter类">Formatter类</h5><p>新的格式化功能由java.util.Formatter类处理。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    Formatter f = <span class="keyword">new</span> Formatter(System.out);</span><br><span class="line">    String name = <span class="string">"xiejun"</span>;</span><br><span class="line">    <span class="keyword">int</span> age = <span class="number">25</span>;</span><br><span class="line">    f.format(<span class="string">"name:%s, age: %d"</span>,name, age);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="格式化说明符">格式化说明符</h5><p>其语法如下:</p>
+<pre><code>%[<span class="link_label">argument_index$</span>][<span class="link_reference">flags</span>][<span class="link_label">width</span>][<span class="link_reference">.precision</span>]conversion
+</code></pre><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    Formatter f = <span class="keyword">new</span> Formatter(System.out);</span><br><span class="line">    String name = <span class="string">"xiejun"</span>;</span><br><span class="line">    <span class="keyword">int</span> age = <span class="number">25</span>;</span><br><span class="line">    <span class="keyword">double</span> height = <span class="number">1.75</span>;</span><br><span class="line">    f.format(<span class="string">"name:%-15s, age: %5d, age: %7f\n"</span>,name, age, height);</span><br><span class="line">    f.format(<span class="string">"name:%15s, age: %5d, age: %7f\n"</span>,name, age, height);</span><br><span class="line">    f.format(<span class="string">"name:%2.2s, age: %5d, age: %1.4f\n"</span>,name, age, height);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code><span class="string">name:</span>xiejun         , <span class="string">age:</span>    <span class="number">25</span>, <span class="string">age:</span> <span class="number">1.750000</span>
+<span class="string">name:</span>         xiejun, <span class="string">age:</span>    <span class="number">25</span>, <span class="string">age:</span> <span class="number">1.750000</span>
+<span class="string">name:</span>     xi, <span class="string">age:</span>    <span class="number">25</span>, <span class="string">age:</span> <span class="number">1.7500</span>
+</code></pre><p>width 应用于各种类型表示数据最小尺寸， precision用于控制最大尺寸，应用于String时，表示打印出的最大字符量，对浮点数时，表示小数部分要显示出来的位数，对整数使用则会触发异常</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>%d</td>
+<td>十进制整形数字</td>
+</tr>
+<tr>
+<td>%c</td>
+<td>Unicode字符</td>
+</tr>
+<tr>
+<td>%b</td>
+<td>boolean值</td>
+</tr>
+<tr>
+<td>%s</td>
+<td>String</td>
+</tr>
+<tr>
+<td>%f</td>
+<td>浮点，十进制</td>
+</tr>
+<tr>
+<td>%e</td>
+<td>浮点，科学计数</td>
+</tr>
+<tr>
+<td>%x</td>
+<td>整数，十六进制</td>
+</tr>
+<tr>
+<td>%h</td>
+<td>hash code，十六进制</td>
+</tr>
+<tr>
+<td>%%</td>
+<td>字符%</td>
+</tr>
+</tbody>
+</table>
+<h5 id="String-format()">String.format()</h5><p>类似于C中的sprintf，String.format() 接受与Formatter.fromat()相同的参数，但是返回一个String对象</p>
+<h4 id="正则表达式">正则表达式</h4><p> 正则表达式是一种很强大的文本处理工具，通过正则表示我们可以很方便的通过编程来处理字符串的模式匹配问题</p>
+<h5 id="基础">基础</h5><p> 通过String.matches来使用正则表达式</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">matches</span><span class="params">(String regex)</span></span></span><br></pre></td></tr></table></figure>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    System.out.println(<span class="string">"-12345"</span>.matches(<span class="string">"-?\\d+"</span>)); <span class="comment">//true</span></span><br><span class="line">    System.out.println(<span class="string">"5678"</span>.matches(<span class="string">"-?\\d+"</span>)); <span class="comment">//true</span></span><br><span class="line">    System.out.println(<span class="string">"+91011"</span>.matches(<span class="string">"-?\\d+"</span>)); <span class="comment">//false</span></span><br><span class="line">    System.out.println(<span class="string">"+911"</span>.matches(<span class="string">"(-|\\+)?\\d+"</span>)); <span class="comment">//true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code>? ：代表出现一次或多次
++ ：代表出现一次或者多次
+<span class="string">| ：代表并联</span>
+\\ : 表示开始一个转义字符
+</code></pre><p>通过String.split()方法也能使用正则表达式</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> String[] split(String regex, <span class="keyword">int</span> limit)</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String s1 = <span class="string">"abcd,efgh;mnky!dsdy"</span>;</span><br><span class="line">String[] ss = s1.split(<span class="string">",|;|!"</span>); <span class="comment">// : &#123;abcd, efgh, mnky, dsdy&#125;</span></span><br></pre></td></tr></table></figure>
+<h5 id="创建正则表达式">创建正则表达式</h5><p>  更多正则表达式相关内容后面再补充吧</p>
+</span>
       
     </div>
 
@@ -379,7 +567,7 @@ howdy
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#不可变String"><span class="nav-number">1.</span> <span class="nav-text">不可变String</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#不可变String"><span class="nav-number">1.</span> <span class="nav-text">不可变String</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#StringBuilder"><span class="nav-number">2.</span> <span class="nav-text">StringBuilder</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#String_类提供的方法"><span class="nav-number">3.</span> <span class="nav-text">String 类提供的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#构造器"><span class="nav-number">3.1.</span> <span class="nav-text">构造器</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#length()"><span class="nav-number">3.2.</span> <span class="nav-text">length()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#charAt()"><span class="nav-number">3.3.</span> <span class="nav-text">charAt()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#getChars(),_getBytes()"><span class="nav-number">3.4.</span> <span class="nav-text">getChars(), getBytes()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#toCharArray()"><span class="nav-number">3.5.</span> <span class="nav-text">toCharArray()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#equals(),_equalsIgnoreCase()"><span class="nav-number">3.6.</span> <span class="nav-text">equals(), equalsIgnoreCase()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#compareTo(),_compareToIgnoreCase()"><span class="nav-number">3.7.</span> <span class="nav-text">compareTo(), compareToIgnoreCase()</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#更多方法，_参考String"><span class="nav-number">4.</span> <span class="nav-text">更多方法， 参考String</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#格式化输出"><span class="nav-number">5.</span> <span class="nav-text">格式化输出</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#printf()"><span class="nav-number">5.1.</span> <span class="nav-text">printf()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#format()"><span class="nav-number">5.2.</span> <span class="nav-text">format()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Formatter类"><span class="nav-number">5.3.</span> <span class="nav-text">Formatter类</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#格式化说明符"><span class="nav-number">5.4.</span> <span class="nav-text">格式化说明符</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#String-format()"><span class="nav-number">5.5.</span> <span class="nav-text">String.format()</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#正则表达式"><span class="nav-number">6.</span> <span class="nav-text">正则表达式</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#基础"><span class="nav-number">6.1.</span> <span class="nav-text">基础</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#创建正则表达式"><span class="nav-number">6.2.</span> <span class="nav-text">创建正则表达式</span></a></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>
