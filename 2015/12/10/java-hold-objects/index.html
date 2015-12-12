@@ -30,7 +30,7 @@
 
 
 
-  <meta name="keywords" content="exception,异常," />
+  <meta name="keywords" content="generic,java,object," />
 
 
 
@@ -39,19 +39,38 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
 
 
-<meta name="description" content="异常的基本概念为什么需要异常呢？ 在程序运行中，总是会出错的，错误的处理一直以来都是各个程序语言需要处理的问题，在C语言中，错误一般是通过返回值和全局错误标识来进行表示的，这是一种约定俗称的方法，这样的方法比较原始，在比较现代的语言,例如Python， PHP, C++, Java 都支持通过异常来处理错误通过异常，我们可以在错误出现时，实行合适的操作来处理错误
-抛出异常抛出异常通过关键字 thr">
+<meta name="description" content="当我们需要不知道具体多少个数量的对象时候，甚至是不知道对象的具体类型时，我们显然没法在代码里直接写的方式来表示这些对象
+Type refer1;
+Type refer2;
+Type refer3;
+.
+.
+.
+这样是不可能的，因为不知道对象具体由多少个，所以我们需要编程语言提供一些机制来处理这个问题，Java有不少方式可以来解决这个问题，比如说数组，可以通过一个数组来持有多个对象，但是由于数组的长">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java 学习总结二  异常">
-<meta property="og:url" content="http://yoursite.com/2015/12/05/java-exception/index.html">
+<meta property="og:title" content="Java 学习总结五 集合类">
+<meta property="og:url" content="http://yoursite.com/2015/12/10/java-hold-objects/index.html">
 <meta property="og:site_name" content="It's Me">
-<meta property="og:description" content="异常的基本概念为什么需要异常呢？ 在程序运行中，总是会出错的，错误的处理一直以来都是各个程序语言需要处理的问题，在C语言中，错误一般是通过返回值和全局错误标识来进行表示的，这是一种约定俗称的方法，这样的方法比较原始，在比较现代的语言,例如Python， PHP, C++, Java 都支持通过异常来处理错误通过异常，我们可以在错误出现时，实行合适的操作来处理错误
-抛出异常抛出异常通过关键字 thr">
-<meta property="og:updated_time" content="2015-12-10T15:43:06.000Z">
+<meta property="og:description" content="当我们需要不知道具体多少个数量的对象时候，甚至是不知道对象的具体类型时，我们显然没法在代码里直接写的方式来表示这些对象
+Type refer1;
+Type refer2;
+Type refer3;
+.
+.
+.
+这样是不可能的，因为不知道对象具体由多少个，所以我们需要编程语言提供一些机制来处理这个问题，Java有不少方式可以来解决这个问题，比如说数组，可以通过一个数组来持有多个对象，但是由于数组的长">
+<meta property="og:image" content="http://7q5fny.com1.z0.glb.clouddn.com/blogThinking%20in%20Java%204th%20Ed.jpg">
+<meta property="og:updated_time" content="2015-12-12T12:37:23.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java 学习总结二  异常">
-<meta name="twitter:description" content="异常的基本概念为什么需要异常呢？ 在程序运行中，总是会出错的，错误的处理一直以来都是各个程序语言需要处理的问题，在C语言中，错误一般是通过返回值和全局错误标识来进行表示的，这是一种约定俗称的方法，这样的方法比较原始，在比较现代的语言,例如Python， PHP, C++, Java 都支持通过异常来处理错误通过异常，我们可以在错误出现时，实行合适的操作来处理错误
-抛出异常抛出异常通过关键字 thr">
+<meta name="twitter:title" content="Java 学习总结五 集合类">
+<meta name="twitter:description" content="当我们需要不知道具体多少个数量的对象时候，甚至是不知道对象的具体类型时，我们显然没法在代码里直接写的方式来表示这些对象
+Type refer1;
+Type refer2;
+Type refer3;
+.
+.
+.
+这样是不可能的，因为不知道对象具体由多少个，所以我们需要编程语言提供一些机制来处理这个问题，Java有不少方式可以来解决这个问题，比如说数组，可以通过一个数组来持有多个对象，但是由于数组的长">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -61,7 +80,7 @@
   };
 </script>
 
-  <title> Java 学习总结二  异常 | It's Me </title>
+  <title> Java 学习总结五 集合类 | It's Me </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -207,7 +226,7 @@
           
           
             
-              Java 学习总结二  异常
+              Java 学习总结五 集合类
             
           
         </h1>
@@ -216,8 +235,8 @@
       <div class="post-meta">
         <span class="post-time">
           发表于
-          <time itemprop="dateCreated" datetime="2015-12-05T22:10:59+08:00" content="2015-12-05">
-            2015-12-05
+          <time itemprop="dateCreated" datetime="2015-12-10T14:34:52+08:00" content="2015-12-10">
+            2015-12-10
           </time>
         </span>
 
@@ -227,8 +246,8 @@
           
             <span class="post-comments-count">
               &nbsp; | &nbsp;
-              <a href="/2015/12/05/java-exception/#comments" itemprop="discussionUrl">
-                <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/05/java-exception/" itemprop="commentsCount"></span>
+              <a href="/2015/12/10/java-hold-objects/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/10/java-hold-objects/" itemprop="commentsCount"></span>
               </a>
             </span>
           
@@ -242,23 +261,44 @@
       
 
       
-        <span itemprop="articleBody"><h3 id="异常的基本概念">异常的基本概念</h3><p>为什么需要异常呢？ 在程序运行中，总是会出错的，错误的处理一直以来都是各个程序语言需要处理的问题，在C语言中，错误一般是通过返回值和全局错误标识来进行表示的，这是一种约定俗称的方法，这样的方法比较原始，在比较现代的语言,例如Python， PHP, C++, Java 都支持通过异常来处理错误<br>通过异常，我们可以在错误出现时，实行合适的操作来处理错误</p>
-<h4 id="抛出异常">抛出异常</h4><p>抛出异常通过关键字 throw 来实现</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(t == <span class="keyword">null</span>)</span><br><span class="line">	<span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException()</span><br></pre></td></tr></table></figure>
-<p>在Java中，异常和其他对象一样，通过new 在堆上创建。标准异常类有两个构造器:一个是默认构造器，另外一个是以字符串作为参数，可以将相关信息放入异常对象中</p>
-<p>当抛出异常时，函数会从方法或者作用域中退出(类似于 return的效果)</p>
-<h4 id="异常捕获">异常捕获</h4><p>通过try…catch…finally 来进行异常的捕获和处理</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> exception_sample;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.InputMismatchException;</span><br><span class="line"><span class="keyword">import</span> java.util.Scanner;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestClass</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Scanner input = <span class="keyword">new</span> Scanner(System.in);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">"input a integer"</span>);</span><br><span class="line">            <span class="keyword">int</span> one = input.nextInt();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InputMismatchException e) &#123;</span><br><span class="line">            System.out.println(<span class="string">"input doesn't matche, pliease input ainteger"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="异常匹配">异常匹配</h4><p>抛出异常的时候，异常处理系统会按照代码书写的顺序找出最近的处理程序，找到匹配的处理程序之后，便会认为异常已经得到处理，不再继续查找，查找的时候不要求完全匹配，派生类的对象也可以匹配其积累的处理程序，因此在写catch的时候要将派生类写在前面，基类写在后面</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Annoyance</span> <span class="keyword">extends</span> <span class="title">Exception</span></span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Sneeze</span> <span class="keyword">extends</span> <span class="title">Annoyance</span></span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestClass</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span>&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Sneeze();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Sneeze s) &#123;</span><br><span class="line">            System.out.println(<span class="string">"Caught Sneeze"</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Annoyance a) &#123;</span><br><span class="line">            System.out.println(<span class="string">"Caught Annoyance"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">try</span>&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Sneeze();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Annoyance a) &#123;</span><br><span class="line">            System.out.println(<span class="string">"Caught Annoyance"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="经验总结">经验总结</h4><ol>
-<li>处理运行时异常时候，采用逻辑去合理规避同时辅助try-catch处理</li>
-<li>在多重catch块后面，可以加一个catche(Exception) 来处理可能会被遗漏的异常</li>
-<li>对于不确定的代码，也可以加上try-catch，处理潜在的异常</li>
-<li>尽量去处理异常， 不要只是简单调用printStackTrace()去打印</li>
-<li>具体如何处理异常，要根据不同的业务需求和异常类型去决定</li>
-<li>尽量添加finally语句块去释放占用的资源</li>
+        <span itemprop="articleBody"><p>当我们需要不知道具体多少个数量的对象时候，甚至是不知道对象的具体类型时，我们显然没法在代码里直接写的方式来表示这些对象</p>
+<pre><code><span class="built_in">Type</span> refer1;
+<span class="built_in">Type</span> refer2;
+<span class="built_in">Type</span> refer3;
+.
+.
+.
+</code></pre><p>这样是不可能的，因为不知道对象具体由多少个，所以我们需要编程语言提供一些机制来处理这个问题，Java有不少方式可以来解决这个问题，比如说数组，可以通过一个数组来持有多个对象，但是由于数组的长度是固定的，虽然我们可以申明足够大的容量来保证要用到的数量小于这个最大值，但我们很多时候希望由更灵活的方式来持有对象。<br>在Java中，除了数组，我们还可以用List，Set，Queue，Map来持有对象，这些对象类型又被称为<strong>集合类</strong></p>
+<h4 id="泛型和类型安全的容器">泛型和类型安全的容器</h4><p>在Java支持泛型之前，Java中所有类都集成于Object类，因此可以靠持有Object类来持有其他类，但正因为这样，就意味着所有的类都可以往容器里放，一不小心，就会出现类型错误<br>在支持泛型之后，这个问题就得到了改善，可以通过泛型来保存一组容器，容器的类型会在编译时得到检测，这样就可以安全的持有对象</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestClass</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        ArrayList&lt;Integer&gt; arr = <span class="keyword">new</span> ArrayList&lt;Integer&gt;();</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">5</span>;i++) &#123;</span><br><span class="line">            arr.add(i);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i&lt; arr.size(); i++ ) &#123;</span><br><span class="line">            System.out.println(arr.get(i));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (Integer i : arr) &#123;</span><br><span class="line">            System.out.println(arr.get(i));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果我们想要将一个Float对象放入arr中，那么在编译期就会报错，不再会是运行时错误，实现了类型安全</p>
+<h4 id="Collection_与_Map">Collection 与 Map</h4><ol>
+<li>Collection , 是一个接口，表示一个独立的序列，序列中的元素都服从一条或多条规则。由List， Set， Queue 三个子接口</li>
+<li>Map ， 一组成对的键值对 对象，允许通过键值来查找值，也被称为关联数组。</li>
 </ol>
+<h4 id="List">List</h4><p>List 由两种实现，ArrayList和LinkedList， 我们可以把他们分别看做数组和链表，其特性也是跟数组和链表类似的，ArrayList的随机访问性能较好(0(1))，但是在链表中插入和移除元素代价较大(O(n))，LinkList 的随机访问性能较差(O(n))，但提供更好的插入和删除操作(O(1))</p>
+<h4 id="迭代器">迭代器</h4><h5 id="Iterator">Iterator</h5><p>我们把容器的遍历操作抽象为迭代器的操作，这样我们就可以忽略掉不同容器的差异，使得代码的可复用能力更强，Java中的迭代器只能单向移动，只能用来:</p>
+<ol>
+<li>使用iterator()方法来要求容器返回一个iterator</li>
+<li>使用next() 获取下一个元素</li>
+<li>使用hasNext()来判断是否还有元素</li>
+<li>使用remove() 将迭代器返回的元素删除</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.Iterator;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestClass</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        List&lt;String&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt; <span class="number">5</span>; i++) &#123;</span><br><span class="line">            list.add(<span class="string">""</span>+i);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(list.toString());</span><br><span class="line">        Iterator&lt;String&gt; iter;</span><br><span class="line">        iter = list.iterator();</span><br><span class="line">        <span class="keyword">while</span>(iter.hasNext()) &#123;</span><br><span class="line">            iter.next();</span><br><span class="line">            iter.remove();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(list.toString());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="ListIterator">ListIterator</h5><p>ListIterator具有更强大的功能，它只能应用于List类的访问，可以双向移动，可以通过一个listIterator()方法产生一个指向List开头的ListIterator，也可以通过list(n) 产生一个指向列表索引为n的ListIterator</p>
+<h4 id="Set">Set</h4><p>如其字面意思，Set表示集合，Set中不保存重复的元素，由 HashSet， TreeSet， LinkedHashSet 几种实现，通过名字我们就可以知道，这几种实现分别是基于hash表(二次探测)， 二叉平衡树， hash表（链表来处理冲突） 实现的</p>
+<h4 id="Java_中容器总结">Java 中容器总结</h4><p>Java中提供了大量组织多个对象的方式</p>
+<ol>
+<li>数组用来保存明确类型的对象，可以是多维的，可以保存基本类型，但是数组一旦生成，其容量不能发生改变</li>
+<li>Collection用来保存单一的元素，Map用来保存相关的键值对。通过Java的泛型，可以指定放入容器的元素类型，来保证类型安全。容器不能持有基本类型，但是通过包装类型的自动包装机制可以很好的执行容器持有包装类型和基本类型之间的转换</li>
+<li>和数组类似，List具有相类似的功能，但是List可以自动扩容</li>
+<li>List由两种实现，一种是ArrayList，另一种是LinkedList，ArrayList具有更好的随机访问性能，LinkedList在中间插入和删除元素时具有更好的表现</li>
+<li>各种Queue和栈的行为由LinkedList提供支持</li>
+<li>提供Map</li>
+<li>提供Set</li>
+<li>新程序中不应该使用过时的Vector, Hashtable 和 Stack</li>
+</ol>
+<p><img src="http://7q5fny.com1.z0.glb.clouddn.com/blogThinking%20in%20Java%204th%20Ed.jpg" alt=""></p>
 </span>
       
     </div>
@@ -267,9 +307,11 @@
       
         <div class="post-tags">
           
-            <a href="/tags/exception/" rel="tag">#exception</a>
+            <a href="/tags/generic/" rel="tag">#generic</a>
           
-            <a href="/tags/异常/" rel="tag">#异常</a>
+            <a href="/tags/java/" rel="tag">#java</a>
+          
+            <a href="/tags/object/" rel="tag">#object</a>
           
         </div>
       
@@ -278,13 +320,11 @@
         <div class="post-nav">
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2015/12/06/java-string/" rel="prev">Java学习总结三 字符串</a>
-            
           </div>
 
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/12/01/java-polymorphism/" rel="next">Java 学习总结一 多态</a>
+              <a href="/2015/12/08/java-commonclass/" rel="next">Java 学习总结四 Java中的常用类</a>
             
           </div>
         </div>
@@ -309,8 +349,8 @@
         
           <div class="comments" id="comments">
             
-              <div class="ds-thread" data-thread-key="2015/12/05/java-exception/"
-                   data-title="Java 学习总结二  异常" data-url="http://yoursite.com/2015/12/05/java-exception/">
+              <div class="ds-thread" data-thread-key="2015/12/10/java-hold-objects/"
+                   data-title="Java 学习总结五 集合类" data-url="http://yoursite.com/2015/12/10/java-hold-objects/">
               </div>
             
           </div>
@@ -392,7 +432,7 @@
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#异常的基本概念"><span class="nav-number">1.</span> <span class="nav-text">异常的基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#抛出异常"><span class="nav-number">1.1.</span> <span class="nav-text">抛出异常</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#异常捕获"><span class="nav-number">1.2.</span> <span class="nav-text">异常捕获</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#异常匹配"><span class="nav-number">1.3.</span> <span class="nav-text">异常匹配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#经验总结"><span class="nav-number">1.4.</span> <span class="nav-text">经验总结</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#泛型和类型安全的容器"><span class="nav-number">1.</span> <span class="nav-text">泛型和类型安全的容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Collection_与_Map"><span class="nav-number">2.</span> <span class="nav-text">Collection 与 Map</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#List"><span class="nav-number">3.</span> <span class="nav-text">List</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#迭代器"><span class="nav-number">4.</span> <span class="nav-text">迭代器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Iterator"><span class="nav-number">4.1.</span> <span class="nav-text">Iterator</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ListIterator"><span class="nav-number">4.2.</span> <span class="nav-text">ListIterator</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Set"><span class="nav-number">5.</span> <span class="nav-text">Set</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Java_中容器总结"><span class="nav-number">6.</span> <span class="nav-text">Java 中容器总结</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>
