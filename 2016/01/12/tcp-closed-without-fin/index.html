@@ -1,0 +1,688 @@
+<!doctype html>
+<html class="theme-next use-motion theme-next-mist">
+<head>
+  
+
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+  <meta name="google-site-verification" content="oh7q5wMOdjRcmVFjX93pPiUFrQVKtcRZn8klDgVplII" />
+
+
+
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.5.1"/>
+
+
+
+
+  <meta name="keywords" content="FIN,Linux,RST,TCP,socket," />
+
+
+
+
+
+  <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
+
+
+<meta name="description" content="最近写一个简单的聊天服务器时候， 看了UNP上通过带外数据想实现心跳的例子，就尝试了使用一下，然后之前好好的客户端崩溃掉服务端也能正常处理，加了这块代码之后客户端崩溃服务端也会得到 Connection reset by peer 的错误。经过各种纠结， 最后在群友的帮助下，发现了是由于在Linux下，如果TCP接收缓冲区中由数据，那么此时调用close，便不会发送Fin， 会直接发送RST。由于">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux 下 TCP 连接断开未发送 FIN">
+<meta property="og:url" content="http://yoursite.com/2016/01/12/tcp-closed-without-fin/index.html">
+<meta property="og:site_name" content="It's Me">
+<meta property="og:description" content="最近写一个简单的聊天服务器时候， 看了UNP上通过带外数据想实现心跳的例子，就尝试了使用一下，然后之前好好的客户端崩溃掉服务端也能正常处理，加了这块代码之后客户端崩溃服务端也会得到 Connection reset by peer 的错误。经过各种纠结， 最后在群友的帮助下，发现了是由于在Linux下，如果TCP接收缓冲区中由数据，那么此时调用close，便不会发送Fin， 会直接发送RST。由于">
+<meta property="og:updated_time" content="2016-01-11T22:07:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux 下 TCP 连接断开未发送 FIN">
+<meta name="twitter:description" content="最近写一个简单的聊天服务器时候， 看了UNP上通过带外数据想实现心跳的例子，就尝试了使用一下，然后之前好好的客户端崩溃掉服务端也能正常处理，加了这块代码之后客户端崩溃服务端也会得到 Connection reset by peer 的错误。经过各种纠结， 最后在群友的帮助下，发现了是由于在Linux下，如果TCP接收缓冲区中由数据，那么此时调用close，便不会发送Fin， 会直接发送RST。由于">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'post'
+  };
+</script>
+
+  <title> Linux 下 TCP 连接断开未发送 FIN | It's Me </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?ea5bfefdcd245de6354e704415c17ae7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><h1 class="site-meta">
+  <span class="logo-line-before"><i></i></span>
+  <a href="/" class="brand" rel="start">
+      <span class="logo">
+        <i class="icon-next-logo"></i>
+      </span>
+      <span class="site-title">It's Me</span>
+  </a>
+  <span class="logo-line-after"><i></i></span>
+</h1>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu menu-left">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon icon-next-home"></i> <br />
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            <i class="menu-item-icon icon-next-categories"></i> <br />
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            <i class="menu-item-icon icon-next-about"></i> <br />
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            <i class="menu-item-icon icon-next-archives"></i> <br />
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            <i class="menu-item-icon icon-next-tags"></i> <br />
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <form class="site-search-form">
+    <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+  </form>
+
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'tP3YmrvjTZUH813-kAhg','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content"> 
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              Linux 下 TCP 连接断开未发送 FIN
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          发表于
+          <time itemprop="dateCreated" datetime="2016-01-12T00:36:51+08:00" content="2016-01-12">
+            2016-01-12
+          </time>
+        </span>
+
+        
+          <span class="post-category" >
+            &nbsp; | &nbsp; 分类于
+            
+              <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                <a href="/categories/UNP/" itemprop="url" rel="index">
+                  <span itemprop="name">UNP</span>
+                </a>
+              </span>
+
+              
+              
+
+            
+          </span>
+        
+
+        
+          
+            <span class="post-comments-count">
+              &nbsp; | &nbsp;
+              <a href="/2016/01/12/tcp-closed-without-fin/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2016/01/12/tcp-closed-without-fin/" itemprop="commentsCount"></span>
+              </a>
+            </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>最近写一个简单的聊天服务器时候， 看了UNP上通过带外数据想实现心跳的例子，就尝试了使用一下，然后之前好好的客户端崩溃掉服务端也能正常处理，加了这块代码之后客户端崩溃服务端也会得到 Connection reset by peer 的错误。<br>经过各种纠结， 最后在群友的帮助下，发现了是由于在Linux下，如果TCP接收缓冲区中由数据，那么此时调用close，便不会发送Fin， 会直接发送RST。由于通过select监听带外数据异常，在通知带外数据异常时，虽然调用recv(1, MSG_OOB)读走了带外数据，但是由于没有调用普通的读数据，还是会被当做缓冲区由数据，直接发送RST而不发送FIN<br>在这儿记录以下找到问题的过程</p>
+<p>简化了的出问题的代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 客户端代码</span></span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> select</span><br><span class="line"></span><br><span class="line">sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line">sock.bind((<span class="string">'localhost'</span>, <span class="number">8081</span>))</span><br><span class="line">sock.connect((<span class="string">'localhost'</span>, <span class="number">8080</span>))</span><br><span class="line">connections = &#123;&#125;</span><br><span class="line">connections[sock.fileno()] = sock</span><br><span class="line">expires = time.time()</span><br><span class="line"><span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">    r = []</span><br><span class="line">    e = []</span><br><span class="line">    <span class="keyword">for</span> fileno, conn <span class="keyword">in</span> connections.items():</span><br><span class="line">        r.append(fileno)</span><br><span class="line">        e.append(fileno)</span><br><span class="line">    r, w, e = select.select(r, [], e, <span class="number">1</span>)</span><br><span class="line">    <span class="keyword">for</span> fileno <span class="keyword">in</span> r:</span><br><span class="line">        conn = connections[fileno]</span><br><span class="line">        print(conn.recv(<span class="number">1024</span>))</span><br><span class="line">    <span class="keyword">for</span> fileno <span class="keyword">in</span> e:</span><br><span class="line">        conn = connections[fileno]</span><br><span class="line">        print(conn.recv(<span class="number">1</span>, socket.MSG_OOB))</span><br><span class="line">    current = time.time()</span><br><span class="line">    <span class="keyword">while</span> current&gt; expires:</span><br><span class="line">        expires += <span class="number">1000</span></span><br><span class="line">        sock.send(<span class="string">'c'</span>, socket.MSG_OOB)</span><br><span class="line">		</span><br><span class="line"><span class="comment"># 服务端代码</span></span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"><span class="keyword">import</span> select</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line">    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, <span class="number">1</span>)</span><br><span class="line">    sock.setblocking(<span class="number">0</span>)</span><br><span class="line">    sock.bind((<span class="string">'localhost'</span>, <span class="number">8080</span>))</span><br><span class="line">    sock.listen(<span class="number">5</span>)</span><br><span class="line">    connections = &#123;&#125;</span><br><span class="line">    connections[sock.fileno()] = sock</span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">        r = []</span><br><span class="line">        w = []</span><br><span class="line">        e = []</span><br><span class="line">        <span class="keyword">for</span> fileno, conn <span class="keyword">in</span> connections.items():</span><br><span class="line">            r.append(fileno)</span><br><span class="line">            e.append(fileno)</span><br><span class="line">        r, w, e = select.select(r, w, e)</span><br><span class="line">        <span class="keyword">for</span> fileno <span class="keyword">in</span> r:</span><br><span class="line">            conn = connections[fileno]</span><br><span class="line">            <span class="keyword">if</span> conn == sock:</span><br><span class="line">                conn, addr = sock.accept()</span><br><span class="line">                connections[conn.fileno()] = conn</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                data = conn.recv(<span class="number">1024</span>)</span><br><span class="line">                <span class="keyword">if</span> data <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">                    conn.close()</span><br><span class="line">                    <span class="keyword">del</span> connections[fileno]</span><br><span class="line">        <span class="keyword">for</span> fileno <span class="keyword">in</span> e:</span><br><span class="line">            conn = connections[fileno]</span><br><span class="line">            print(conn.recv(<span class="number">1</span>, socket.MSG_OOB))</span><br><span class="line">            conn.send(<span class="string">'c'</span>, socket.MSG_OOB)</span><br><span class="line"><span class="keyword">finally</span>:</span><br><span class="line">    sock.close()</span><br></pre></td></tr></table></figure>
+<p>遇到问题之后，想了各种可能的情况，比如对方已经发送FIN了，还朝对方发送了数据或者接收了数据之类的，最后想到好像有个tcpdump命令可以看tcp的通信情况，就使用这个命令看了以下tcp双方收发的数据情况，发现client只发送了RST没发送FIN，这和之前印象中看到的结束进程会发送FIN不符啊，翻了翻UNP、确实没找到相关内容，就去某群里问了一下什么时候会出现不发送FIN</p>
+<pre><code><span class="number">03</span>:<span class="number">04</span>:<span class="number">09.137374</span> IP localhost.tproxy &gt; localhost.http-alt: Flags [S], seq <span class="number">2126650160</span>, win <span class="number">43690</span>, options [mss <span class="number">65495</span>,sackOK,TS val <span class="number">113521554</span> ecr <span class="number">0</span>,nop,wscale <span class="number">7</span>], length <span class="number">0</span>
+<span class="number">03</span>:<span class="number">04</span>:<span class="number">09.137415</span> IP localhost.http-alt &gt; localhost.tproxy: Flags [S.], seq <span class="number">2461040723</span>, ack <span class="number">2126650161</span>, win <span class="number">43690</span>, options [mss <span class="number">65495</span>,sackOK,TS val <span class="number">113521555</span> ecr <span class="number">113521554</span>,nop,wscale <span class="number">7</span>], length <span class="number">0</span>
+<span class="number">03</span>:<span class="number">04</span>:<span class="number">09.137446</span> IP localhost.tproxy &gt; localhost.http-alt: Flags [.], ack <span class="number">1</span>, win <span class="number">342</span>, options [nop,nop,TS val <span class="number">113521555</span> ecr <span class="number">113521555</span>], length <span class="number">0</span>
+<span class="number">03</span>:<span class="number">04</span>:<span class="number">10.137866</span> IP localhost.tproxy &gt; localhost.http-alt: Flags [P.U], seq <span class="number">1</span>:<span class="number">2</span>, ack <span class="number">1</span>, win <span class="number">342</span>, urg <span class="number">1</span>, options [nop,nop,TS val <span class="number">113521805</span> ecr <span class="number">113521555</span>], length <span class="number">1</span>
+<span class="number">03</span>:<span class="number">04</span>:<span class="number">10.137976</span> IP localhost.http-alt &gt; localhost.tproxy: Flags [.], ack <span class="number">2</span>, win <span class="number">342</span>, options [nop,nop,TS val <span class="number">113521805</span> ecr <span class="number">113521805</span>], length <span class="number">0</span>
+<span class="number">03</span>:<span class="number">04</span>:<span class="number">10.138218</span> IP localhost.http-alt &gt; localhost.tproxy: Flags [P.U], seq <span class="number">1</span>:<span class="number">2</span>, ack <span class="number">2</span>, win <span class="number">342</span>, urg <span class="number">1</span>, options [nop,nop,TS val <span class="number">113521805</span> ecr <span class="number">113521805</span>], length <span class="number">1</span>
+<span class="number">03</span>:<span class="number">04</span>:<span class="number">10.138258</span> IP localhost.tproxy &gt; localhost.http-alt: Flags [.], ack <span class="number">2</span>, win <span class="number">342</span>, options [nop,nop,TS val <span class="number">113521805</span> ecr <span class="number">113521805</span>], length <span class="number">0</span>
+<span class="number">03</span>:<span class="number">04</span>:<span class="number">37.620543</span> IP localhost.tproxy &gt; localhost.http-alt: Flags [R.], seq <span class="number">2</span>, ack <span class="number">2</span>, win <span class="number">342</span>, options [nop,nop,TS val <span class="number">113528675</span> ecr <span class="number">113521805</span>], length <span class="number">0</span>
+</code></pre><p>从上面的tcpdump信息可以发现，客户端发起连接后，向服务端发送了SYN， 服务端回 SYN+ACK， 客户端回ACK， 客户端发送带外数据，服务端收到带外数据发送ACK， 服务端发送带外数据，客户端收到带外数据回复ACK， 然后此时我kill掉了客户端进程，此时并没有发送FIN， 直接发送了RST，此时服务端的select会检测到可读事件，调用recv读取一个已经接收到RST的socket就会报ECONNRESET错误</p>
+<p>后面有人提出了说在Linux下，如果TCP缓冲区里还由内容没吸干净，调用close就会出现发送RST而不发送FIN的情况，还给出了代码复现，找到了源代码中相关内容，然后其他人还找出了相关文档 <a href="http://cs.ecs.baylor.edu/~donahoo/practical/CSockets/TCPRST.pdf" target="_blank" rel="external">TCP RST: Calling close() on a socket with data in the receive queue</a></p>
+<p>如下代码, 使用tcpdump 也出现了同样的问题</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//client</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">char</span> buff[] = <span class="string">"hello"</span>;</span><br><span class="line">    <span class="keyword">int</span> clientfd = socket(AF_INET, SOCK_STREAM, <span class="number">0</span>);</span><br><span class="line">    sockaddr_in serveraddr;</span><br><span class="line">    bzero(&amp;serveraddr, <span class="keyword">sizeof</span>(serveraddr));</span><br><span class="line">    serveraddr.sin_family = AF_INET;</span><br><span class="line">    serveraddr.sin_port = htons(<span class="number">8080</span>);</span><br><span class="line">    inet_pton(AF_INET, <span class="string">"127.0.0.1"</span>, &amp;serveraddr.sin_addr);</span><br><span class="line">    connect(clientfd, (<span class="keyword">struct</span> sockaddr* )&amp;serveraddr, <span class="keyword">sizeof</span>(serveraddr));</span><br><span class="line">    sleep(<span class="number">3</span>);</span><br><span class="line">    <span class="comment">//send(clientfd, buff, strlen(buff), 0);</span></span><br><span class="line">    close(clientfd);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//server </span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">char</span> buff[<span class="number">10</span>]=<span class="string">"hello"</span>;</span><br><span class="line">    bzero(buff, <span class="keyword">sizeof</span>(buff));</span><br><span class="line">    <span class="keyword">int</span> listenfd = socket(AF_INET, SOCK_STREAM, <span class="number">0</span>);</span><br><span class="line">    sockaddr_in serveraddr;</span><br><span class="line">    bzero(&amp;serveraddr, <span class="keyword">sizeof</span>(serveraddr));</span><br><span class="line">    serveraddr.sin_family = AF_INET;</span><br><span class="line">    serveraddr.sin_port = htons(<span class="number">8080</span>);</span><br><span class="line">    inet_pton(AF_INET, <span class="string">"127.0.0.1"</span>, &amp;serveraddr.sin_addr);</span><br><span class="line">    bind(listenfd, (<span class="keyword">struct</span> sockaddr *)&amp;serveraddr, <span class="keyword">sizeof</span>(serveraddr));</span><br><span class="line">    listen(listenfd, <span class="number">5</span>);</span><br><span class="line">    sockaddr_in cliaddr;</span><br><span class="line">    <span class="keyword">socklen_t</span> len;</span><br><span class="line">    <span class="keyword">int</span> connfd = accept(listenfd, (<span class="keyword">struct</span> sockaddr *)&amp;cliaddr, &amp;len);</span><br><span class="line">    <span class="comment">//int n = recv(connfd, buff, 10, 0);</span></span><br><span class="line">    send(connfd, buff, <span class="built_in">strlen</span>(buff), <span class="number">0</span>);</span><br><span class="line">    <span class="comment">//buff[n] = 0;</span></span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;buff&lt;&lt;endl;</span><br><span class="line">    close(listenfd);</span><br><span class="line">    close(connfd);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果修改客户端代码读取掉数据就能正常的发送FIN， </p>
+<p>在 /net/ipv4/tcp.c 中2063行左右有相关逻辑， 估摸着发送了带外数据，调用recv(fd, 1, MSG_OOB) 并不能让 data_was_unread 为 0， 具体细节可能得更后面再去了解了</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> ((skb = __skb_dequeue(&amp;sk-&gt;sk_receive_queue)) != <span class="literal">NULL</span>) &#123;</span><br><span class="line">	u32 len = TCP_SKB_CB(skb)-&gt;end_seq - TCP_SKB_CB(skb)-&gt;seq;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (TCP_SKB_CB(skb)-&gt;tcp_flags &amp; TCPHDR_FIN)</span><br><span class="line">		len--;</span><br><span class="line">	data_was_unread += len;</span><br><span class="line">	__kfree_skb(skb);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">sk_mem_reclaim(sk);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* If socket has been already reset (e.g. in tcp_reset()) - kill it. */</span></span><br><span class="line"><span class="keyword">if</span> (sk-&gt;sk_state == TCP_CLOSE)</span><br><span class="line">	<span class="keyword">goto</span> adjudge_to_death;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* As outlined in RFC 2525, section 2.17, we send a RST here because</span><br><span class="line"> * data was lost. To witness the awful effects of the old behavior of</span><br><span class="line"> * always doing a FIN, run an older 2.1.x kernel or 2.0.x, start a bulk</span><br><span class="line"> * GET in an FTP client, suspend the process, wait for the client to</span><br><span class="line"> * advertise a zero window, then kill -9 the FTP client, wheee...</span><br><span class="line"> * Note: timeout is always zero in such a case.</span><br><span class="line"> */</span></span><br><span class="line"><span class="keyword">if</span> (unlikely(tcp_sk(sk)-&gt;repair)) &#123;</span><br><span class="line">	sk-&gt;sk_prot-&gt;disconnect(sk, <span class="number">0</span>);</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (data_was_unread) &#123;</span><br><span class="line">	<span class="comment">/* Unread data was tossed, zap the connection. */</span></span><br><span class="line">	NET_INC_STATS_USER(sock_net(sk), LINUX_MIB_TCPABORTONCLOSE);</span><br><span class="line">	tcp_set_state(sk, TCP_CLOSE);</span><br><span class="line">	tcp_send_active_reset(sk, sk-&gt;sk_allocation);</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (sock_flag(sk, SOCK_LINGER) &amp;&amp; !sk-&gt;sk_lingertime) &#123;</span><br><span class="line">	<span class="comment">/* Check zero linger _after_ checking for unread data. */</span></span><br><span class="line">	sk-&gt;sk_prot-&gt;disconnect(sk, <span class="number">0</span>);</span><br><span class="line">	NET_INC_STATS_USER(sock_net(sk), LINUX_MIB_TCPABORTONDATA);</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (tcp_close_state(sk)) &#123;</span><br></pre></td></tr></table></figure></span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/FIN/" rel="tag">#FIN</a>
+          
+            <a href="/tags/Linux/" rel="tag">#Linux</a>
+          
+            <a href="/tags/RST/" rel="tag">#RST</a>
+          
+            <a href="/tags/TCP/" rel="tag">#TCP</a>
+          
+            <a href="/tags/socket/" rel="tag">#socket</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/12/11/java-fileio/" rel="next">java 学习总结六 文件操作</a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+ </div>
+
+        
+
+        
+          <div class="comments" id="comments">
+            
+              <div class="ds-thread" data-thread-key="2016/01/12/tcp-closed-without-fin/"
+                   data-title="Linux 下 TCP 连接断开未发送 FIN" data-url="http://yoursite.com/2016/01/12/tcp-closed-without-fin/">
+              </div>
+            
+          </div>
+        
+      </div>
+
+      
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="http://7q5fny.com1.z0.glb.clouddn.com/bloghead.jpg" alt="xiejun" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">xiejun</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">16</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">43</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <p class="post-toc-empty">此文章未包含目录</p>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner"> <div class="copyright" >
+  
+  &copy; &nbsp;  2015 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="icon-next-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xiejun</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+ </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"xiejun901"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+
+    
+  
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.1"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.1"></script>
+  
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/js/motion_global.js?v=0.4.5.1" id="motion.global"></script>
+
+
+
+
+  <script type="text/javascript" src="/js/nav-toggle.js?v=0.4.5.1"></script>
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.1" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 0.4 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    var $tocContent = $('.post-toc-content');
+    if (isDesktop() && CONFIG.sidebar === 'post') {
+      if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+        displaySidebar();
+      }
+    }
+  });
+</script>
+
+
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      if (CONFIG.sidebar === 'always') {
+        displaySidebar();
+      }
+      if (isMobile()) {
+        FastClick.attach(document.body);
+      }
+    });
+  </script>
+
+  
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/lazyload.js"></script>
+  <script type="text/javascript">
+    $(function () {
+      $("#posts").find('img').lazyload({
+        placeholder: "/images/loading.gif",
+        effect: "fadeIn"
+      });
+    });
+  </script>
+</body>
+</html>
