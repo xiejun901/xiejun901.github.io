@@ -39,16 +39,40 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
 
 
-<meta name="description">
+<meta name="description" content="文件系统简介为什么需要文件系统
+程序有需要存储大量信息的需求
+ 所有的计算机应用都需要存储和读取信息，如果将这些信息都放在地址空间中，那么信息的容量将会受到限制。
+
+在程序关闭之后信息依然需要被保留
+ 如果将信息存储在地址空间中，如果进程结束，那么信息就会丢失。当进程被杀掉的时候，有些信息也需要被存储。
+
+多个进程能同时访问信息
+ 如果将信息存储在地址空间，那么多个进程将无法访问这些信息。（采用进">
 <meta property="og:type" content="article">
-<meta property="og:title" content="现代操作系统笔记之文件系统">
+<meta property="og:title" content="<<现代操作系统>>学习笔记之文件系统">
 <meta property="og:url" content="http://yoursite.com/2016/02/22/modern-operating-systems-file-systems/index.html">
 <meta property="og:site_name" content="It's Me">
-<meta property="og:description">
-<meta property="og:updated_time" content="2016-02-22T09:23:24.000Z">
+<meta property="og:description" content="文件系统简介为什么需要文件系统
+程序有需要存储大量信息的需求
+ 所有的计算机应用都需要存储和读取信息，如果将这些信息都放在地址空间中，那么信息的容量将会受到限制。
+
+在程序关闭之后信息依然需要被保留
+ 如果将信息存储在地址空间中，如果进程结束，那么信息就会丢失。当进程被杀掉的时候，有些信息也需要被存储。
+
+多个进程能同时访问信息
+ 如果将信息存储在地址空间，那么多个进程将无法访问这些信息。（采用进">
+<meta property="og:updated_time" content="2016-02-22T10:00:32.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="现代操作系统笔记之文件系统">
-<meta name="twitter:description">
+<meta name="twitter:title" content="<<现代操作系统>>学习笔记之文件系统">
+<meta name="twitter:description" content="文件系统简介为什么需要文件系统
+程序有需要存储大量信息的需求
+ 所有的计算机应用都需要存储和读取信息，如果将这些信息都放在地址空间中，那么信息的容量将会受到限制。
+
+在程序关闭之后信息依然需要被保留
+ 如果将信息存储在地址空间中，如果进程结束，那么信息就会丢失。当进程被杀掉的时候，有些信息也需要被存储。
+
+多个进程能同时访问信息
+ 如果将信息存储在地址空间，那么多个进程将无法访问这些信息。（采用进">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -58,7 +82,7 @@
   };
 </script>
 
-  <title> 现代操作系统笔记之文件系统 | It's Me </title>
+  <title> <<现代操作系统>>学习笔记之文件系统 | It's Me </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -204,7 +228,7 @@
           
           
             
-              现代操作系统笔记之文件系统
+              <<现代操作系统>>学习笔记之文件系统
             
           
         </h1>
@@ -254,7 +278,20 @@
       
 
       
-        <span itemprop="articleBody"></span>
+        <span itemprop="articleBody"><h3 id="文件系统简介">文件系统简介</h3><h4 id="为什么需要文件系统">为什么需要文件系统</h4><ol>
+<li><p>程序有需要存储大量信息的需求</p>
+<p> 所有的计算机应用都需要存储和读取信息，如果将这些信息都放在地址空间中，那么信息的容量将会受到限制。</p>
+</li>
+<li><p>在程序关闭之后信息依然需要被保留</p>
+<p> 如果将信息存储在地址空间中，如果进程结束，那么信息就会丢失。当进程被杀掉的时候，有些信息也需要被存储。</p>
+</li>
+<li><p>多个进程能同时访问信息</p>
+<p> 如果将信息存储在地址空间，那么多个进程将无法访问这些信息。（采用进程间通信是另外一回事～～）</p>
+</li>
+</ol>
+<h4 id="对长期存储进行抽象">对长期存储进行抽象</h4><p>通常我们用来存储这些信息的设备由磁盘，固态硬盘，光盘，磁带。在这部分内容中我们只需要将这些设备看做一个提供了读某个区块(block)和写某个区块的区块序列就行。但是如果只有读写区块的操作，那么在使用中，就会非常的不方便，需要考虑很多额外的问题，比如， 如何找到数据，如何隔离不同用户的信息，如何释放数据等等。</p>
+<p>正如操作系统将处理器抽象为进程，将主存储器</p>
+</span>
       
     </div>
 
@@ -305,7 +342,7 @@
           <div class="comments" id="comments">
             
               <div class="ds-thread" data-thread-key="2016/02/22/modern-operating-systems-file-systems/"
-                   data-title="现代操作系统笔记之文件系统" data-url="http://yoursite.com/2016/02/22/modern-operating-systems-file-systems/">
+                   data-title="<<现代操作系统>>学习笔记之文件系统" data-url="http://yoursite.com/2016/02/22/modern-operating-systems-file-systems/">
               </div>
             
           </div>
@@ -387,7 +424,7 @@
           <div class="post-toc">
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#文件系统简介"><span class="nav-number">1.</span> <span class="nav-text">文件系统简介</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#为什么需要文件系统"><span class="nav-number">1.1.</span> <span class="nav-text">为什么需要文件系统</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#对长期存储进行抽象"><span class="nav-number">1.2.</span> <span class="nav-text">对长期存储进行抽象</span></a></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>
