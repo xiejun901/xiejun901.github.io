@@ -1,7 +1,7 @@
 title: 在IDEA中使用maven建立spark工程
 date: 2017-05-02 22:30:14
 categories: Spark
-tags: [spark, idea, scala]
+tags: [Spark, idea, scala]
 ---
 
 记录一下过程, 使用的软件是

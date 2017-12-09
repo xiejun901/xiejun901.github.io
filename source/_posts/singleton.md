@@ -1,6 +1,6 @@
 title: singleton 单例模式
 date: 2015-10-12 21:07:59
-tags: [singleton, c++, design pattern, 设计模式, 单例模式]
+tags: [singleton, C++, design pattern, 设计模式, 单例模式]
 categories: design pattern
 ---
 

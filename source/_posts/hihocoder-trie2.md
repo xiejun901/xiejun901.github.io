@@ -1,6 +1,6 @@
 title: hihocoder算法练习之trie图
 date: 2015-10-11 19:21:06
-tags: [hihocoder, algorithm, c++, trie图]
+tags: [hihocoder, algorithm, C++, trie图]
 categories: hihocoder
 ---
 

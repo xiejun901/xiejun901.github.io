@@ -1,6 +1,6 @@
 title: hihocoder算法练习之kmp算法
 date: 2015-10-11 15:53:09
-tags: [hihocoder, algorithm, c++, kmp, next数组]
+tags: [hihocoder, algorithm, C++, kmp, next数组]
 categories: hihocoder
 ---
 

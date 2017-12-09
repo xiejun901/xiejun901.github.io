@@ -1,6 +1,6 @@
 title: spark 中 groupByKey 和 aggregateByKey(reduceByKey) 差距的一次真实体验
 date: 2017-11-05 22:08:36
-tags: [spark, RDD, groupByKey, aggregateByKey, reduceByKey]
+tags: [Spark, RDD, groupByKey, aggregateByKey, reduceByKey]
 ---
 
 在spark中，groupByKey 需要将同一个key的记录全部拿到一块然后放入内存中进行计算，aggregateByKey 是现在各个partition会按照seqOp 先进性合并，然后再按照combineOp对各个partitions上计算的结果再进行组合。

@@ -1,6 +1,6 @@
 title: hihocoder算法练习之trie树
 date: 2015-10-11 12:07:05
-tags : [hihocoder, algorithm, c++, trie树, 字典树]
+tags : [hihocoder, algorithm, C++, trie树, 字典树]
 categories: hihocoder
 ---
 

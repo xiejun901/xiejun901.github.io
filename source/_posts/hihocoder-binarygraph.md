@@ -1,6 +1,6 @@
 categories : hihocoder
 title: hihocoder算法练习之二分图
-tags : [hihocoder, algorithm, c++, 二分图, 二分图判定, 最大匹配]
+tags : [hihocoder, algorithm, C++, 二分图, 二分图判定, 最大匹配]
 date: 2015-10-11 19:31:05
 ---
 
