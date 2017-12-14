@@ -44,6 +44,17 @@ $$
 那么在第$t$轮训练的时候，我们的目标函数为
 
 $$
-obj^{(t)} = \sum_{i=1}^n l(y_i, \hat{y_i}^{(t)}) + \sum_{j=1}^t\Omega(f_j)
+obj^{(t)} = \sum_{i=1}^n l(y_i, \hat{y_i}^{(t)}) + \sum_{j=1}^t\Omega(f_j) \\
+=\sum_{i=1}^n l(y_i, \hat{y_i}^{(t-1)} + f_t(x_i)) + \sum_{j=1}^t\Omega(f_j)
+$$
+
+根据泰勒展开公式
+
+$$
+f(x+\Delta x) = \sum_{j=0}^\infty{\frac{\Delta x ^j}{j!}}f^{(n)}(x)
+$$
+ 
+$$
+g_i = \partial_{\hat{y_i}^{(t-1)}} l(y_i, \hat{y_i}^{(t-1)})
 $$
 

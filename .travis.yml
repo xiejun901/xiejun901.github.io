@@ -1,0 +1,31 @@
+language: node_js
+node_js: stable
+
+# S: Build Lifecycle
+install:
+  - npm install
+
+
+before_script:
+ # - npm install -g gulp
+  - rm node_modules/marked/lib/marked.js 
+  - cp marked.js node_modules/marked/lib/marked.js
+script:
+  - hexo g
+
+after_script:
+  - cd ./public
+  - git init
+  - git config user.name "xiejun"
+  - git config user.email "xiejun901@gmail.com"
+  - git add .
+  - git commit -m "Update docs"
+  - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:master
+# E: Build LifeCycle
+
+branches:
+  only:
+    - hexo
+env:
+ global:
+   - GH_REF: git@github.com:xiejun901/xiejun901.github.io.git
