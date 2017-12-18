@@ -58,3 +58,11 @@ $$
 g_i = \partial_{\hat{y_i}^{(t-1)}} l(y_i, \hat{y_i}^{(t-1)})
 $$
 
+$$
+h_i = \partial_{\hat{y_i}^{(t-1)}}^2 l(y_i, \hat{y_i}^{(t-1)})
+$$
+
+$$
+obj^{(t)} = \sum_{i=1}^n l(y_i, \hat{y_i}^{(t-1)}) + g_i f_t(x_i) + \frac{1}{2} h_i f_t^2(x_i)
+$$
+
