@@ -10,7 +10,7 @@ git checkout --track origin/hexo
 # init the submodule, this is the fork of hexo theme: next
 git submodule update --init --recursive
 
-# install npm
+# install the modules
 npm install
 
 # replace the marked.js to support math-jax better
