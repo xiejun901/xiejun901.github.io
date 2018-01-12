@@ -144,4 +144,155 @@ mathjax: true
 --
 ```
 
+## cisco anyconnect 服务端搭建
+
+[ocserv 安装和配置](https://www.vultr.com/docs/setup-openconnect-vpn-server-for-cisco-anyconnect-on-ubuntu-14-04-x64) 
+
+防丢防打不开，将上面的链接的内容转一份
+
+OpenConnect server, also known as ocserv, is a VPN server that communicates over SSL. By design, its goal is to become a secure, lightweight, and fast VPN server. OpenConnect server uses the OpenConnect SSL VPN protocol. At the time of writing, it also has experimental compatibility with clients that use the AnyConnect SSL VPN protocol.
+
+This article will show you how to install and setup ocserv on Ubuntu 14.04 x64.
+
+Installing ocserv
+
+Since Ubuntu 14.04 does not ship with ocserv, we will have to download the source code and compile it. The latest stable version of ocserv is 0.9.2.
+
+Download ocserv from the official site.
+
+```
+wget ftp://ftp.infradead.org/pub/ocserv/ocserv-0.9.2.tar.xz
+tar -xf ocserv-0.9.2.tar.xz
+cd ocserv-0.9.2
+```
+
+Next, install the compile dependencies.
+
+```
+apt-get install build-essential pkg-config libgnutls28-dev libwrap0-dev libpam0g-dev libseccomp-dev libreadline-dev libnl-route-3-dev
+```
+
+Compile and install ocserv.
+
+```
+./configure
+make
+make install
+Configuring ocserv
+```
+
+A sample config file is placed under the directory ocser-0.9.2/doc. We will use this file as a template. At first, we have to make our own CA cert and server cert.
+
+```
+cd ~
+apt-get install gnutls-bin
+mkdir certificates
+cd certificates
+```
+
+We create a CA template file (ca.tmpl) with the content similar to the following. You can set your own "cn" and "organization".
+
+```
+cn = "VPN CA" 
+organization = "Big Corp" 
+serial = 1 
+expiration_days = 3650
+ca 
+signing_key 
+cert_signing_key 
+crl_signing_key 
+```
+
+Then, generate a CA key and CA cert.
+
+```
+certtool --generate-privkey --outfile ca-key.pem
+certtool --generate-self-signed --load-privkey ca-key.pem --template ca.tmpl --outfile ca-cert.pem
+```
+
+Next, create a local server certificate template file (server.tmpl) with the the content below. Please pay attention to the "cn" field, it must match the DNS name or IP address of your server.
+
+```
+cn = "you domain name or ip"
+organization = "MyCompany" 
+expiration_days = 3650 
+signing_key 
+encryption_key
+tls_www_server
+```
+
+Then, generate the server key and certificate.
+
+```
+certtool --generate-privkey --outfile server-key.pem
+certtool --generate-certificate --load-privkey server-key.pem --load-ca-certificate ca-cert.pem --load-ca-privkey ca-key.pem --template server.tmpl --outfile server-cert.pem
+```
+
+Copy the key, certificate, and config file to the ocserv config directory.
+
+```
+mkdir /etc/ocserv
+cp server-cert.pem server-key.pem /etc/ocserv
+cd ~/ocserv-0.9.2/doc
+cp sample.config /etc/ocserv/config
+cd /etc/ocserv
+```
+
+Edit the config file under /etc/ocserv. Uncomment or modify the fields described below.
+
+```
+auth = "plain[/etc/ocserv/ocpasswd]"
+
+try-mtu-discovery = true
+
+server-cert = /etc/ocserv/server-cert.pem
+server-key = /etc/ocserv/server-key.pem
+
+dns = 8.8.8.8
+
+# comment out all route fields
+#route = 10.10.10.0/255.255.255.0
+#route = 192.168.0.0/255.255.0.0
+#route = fef4:db8:1000:1001::/64
+#no-route = 192.168.5.0/255.255.255.0
+
+cisco-client-compat = true
+```
+
+Generate a user that will be used to login to ocserv.
+
+```
+ocpasswd -c /etc/ocserv/ocpasswd username
+```
+
+Enable NAT.
+
+```
+iptables -t nat -A POSTROUTING -j MASQUERADE
+```
+
+Enable IPv4 forwarding. Edit the file /etc/sysctl.conf.
+
+```
+net.ipv4.ip_forward=1
+```
+
+Apply this modification.
+
+```
+sysctl -p /etc/sysctl.conf
+```
+
+Start ocserv and connect using Cisco AnyConnect
+
+First, start ocserv.
+
+```
+ocserv -c /etc/ocserv/config
+```
+
+Then, install Cisco AnyConnect on any of your devices, such as iPhone, iPad, or an Android device. Since we used a self-signed server key and certificate, we have to uncheck the option which prevents insecure servers. This option is located in the settings of AnyConnect. At this point, we can setup a new connection with the domain name or IP address of our ocserv and the username/password that we created.
+
+Connect and enjoy!
+
 
