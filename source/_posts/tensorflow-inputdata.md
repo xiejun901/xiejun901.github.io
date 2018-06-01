@@ -10,7 +10,7 @@ categories: machine learning
 
 tensorflow 读取数据主要有以下几种方式:
 
-- Feeding: 在运行的通过代码中的feed_dict来提供数据，这种方式在数据量小或者简单搭建一个网络调试的时候可以使用，但是如果数据两太大就比较麻烦了，需要自己去控制数据的读取，然后分batch输入到网络中
+- Feeding: 在运行的通过代码中的feed_dict来提供数据，这种方式在数据量小或者简单搭建一个网络调试的时候可以使用，但是如果数据量太大就比较麻烦了，需要自己去控制数据的读取，然后分batch输入到网络中
 
 - QueueRunner: 基于队列的方式读取数据，可以一边使用数据一边从磁盘读取，现在已经完全可以使用tf.data 这一套api 来代替了
 
@@ -18,9 +18,10 @@ tensorflow 读取数据主要有以下几种方式:
 
 ### Dataset 的创建
 
-dataset 可以认为是由很多行数据构成，每一行的结构是相同的，每一行包含了一个或者多个tensor。可以通过 Dataset.output_types 输出每一行的tensor的数据类型，Dataset.output_shapes输出每一行的tensor的shape。dataset的数据原可以从内存读入，也可以从磁盘读入。从磁盘读入的时候可以读取tfrecord格式的数据或者文本格式的数据。
+dataset 可以认为是由很多行数据构成，每一行的结构是相同的，每一行包含了一个或者多个tensor。可以通过 Dataset.output_types 输出每一行的tensor的数据类型，Dataset.output_shapes输出每一行的tensor的shape。dataset的数据源可以从内存读入，也可以从磁盘读入。从磁盘读入的时候可以读取tfrecord格式的数据或者文本格式的数据。
 
-这儿举个例子我们由一些数据，需要用来使用，这儿介绍以下几种方式从原始数据创建datasetd的方法
+这儿举个例子我们有
+一些数据，需要用来使用，这儿介绍以下几种方式从原始数据创建dataset的方法
 
 假设数据以文本方式存储，以空格进行分割，第一列是label，第二列是一种feature,由以逗号分割的5个浮点数组成，第三列是另外一种feature，是以逗号分割的两个字符串构成
 
@@ -31,7 +32,7 @@ dataset 可以认为是由很多行数据构成，每一行的结构是相同的
 
 #### 从内存中的数据创建
 
-当我们的数据两很小的时候，我们可以直接把数据读入内存然后，创建dataset.
+当我们的数据量很小的时候，我们可以直接把数据读入内存，然后创建dataset.
 
 
 
@@ -188,7 +189,7 @@ print(dataset.output_types)
 
 ### Dataset 的转换
 
-在已经存在的dataset上，我们可以使用各种转换操作，将一个daset转换乘另外一个dataset，主要有以下这些操作
+在已经存在的dataset上，我们可以使用各种转换操作，将一个dataset转换乘另外一个dataset，主要有以下这些操作
 
 #### Dataset.map
 
@@ -219,7 +220,7 @@ cache操作，可以将dataset缓存在内存或者磁盘上，如果dataset的�
 
 ### Dataset 的使用
 
-构建好了dataset之后主要是通过Iterator来使用的。现在主要由以下几种使用方式
+构建好了dataset之后主要是通过Iterator来使用的。现在主要有以下几种使用方式
 
 - one-shot
 - initializable
