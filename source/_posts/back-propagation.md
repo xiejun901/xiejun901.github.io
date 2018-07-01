@@ -187,6 +187,35 @@ class Executor(object):
 
 ### 常见运算符的实现
 
+在反响传播中，实际上求导都是最终的损失函数(标量)对中间变量求导，因此可以使用标量对向量的求导来理解
+
+在这儿求导的推导可以参考这篇文章 [矩阵求导术（上）](https://zhuanlan.zhihu.com/p/24709748) 文章中通过微分方程来推导标量对矩阵的求导。
+
+主要使用以下几条规则来进行矩阵微分运算和迹技巧
+
+#### 导数与微分方程关系
+
+$$
+df=\sum_{i=1}^{m} \sum_{j=1}^{n} \frac{\partial f}{\partial X_{ij}}dX_{ij}=tr(\frac{\partial f}{\partial X}^T dX)
+$$
+
+#### 矩阵微分运算法则
+
+1. $d(X \pm Y) = dX \pm dY$ , $d(XY) = dXY + XdY$ , $d(X^T) = (dX)^T$ , $dtr(X) = tr(dX)$
+2. $d(X^{-1})=-X^{-1}dXX^{-1}$ 
+3. $d|X| = tr(X^\\#dX)$ 当X可逆的时候可写作 $d|X|=|X|tr(X^{-1}dX)$
+4. $d(X\bigodot Y)=dX \bigodot Y+X \bigodot dY$
+5. $d\sigma(X)=\sigma ^ \prime (X) \bigodot dX$
+
+#### 迹技巧
+
+1. 标量套上迹 $a=tr(a)$
+2. 转置 $tr(A^T)=tr(A)$
+3. 线性 $tr(A \pm B) = tr(A) \pm tr(B)$
+4. 矩阵乘法交换  $tr(AB)=tr(BA)$
+5. 矩阵乘法/逐元素乘法交换 $ tr(A^T(B \bigodot C)) =  tr((A \bigodot B)^TC)$
+
+通过以上规则就能进行求导推导, 注意，这个地方没有直接定义定义矩阵对矩阵求导，因此对于复合函数求导不能直接沿用链式法则，需要通过微分代换的方式进行计算。
 
 #### Placeholder
 
@@ -211,10 +240,7 @@ class PlaceholderOp(Op):
 
 对于加法运算，输出对两个输入的导数就是输出本身
 
-$$
-Z = X + Y
-$$
-
+![](add_diff.JPG)
 
 ```python
 class AddOp(Op):
@@ -235,3 +261,80 @@ class AddOp(Op):
     def bprop(self, node ,input_vals, output_grad):
         return [output_grad, output_grad]
 ```
+
+#### 矩阵乘法
+
+
+```python
+class MatMulOp(Op):
+
+    def __call__(self, node1, node2):
+        node = Node()
+        node.inputs = [node1, node2]
+        node.op = self
+        node.name = "MatMulOp({},{})".format(node1.name, node2.name)
+        node1.outputs.append(node)
+        node2.outputs.append(node)
+        return node
+
+    def compute(self, node, input_vals):
+        assert len(input_vals) == 2
+        return np.matmul(input_vals[0], input_vals[1])
+
+    def bprop(self, node, input_vals, output_grad):
+        return [np.matmul(output_grad,np.transpose(input_vals[1])), np.matmul(np.transpose(input_vals[0]), output_grad)]
+```
+
+#### 逐元素乘法
+
+
+```python
+class MulOp(Op):
+
+    def __call__(self, node1, node2):
+        node = Node()
+        node.inputs = [node1, node2]
+        node.op = self
+        node.name = "{}*{}".format(node1.name, node2.name)
+        node1.outputs.append(node)
+        node2.outputs.append(node)
+        return node
+
+    def compute(self, node, input_vals):
+        assert len(input_vals) == 2
+        return input_vals[0] * input_vals[1]
+
+    def bprop(self, node, input_vals, output_grad):
+        assert len(input_vals) == 2
+        return [input_vals[1]*output_grad, input_vals[0]*output_grad]
+```
+
+
+#### 逐元素函数
+
+这儿以sigmoid为例
+
+```python
+class SigmoidOp(Op):
+
+    def __call__(self, node1):
+        node = Node()
+        node.inputs = [node1]
+        node.op = self
+        node.name = "Sigmoid({})".format(node1.name)
+        node1.outputs.append(node)
+        return node
+
+    def compute(self, node, input_vals):
+        assert len(input_vals) == 1
+        return sigmoid_func(input_vals[0])
+
+    def bprop(self, node, input_vals, output_grad):
+        temp = sigmoid_func(input_vals[0])
+        return [output_grad * (1 - temp) * temp]
+```
+
+
+#### 其他
+
+其他的运算符的实现基本与上面一致，推导也差别不大。实现的源码在 [反向传播](https://github.com/xiejun901/ToyDL/blob/master/python/back_prop.py)
