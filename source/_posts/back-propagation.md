@@ -64,7 +64,7 @@ $$
 
 ### 节点和运算符的表示
 
-需要定于最基本的两个数据结构变量节点和运算符。
+需要定义最基本的两个数据结构变量节点和运算符。
 对于每个节点，我们需要保存产生此变量的运算符和此变量是由哪些节点计算而来，同时为了处理字面值的常量和节点的运算，使用了一个成员变量来表示这个常量。对于运算符，我们需要定义一个前向运算和反向传播运算。前向运算用来计算变量节点的值，反向传播运算用来求导
 
 ```python
@@ -240,7 +240,7 @@ class PlaceholderOp(Op):
 
 对于加法运算，输出对两个输入的导数就是输出本身
 
-![](add_diff.JPG)
+![](adddiff.png)
 
 ```python
 class AddOp(Op):
@@ -263,6 +263,8 @@ class AddOp(Op):
 ```
 
 #### 矩阵乘法
+
+![](matmuldiff.png)
 
 
 ```python
@@ -287,6 +289,7 @@ class MatMulOp(Op):
 
 #### 逐元素乘法
 
+![](muldiff.png)
 
 ```python
 class MulOp(Op):
@@ -313,6 +316,8 @@ class MulOp(Op):
 #### 逐元素函数
 
 这儿以sigmoid为例
+
+![](fdiff.png)
 
 ```python
 class SigmoidOp(Op):
