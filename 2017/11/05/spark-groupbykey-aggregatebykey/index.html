@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="oh7q5wMOdjRcmVFjX93pPiUFrQVKtcRZn8klDgVplII" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Spark,RDD,groupByKey,aggregateByKey,reduceByKey," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="在spark中，groupByKey 需要将同一个key的记录全部拿到一块然后放入内存中进行计算，aggregateByKey 是现在各个partition会按照seqOp 先进性合并，然后再按照combineOp对各个partitions上计算的结果再进行组合。因此aggregateByKey 拥有更高的效率。 之前">
+<meta name="keywords" content="Spark,RDD,groupByKey,aggregateByKey,reduceByKey">
+<meta property="og:type" content="article">
+<meta property="og:title" content="spark 中 groupByKey 和 aggregateByKey(reduceByKey) 差距的一次真实体验">
+<meta property="og:url" content="http://xiangruix.com/2017/11/05/spark-groupbykey-aggregatebykey/index.html">
+<meta property="og:site_name" content="Learning and Coding">
+<meta property="og:description" content="在spark中，groupByKey 需要将同一个key的记录全部拿到一块然后放入内存中进行计算，aggregateByKey 是现在各个partition会按照seqOp 先进性合并，然后再按照combineOp对各个partitions上计算的结果再进行组合。因此aggregateByKey 拥有更高的效率。 之前由于一般按aggregateByKey写起来比较简单，不比groupByKey的">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-07-27T08:19:37.117Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="spark 中 groupByKey 和 aggregateByKey(reduceByKey) 差距的一次真实体验">
+<meta name="twitter:description" content="在spark中，groupByKey 需要将同一个key的记录全部拿到一块然后放入内存中进行计算，aggregateByKey 是现在各个partition会按照seqOp 先进性合并，然后再按照combineOp对各个partitions上计算的结果再进行组合。因此aggregateByKey 拥有更高的效率。 之前由于一般按aggregateByKey写起来比较简单，不比groupByKey的">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://xiangruix.com/2017/11/05/spark-groupbykey-aggregatebykey/"/>
+
+
+
+
+
+  <title>spark 中 groupByKey 和 aggregateByKey(reduceByKey) 差距的一次真实体验 | Learning and Coding</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?ea5bfefdcd245de6354e704415c17ae7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Learning and Coding</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'tP3YmrvjTZUH813-kAhg','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xiangruix.com/2017/11/05/spark-groupbykey-aggregatebykey/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Xie Jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://7q5fny.com1.z0.glb.clouddn.com/bloghead.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Learning and Coding">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">spark 中 groupByKey 和 aggregateByKey(reduceByKey) 差距的一次真实体验</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-05T22:08:36+00:00">
+                2017-11-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在spark中，groupByKey 需要将同一个key的记录全部拿到一块然后放入内存中进行计算，aggregateByKey 是现在各个partition会按照seqOp 先进性合并，然后再按照combineOp对各个partitions上计算的结果再进行组合。<br>因此aggregateByKey 拥有更高的效率。</p>
+<p>之前由于一般按aggregateByKey写起来比较简单，不比groupByKey的写法麻烦，通常就按aggregateByKey的写法写了，也没有体验到他们的性能差别，这次有一段代码由于用aggregateByKey写起来要稍微不直观一点，因此就偷懒按照groupByKey来写了，同时由于数据量特别大，直接导致任务失败了，才按照aggregateByKey去优化了一下，没想到效率大大的提高，算是切身体验到了两种做法的效率差距。</p>
+<p>问题是这样的, 我有两份特征数据，都是对应到人和经纬度的，现在需要把他们进行合并，合并的方式是对数据A中的每条记录a找到数据B中同一个人的距离a距离在500米以内并且访问次数最多的那条记录b,然后将a,b合并之后作为特征。</p>
+<p>最直观的代码写法是如下这样的</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">merge1</span></span>[<span class="type">A</span>: <span class="type">ClassTag</span>, <span class="type">B</span>: <span class="type">ClassTag</span>, <span class="type">K</span>: <span class="type">ClassTag</span>](rddA: <span class="type">RDD</span>[<span class="type">A</span>], rddB: <span class="type">RDD</span>[<span class="type">B</span>])(</span><br><span class="line">  ka: <span class="type">A</span> =&gt; <span class="type">K</span>, kb: <span class="type">B</span> =&gt; <span class="type">K</span>)(</span><br><span class="line">  filterOp: (<span class="type">A</span>, <span class="type">B</span>) =&gt; <span class="type">Boolean</span>, selectOp: (<span class="type">B</span>, <span class="type">B</span>) =&gt; <span class="type">B</span>) = &#123;</span><br><span class="line">  <span class="keyword">val</span> groupedB = rddB</span><br><span class="line">    .map(x =&gt; (kb(x), x))</span><br><span class="line">    .groupByKey()</span><br><span class="line">  rddA.map(x =&gt; (ka(x), x))</span><br><span class="line">    .leftOuterJoin(groupedB)</span><br><span class="line">    .map &#123;</span><br><span class="line">      <span class="keyword">case</span> (k, (a, <span class="type">Some</span>(bs))) =&gt;</span><br><span class="line">        bs.filter(filterOp(a, _)).toList <span class="keyword">match</span> &#123;</span><br><span class="line">          <span class="keyword">case</span> <span class="type">Nil</span> =&gt; (a, <span class="type">None</span>)</span><br><span class="line">          <span class="keyword">case</span> bs =&gt; (a, bs.reduce(selectOp))</span><br><span class="line">        &#125;</span><br><span class="line">      <span class="keyword">case</span> (k, (a, <span class="type">None</span>)) =&gt; (a, <span class="type">None</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用reduceByKey的方式，reduceByKey和aggregateByKey类似，都不需要将所有的记录汇总在一起进行计算，因此效率上也是能有很大的的提高的。这个地方使用reduceByKey就可以完成功能了，因此就使用了reduceByKey, 改写成 aggregateByKey 也是完全没有问题的。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">merge2</span></span>[<span class="type">A</span>: <span class="type">ClassTag</span>, <span class="type">B</span>: <span class="type">ClassTag</span>, <span class="type">K</span>: <span class="type">ClassTag</span>](rddA: <span class="type">RDD</span>[<span class="type">A</span>], rddB: <span class="type">RDD</span>[<span class="type">B</span>])(</span><br><span class="line">  ka: <span class="type">A</span> =&gt; <span class="type">K</span>, kb: <span class="type">B</span> =&gt; <span class="type">K</span>)(</span><br><span class="line">  filterOp: (<span class="type">A</span>, <span class="type">B</span>) =&gt; <span class="type">Boolean</span>, selectOp: (<span class="type">B</span>, <span class="type">B</span>) =&gt; <span class="type">B</span>) = &#123;</span><br><span class="line">  <span class="keyword">val</span> rddB_ = rddB.map(x =&gt; (kb(x), x))</span><br><span class="line">  rddA.map(x =&gt; (ka(x), x))</span><br><span class="line">    .leftOuterJoin(rddB_)</span><br><span class="line">    .map &#123;</span><br><span class="line">      <span class="keyword">case</span> (k, (a, bOpt)) =&gt;</span><br><span class="line">        (a, (a, bOpt))</span><br><span class="line">    &#125;</span><br><span class="line">    .reduceByKey &#123;</span><br><span class="line">      <span class="keyword">case</span> ((a, <span class="type">Some</span>(b1)), (_, <span class="type">Some</span>(b2))) =&gt;</span><br><span class="line">        <span class="keyword">if</span>(filterOp(a, b1) &amp;&amp; filterOp(a, b2)) &#123;</span><br><span class="line">          (a, <span class="type">Some</span>(selectOp(b1, b2)))</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span>(filterOp(a, b1)) &#123;</span><br><span class="line">          (a, <span class="type">Some</span>(b1))</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span>(filterOp(a, b2)) &#123;</span><br><span class="line">          (a, <span class="type">Some</span>(b2))</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          (a, <span class="type">None</span>)</span><br><span class="line">        &#125;</span><br><span class="line">      <span class="keyword">case</span> ((a, <span class="type">None</span>), (_, <span class="type">Some</span>(b2))) =&gt;</span><br><span class="line">        <span class="keyword">if</span>(filterOp(a, b2))  (a, <span class="type">Some</span>(b2))</span><br><span class="line">        <span class="keyword">else</span> (a, <span class="type">None</span>)</span><br><span class="line">      <span class="keyword">case</span> ((a, <span class="type">Some</span>(b1)), (_, <span class="type">None</span>)) =&gt;</span><br><span class="line">        <span class="keyword">if</span>(filterOp(a, b1)) (a, <span class="type">Some</span>(b1))</span><br><span class="line">        <span class="keyword">else</span> (a, <span class="type">None</span>)</span><br><span class="line">      <span class="keyword">case</span> ((a, <span class="type">None</span>), (_, <span class="type">None</span>)) =&gt; (a, <span class="type">None</span>)</span><br><span class="line">    &#125;.values</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面给个所有的源代码和测试的例子,跑了之后可以发现两种方法都能达到想要的效果，在我自己真实的任务中，代码稍微改动，但是主体逻辑是按照这个写的,数据A的大小压缩后大概是150G, 数据B的大小是125G, 合并之后的数据是762G, 这些数据在内存中大概会占到好几个T，算是比较大的数据了。两边使用相同的配置，方法1在执行的过程中一直报内存错误，并且最终执行2个小时4分钟之后失败了。方法2执行过程中有少量内存错误，在1个小时13分钟之后执行完成。可以看到还是有很大的区别的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">object App &#123;</span><br><span class="line">  </span><br><span class="line">  def main(args : Array[String]) &#123;</span><br><span class="line">    val conf = new SparkConf().setAppName(&quot;spark-2.1.1 test&quot;)</span><br><span class="line">        .setMaster(&quot;local[2]&quot;)</span><br><span class="line">    val sc = new SparkContext(conf)</span><br><span class="line">    type A = (Int, Int)</span><br><span class="line">    type B = (Int, Int, Int)</span><br><span class="line">    val as = List((1, 2), (1, 10), (2, 2), (3, 10))</span><br><span class="line">    val bs = List((1, 3, 3), (1, 1, 5), (1, 15, 10))</span><br><span class="line">    val rddA = sc.parallelize(as)</span><br><span class="line">    val rddB = sc.parallelize(bs)</span><br><span class="line">    val  filterOp = (a:A, b:B) =&gt; &#123;</span><br><span class="line">      math.abs(a._2 - b._2) &lt;= 2</span><br><span class="line">    &#125;</span><br><span class="line">    val selectOp = (b1:B, b2:B) =&gt; if(b1._3 &gt; b2._3) b1 else b2</span><br><span class="line">    val resultA = merge1(rddA, rddB)(_._1, _._1)(filterOp, selectOp)</span><br><span class="line">    val resultB = merge2(rddA, rddB)(_._1, _._1)(filterOp, selectOp)</span><br><span class="line">    resultA.collect().foreach(println)</span><br><span class="line">    resultB.collect().foreach(println)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  def merge1[A: ClassTag, B: ClassTag, K: ClassTag](rddA: RDD[A], rddB: RDD[B])(</span><br><span class="line">    ka: A =&gt; K, kb: B =&gt; K)(</span><br><span class="line">    filterOp: (A, B) =&gt; Boolean, selectOp: (B, B) =&gt; B) = &#123;</span><br><span class="line">    val groupedB = rddB</span><br><span class="line">      .map(x =&gt; (kb(x), x))</span><br><span class="line">      .groupByKey()</span><br><span class="line">    rddA.map(x =&gt; (ka(x), x))</span><br><span class="line">      .leftOuterJoin(groupedB)</span><br><span class="line">      .map &#123;</span><br><span class="line">        case (k, (a, Some(bs))) =&gt;</span><br><span class="line">          bs.filter(filterOp(a, _)).toList match &#123;</span><br><span class="line">            case Nil =&gt; (a, None)</span><br><span class="line">            case bs =&gt; (a, Some(bs.reduce(selectOp)))</span><br><span class="line">          &#125;</span><br><span class="line">        case (k, (a, None)) =&gt; (a, None)</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  def merge2[A: ClassTag, B: ClassTag, K: ClassTag](rddA: RDD[A], rddB: RDD[B])(</span><br><span class="line">    ka: A =&gt; K, kb: B =&gt; K)(</span><br><span class="line">    filterOp: (A, B) =&gt; Boolean, selectOp: (B, B) =&gt; B) = &#123;</span><br><span class="line">    val rddB_ = rddB.map(x =&gt; (kb(x), x))</span><br><span class="line">    rddA.map(x =&gt; (ka(x), x))</span><br><span class="line">      .leftOuterJoin(rddB_)</span><br><span class="line">      .map &#123;</span><br><span class="line">        case (k, (a, bOpt)) =&gt;</span><br><span class="line">          (a, (a, bOpt))</span><br><span class="line">      &#125;</span><br><span class="line">      .reduceByKey &#123;</span><br><span class="line">        case ((a, Some(b1)), (_, Some(b2))) =&gt;</span><br><span class="line">          if(filterOp(a, b1) &amp;&amp; filterOp(a, b2)) &#123;</span><br><span class="line">            (a, Some(selectOp(b1, b2)))</span><br><span class="line">          &#125; else if(filterOp(a, b1)) &#123;</span><br><span class="line">            (a, Some(b1))</span><br><span class="line">          &#125; else if(filterOp(a, b2)) &#123;</span><br><span class="line">            (a, Some(b2))</span><br><span class="line">          &#125; else &#123;</span><br><span class="line">            (a, None)</span><br><span class="line">          &#125;</span><br><span class="line">        case ((a, None), (_, Some(b2))) =&gt;</span><br><span class="line">          if(filterOp(a, b2))  (a, Some(b2))</span><br><span class="line">          else (a, None)</span><br><span class="line">        case ((a, Some(b1)), (_, None)) =&gt;</span><br><span class="line">          if(filterOp(a, b1)) (a, Some(b1))</span><br><span class="line">          else (a, None)</span><br><span class="line">        case ((a, None), (_, None)) =&gt; (a, None)</span><br><span class="line">      &#125;.values</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spark/" rel="tag"># Spark</a>
+          
+            <a href="/tags/RDD/" rel="tag"># RDD</a>
+          
+            <a href="/tags/groupByKey/" rel="tag"># groupByKey</a>
+          
+            <a href="/tags/aggregateByKey/" rel="tag"># aggregateByKey</a>
+          
+            <a href="/tags/reduceByKey/" rel="tag"># reduceByKey</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/11/rl-random-walk/" rel="next" title="强化学习-Random Walk 实例">
+                <i class="fa fa-chevron-left"></i> 强化学习-Random Walk 实例
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/23/env-install/" rel="prev" title="环境安装">
+                环境安装 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://7q5fny.com1.z0.glb.clouddn.com/bloghead.jpg"
+                alt="Xie Jun" />
+            
+              <p class="site-author-name" itemprop="name">Xie Jun</p>
+              <p class="site-description motion-element" itemprop="description">一个随便写写的博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">92</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Xie Jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

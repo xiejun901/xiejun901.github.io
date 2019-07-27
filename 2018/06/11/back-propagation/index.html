@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="oh7q5wMOdjRcmVFjX93pPiUFrQVKtcRZn8klDgVplII" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="反向传播,机器学习,神经网络,梯度下降,求导,深度学习," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="在机器学习中，我们通常是使用梯度下降来更新参数，来使得我们的损失函数最小。 $$\theta = \theta -  \eta*\nabla_{\theta}J(\theta)$$ 其中求梯度是非常重要的一个步骤，而通常所说的反向传播就是一种常见的求梯度方法。 常见的求梯度方法符号求导可以将带符号的表达式表示成一颗表达">
+<meta name="keywords" content="反向传播,机器学习,神经网络,梯度下降,求导,深度学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="反向传播">
+<meta property="og:url" content="http://xiangruix.com/2018/06/11/back-propagation/index.html">
+<meta property="og:site_name" content="Learning and Coding">
+<meta property="og:description" content="在机器学习中，我们通常是使用梯度下降来更新参数，来使得我们的损失函数最小。 $$\theta = \theta -  \eta*\nabla_{\theta}J(\theta)$$ 其中求梯度是非常重要的一个步骤，而通常所说的反向传播就是一种常见的求梯度方法。 常见的求梯度方法符号求导可以将带符号的表达式表示成一颗表达式树，然后利用常见的求导规则，可以进行化简和求导 数值求导利用如下公式进行求导">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://xiangruix.com/2018/06/11/back-propagation/adddiff.png">
+<meta property="og:image" content="http://xiangruix.com/2018/06/11/back-propagation/matmuldiff.png">
+<meta property="og:image" content="http://xiangruix.com/2018/06/11/back-propagation/muldiff.png">
+<meta property="og:image" content="http://xiangruix.com/2018/06/11/back-propagation/fdiff.png">
+<meta property="og:updated_time" content="2019-07-27T08:19:37.109Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="反向传播">
+<meta name="twitter:description" content="在机器学习中，我们通常是使用梯度下降来更新参数，来使得我们的损失函数最小。 $$\theta = \theta -  \eta*\nabla_{\theta}J(\theta)$$ 其中求梯度是非常重要的一个步骤，而通常所说的反向传播就是一种常见的求梯度方法。 常见的求梯度方法符号求导可以将带符号的表达式表示成一颗表达式树，然后利用常见的求导规则，可以进行化简和求导 数值求导利用如下公式进行求导">
+<meta name="twitter:image" content="http://xiangruix.com/2018/06/11/back-propagation/adddiff.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://xiangruix.com/2018/06/11/back-propagation/"/>
+
+
+
+
+
+  <title>反向传播 | Learning and Coding</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?ea5bfefdcd245de6354e704415c17ae7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Learning and Coding</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'tP3YmrvjTZUH813-kAhg','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xiangruix.com/2018/06/11/back-propagation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Xie Jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://7q5fny.com1.z0.glb.clouddn.com/bloghead.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Learning and Coding">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">反向传播</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-11T22:50:54+00:00">
+                2018-06-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/machine-learning/" itemprop="url" rel="index">
+                    <span itemprop="name">machine learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在机器学习中，我们通常是使用梯度下降来更新参数，来使得我们的损失函数最小。</p>
+<p>$$<br>\theta = \theta -  \eta*\nabla_{\theta}J(\theta)<br>$$</p>
+<p>其中求梯度是非常重要的一个步骤，而通常所说的反向传播就是一种常见的求梯度方法。</p>
+<h2 id="常见的求梯度方法"><a href="#常见的求梯度方法" class="headerlink" title="常见的求梯度方法"></a>常见的求梯度方法</h2><h3 id="符号求导"><a href="#符号求导" class="headerlink" title="符号求导"></a>符号求导</h3><p>可以将带符号的表达式表示成一颗表达式树，然后利用常见的求导规则，可以进行化简和求导</p>
+<h3 id="数值求导"><a href="#数值求导" class="headerlink" title="数值求导"></a>数值求导</h3><p>利用如下公式进行求导</p>
+<p>$$<br>\frac{\partial f(x)}{\partial x_i} \approx \mathop {limit}_{h-&gt;0} \frac{f(x+h e_i) - f(x)}{h}<br>$$</p>
+<p>或者</p>
+<p>$$<br>\frac{\partial f(x)}{\partial x_i} \approx \mathop {limit}_{h-&gt;0} \frac{f(x+h e_i) - f(x-h e_i)}{2h}<br>$$</p>
+<h3 id="反向传播"><a href="#反向传播" class="headerlink" title="反向传播"></a>反向传播</h3><p>利用链式法则的求导方式</p>
+<p>$$<br>y=f(x)<br>$$</p>
+<p>$$<br>z=g(y)<br>$$</p>
+<p>$$<br>\frac{\partial z}{\partial x} = \frac{\partial z}{\partial y}  \frac{\partial y}{\partial x} = g’(x)f’(x)<br>$$</p>
+<p>为了提高代码的扩展性，反向传播通常是将计算先抽象成运算符和变量，构造成计算图，然后根据每个变量的值和运算符的求导运算来计算图中任意两个变量的偏导数。后边会详细介绍算法和做一个简单的实现</p>
+<h3 id="自动求导"><a href="#自动求导" class="headerlink" title="自动求导"></a>自动求导</h3><p>自动求导和反向传播的原理是一样的，可以认为是反向传播的不同的实现方式，在构造好计算图之后，根据要求的导数，直接生成新的节点，然后在计算导数的时候就跟前向运算一样，直接通过计算图计算就行了。好处是可以很方便的进行系统优化。tensorflow 和 Theano 都是使用的这种方式</p>
+<h2 id="反向传播-1"><a href="#反向传播-1" class="headerlink" title="反向传播"></a>反向传播</h2><p><a href="http://cs231n.github.io/optimization-2/" target="_blank" rel="noopener">cs231n 反向传播</a> 这儿有一篇非常详细的反向传播原理的介绍。 下面介绍下代码的实现</p>
+<p><a href="https://github.com/xiejun901/ToyDL/blob/master/python/back_prop.py" target="_blank" rel="noopener">自己实现的完整代码</a></p>
+<h3 id="节点和运算符的表示"><a href="#节点和运算符的表示" class="headerlink" title="节点和运算符的表示"></a>节点和运算符的表示</h3><p>需要定义最基本的两个数据结构，变量节点和运算符。<br>对于每个节点，我们需要保存产生此变量的运算符和此变量是由哪些节点计算而来，同时为了处理字面值的常量和节点的运算，使用了一个成员变量来表示这个常量。对于运算符，我们需要定义一个前向运算和反向传播运算。前向运算用来计算变量节点的值，反向传播运算用来求导</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Node</span><span class="params">(object)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.inputs = []</span><br><span class="line">        self.outputs = []</span><br><span class="line">        self.op = <span class="keyword">None</span></span><br><span class="line">        self.name = <span class="string">""</span></span><br><span class="line">        self.const_attr = <span class="keyword">None</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__add__</span><span class="params">(self, other)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> isinstance(other, Node):</span><br><span class="line">            <span class="keyword">return</span> add_op(self, other)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> add_byconst_op(self, other)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__mul__</span><span class="params">(self, other)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> isinstance(other, Node):</span><br><span class="line">            <span class="keyword">return</span> mul_op(self, other)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> mul_byconst_op(self, other)</span><br><span class="line"></span><br><span class="line">    __radd__ = __add__</span><br><span class="line">    __rmul__ = __mul__</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__str__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.name</span><br><span class="line"></span><br><span class="line">    __repr__ = __str__</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Op</span><span class="params">(object)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        调用运算符构造一个节点</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        node = Node()</span><br><span class="line">        node.op = self</span><br><span class="line">        <span class="keyword">return</span> node</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">compute</span><span class="params">(self, node, input_vals)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        前向计算，根据输入的值计算出经过此运算符输出的值</span></span><br><span class="line"><span class="string">        :param input_vals: 输入值 numpy.array</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">raise</span> NotImplementedError</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">bprop</span><span class="params">(self, node, input_vals, output_grad)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        反向传播，根据输出的梯度和输入的值计算出输入的梯度</span></span><br><span class="line"><span class="string">        :param input_vals:</span></span><br><span class="line"><span class="string">        :param output_grad:</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">raise</span> NotImplementedError</span><br></pre></td></tr></table></figure>
+<h3 id="前向计算和反向传播"><a href="#前向计算和反向传播" class="headerlink" title="前向计算和反向传播"></a>前向计算和反向传播</h3><p>Executor类中定义了前向计算和反向传播的方法，对于前向计算，我们只需要在计算出节点的依赖节点的值之后使用节点中存储的运算符计算节点的值就行了。对于反向传播，计算对于某个节点的导数的时候，需要计算好输入的值，然后根据后继节点的导数，调用运算符的bprop方法就可以实现。具体代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Executor</span><span class="params">(object)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.node_to_val_map = &#123;&#125;</span><br><span class="line">        self.node_to_grad_map = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, eval_node_list , feed_dict)</span>:</span></span><br><span class="line">        self.node_to_val_map = dict(feed_dict)</span><br><span class="line">        <span class="keyword">for</span> node <span class="keyword">in</span> eval_node_list:</span><br><span class="line">            self.eval(node)</span><br><span class="line">        <span class="keyword">return</span> [self.node_to_val_map[n] <span class="keyword">for</span> n <span class="keyword">in</span> eval_node_list]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">backward</span><span class="params">(self, output_node, grad_node_list, feed_dict)</span>:</span></span><br><span class="line">        self.node_to_val_map = dict(feed_dict)</span><br><span class="line">        self.node_to_grad_map = &#123;&#125;</span><br><span class="line">        self.eval(output_node) <span class="comment"># 计算输出节点及其依赖的节点的值</span></span><br><span class="line">        self.node_to_grad_map[output_node] = np.ones_like(self.node_to_val_map[output_node])</span><br><span class="line">        <span class="keyword">for</span> node <span class="keyword">in</span> grad_node_list:</span><br><span class="line">            self.eval_grad(node)</span><br><span class="line">        <span class="keyword">return</span> [self.node_to_grad_map[n] <span class="keyword">for</span> n <span class="keyword">in</span> grad_node_list]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">eval</span><span class="params">(self, node)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> node <span class="keyword">in</span> self.node_to_val_map:</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        <span class="keyword">for</span> input_node <span class="keyword">in</span> node.inputs:</span><br><span class="line">            self.eval(input_node)</span><br><span class="line">        input_vals = [self.node_to_val_map[input] <span class="keyword">for</span> input <span class="keyword">in</span> node.inputs]</span><br><span class="line">        self.node_to_val_map[node] = node.op.compute(node, input_vals)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">eval_grad</span><span class="params">(self, node)</span>:</span></span><br><span class="line">        <span class="keyword">from</span> functools <span class="keyword">import</span> reduce</span><br><span class="line">        <span class="keyword">if</span> node <span class="keyword">in</span> self.node_to_grad_map:</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        temp = []</span><br><span class="line">        <span class="keyword">for</span> output <span class="keyword">in</span> node.outputs:</span><br><span class="line">            <span class="keyword">if</span> output <span class="keyword">not</span> <span class="keyword">in</span> self.node_to_val_map:</span><br><span class="line">                <span class="string">"""</span></span><br><span class="line"><span class="string">                需要计算梯度的是被计算点的后续节点，和输出点的祖先节点，由于事先计算过输出节点的值，如果在值table里面不存在，则不是输出</span></span><br><span class="line"><span class="string">                节点的祖先节点</span></span><br><span class="line"><span class="string">                """</span></span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            self.eval_grad(output)</span><br><span class="line">            input_vals = [self.node_to_val_map[n] <span class="keyword">for</span> n <span class="keyword">in</span> output.inputs]</span><br><span class="line">            output_grad = self.node_to_grad_map[output]</span><br><span class="line">            input_grads = output.op.bprop(output, input_vals, output_grad)</span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> range(len(output.inputs)):</span><br><span class="line">                <span class="keyword">if</span> output.inputs[i] == node:</span><br><span class="line">                    temp.append(input_grads[i])</span><br><span class="line">        grad = reduce(<span class="keyword">lambda</span> x1, x2: x1 + x2, temp)</span><br><span class="line">        self.node_to_grad_map[node] = grad</span><br></pre></td></tr></table></figure>
+<h3 id="常见运算符的实现"><a href="#常见运算符的实现" class="headerlink" title="常见运算符的实现"></a>常见运算符的实现</h3><p>在反向传播中，实际上求导都是最终的损失函数(标量)对中间变量求导，因此可以使用标量对向量的求导来进行推导</p>
+<p>在这儿求导的推导可以参考这篇文章 <a href="https://zhuanlan.zhihu.com/p/24709748" target="_blank" rel="noopener">矩阵求导术（上）</a> 文章中通过微分方程来推导标量对矩阵的求导。</p>
+<p>主要使用以下几条规则来进行矩阵微分运算和迹技巧</p>
+<h4 id="导数与微分方程关系"><a href="#导数与微分方程关系" class="headerlink" title="导数与微分方程关系"></a>导数与微分方程关系</h4><p>$$<br>df=\sum_{i=1}^{m} \sum_{j=1}^{n} \frac{\partial f}{\partial X_{ij}}dX_{ij}=tr(\frac{\partial f}{\partial X}^T dX)<br>$$</p>
+<h4 id="矩阵微分运算法则"><a href="#矩阵微分运算法则" class="headerlink" title="矩阵微分运算法则"></a>矩阵微分运算法则</h4><ol>
+<li>$d(X \pm Y) = dX \pm dY$ , $d(XY) = dXY + XdY$ , $d(X^T) = (dX)^T$ , $dtr(X) = tr(dX)$</li>
+<li>$d(X^{-1})=-X^{-1}dXX^{-1}$ </li>
+<li>$d|X| = tr(X^\#dX)$ 当X可逆的时候可写作 $d|X|=|X|tr(X^{-1}dX)$</li>
+<li>$d(X\bigodot Y)=dX \bigodot Y+X \bigodot dY$</li>
+<li>$d\sigma(X)=\sigma ^ \prime (X) \bigodot dX$</li>
+</ol>
+<h4 id="迹技巧"><a href="#迹技巧" class="headerlink" title="迹技巧"></a>迹技巧</h4><ol>
+<li>标量套上迹 $a=tr(a)$</li>
+<li>转置 $tr(A^T)=tr(A)$</li>
+<li>线性 $tr(A \pm B) = tr(A) \pm tr(B)$</li>
+<li>矩阵乘法交换  $tr(AB)=tr(BA)$</li>
+<li>矩阵乘法/逐元素乘法交换 $ tr(A^T(B \bigodot C)) =  tr((A \bigodot B)^TC)$</li>
+</ol>
+<p>通过以上规则就能进行求导推导, 注意，这个地方没有直接定义定义矩阵对矩阵求导，因此对于复合函数求导不能直接沿用链式法则，需要通过微分代换的方式进行计算。</p>
+<h4 id="Placeholder"><a href="#Placeholder" class="headerlink" title="Placeholder"></a>Placeholder</h4><p>这个运算主要是为了产生输入的，此节点的值由feed_dict 提供，不应该在此节点上调用前向运算，对它的导数也是由它的后继节点上的运算符来计算出的。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PlaceholderOp</span><span class="params">(Op)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, *args, **kwargs)</span>:</span></span><br><span class="line">        node = Op.__call__(self)</span><br><span class="line">        <span class="keyword">return</span> node</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">compute</span><span class="params">(self, node, input_vals)</span>:</span></span><br><span class="line">        <span class="keyword">assert</span> <span class="keyword">False</span>, <span class="string">"placeholder values provided by feed_dict"</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">bprop</span><span class="params">(self, node, input_vals, output_grad)</span>:</span></span><br><span class="line">        <span class="keyword">assert</span> <span class="keyword">False</span>, <span class="string">"can not do back propagation"</span></span><br></pre></td></tr></table></figure>
+<h4 id="加法"><a href="#加法" class="headerlink" title="加法"></a>加法</h4><p>对于加法运算，输出对两个输入的导数就是输出本身</p>
+<p><img src="/2018/06/11/back-propagation/adddiff.png" alt=""></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AddOp</span><span class="params">(Op)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, node1, node2)</span>:</span></span><br><span class="line">        node = Node()</span><br><span class="line">        node.inputs = [node1, node2]</span><br><span class="line">        node.op = self</span><br><span class="line">        node.name = <span class="string">"&#123;&#125;+&#123;&#125;"</span>.format(node1.name, node2.name)</span><br><span class="line">        node1.outputs.append(node)</span><br><span class="line">        node2.outputs.append(node)</span><br><span class="line">        <span class="keyword">return</span> node</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">compute</span><span class="params">(self, node, input_vals)</span>:</span></span><br><span class="line">        <span class="keyword">assert</span> len(input_vals) == <span class="number">2</span></span><br><span class="line">        <span class="keyword">return</span> input_vals[<span class="number">0</span>] + input_vals[<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">bprop</span><span class="params">(self, node ,input_vals, output_grad)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> [output_grad, output_grad]</span><br></pre></td></tr></table></figure>
+<h4 id="矩阵乘法"><a href="#矩阵乘法" class="headerlink" title="矩阵乘法"></a>矩阵乘法</h4><p><img src="/2018/06/11/back-propagation/matmuldiff.png" alt=""></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MatMulOp</span><span class="params">(Op)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, node1, node2)</span>:</span></span><br><span class="line">        node = Node()</span><br><span class="line">        node.inputs = [node1, node2]</span><br><span class="line">        node.op = self</span><br><span class="line">        node.name = <span class="string">"MatMulOp(&#123;&#125;,&#123;&#125;)"</span>.format(node1.name, node2.name)</span><br><span class="line">        node1.outputs.append(node)</span><br><span class="line">        node2.outputs.append(node)</span><br><span class="line">        <span class="keyword">return</span> node</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">compute</span><span class="params">(self, node, input_vals)</span>:</span></span><br><span class="line">        <span class="keyword">assert</span> len(input_vals) == <span class="number">2</span></span><br><span class="line">        <span class="keyword">return</span> np.matmul(input_vals[<span class="number">0</span>], input_vals[<span class="number">1</span>])</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">bprop</span><span class="params">(self, node, input_vals, output_grad)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> [np.matmul(output_grad,np.transpose(input_vals[<span class="number">1</span>])), np.matmul(np.transpose(input_vals[<span class="number">0</span>]), output_grad)]</span><br></pre></td></tr></table></figure>
+<h4 id="逐元素乘法"><a href="#逐元素乘法" class="headerlink" title="逐元素乘法"></a>逐元素乘法</h4><p><img src="/2018/06/11/back-propagation/muldiff.png" alt=""></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MulOp</span><span class="params">(Op)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, node1, node2)</span>:</span></span><br><span class="line">        node = Node()</span><br><span class="line">        node.inputs = [node1, node2]</span><br><span class="line">        node.op = self</span><br><span class="line">        node.name = <span class="string">"&#123;&#125;*&#123;&#125;"</span>.format(node1.name, node2.name)</span><br><span class="line">        node1.outputs.append(node)</span><br><span class="line">        node2.outputs.append(node)</span><br><span class="line">        <span class="keyword">return</span> node</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">compute</span><span class="params">(self, node, input_vals)</span>:</span></span><br><span class="line">        <span class="keyword">assert</span> len(input_vals) == <span class="number">2</span></span><br><span class="line">        <span class="keyword">return</span> input_vals[<span class="number">0</span>] * input_vals[<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">bprop</span><span class="params">(self, node, input_vals, output_grad)</span>:</span></span><br><span class="line">        <span class="keyword">assert</span> len(input_vals) == <span class="number">2</span></span><br><span class="line">        <span class="keyword">return</span> [input_vals[<span class="number">1</span>]*output_grad, input_vals[<span class="number">0</span>]*output_grad]</span><br></pre></td></tr></table></figure>
+<h4 id="逐元素函数"><a href="#逐元素函数" class="headerlink" title="逐元素函数"></a>逐元素函数</h4><p><img src="/2018/06/11/back-propagation/fdiff.png" alt=""></p>
+<p>这儿以sigmoid为例</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SigmoidOp</span><span class="params">(Op)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, node1)</span>:</span></span><br><span class="line">        node = Node()</span><br><span class="line">        node.inputs = [node1]</span><br><span class="line">        node.op = self</span><br><span class="line">        node.name = <span class="string">"Sigmoid(&#123;&#125;)"</span>.format(node1.name)</span><br><span class="line">        node1.outputs.append(node)</span><br><span class="line">        <span class="keyword">return</span> node</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">compute</span><span class="params">(self, node, input_vals)</span>:</span></span><br><span class="line">        <span class="keyword">assert</span> len(input_vals) == <span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> sigmoid_func(input_vals[<span class="number">0</span>])</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">bprop</span><span class="params">(self, node, input_vals, output_grad)</span>:</span></span><br><span class="line">        temp = sigmoid_func(input_vals[<span class="number">0</span>])</span><br><span class="line">        <span class="keyword">return</span> [output_grad * (<span class="number">1</span> - temp) * temp]</span><br></pre></td></tr></table></figure>
+<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><p>其他的运算符的实现基本与上面一致，推导也差别不大。实现的源码在 <a href="https://github.com/xiejun901/ToyDL/blob/master/python/back_prop.py" target="_blank" rel="noopener">反向传播</a></p>
+<h3 id="使用反向传播实现基本的算法"><a href="#使用反向传播实现基本的算法" class="headerlink" title="使用反向传播实现基本的算法"></a>使用反向传播实现基本的算法</h3><p>基于上面的反向传播的代码和一些基本的运算符，可以实现一个一个简单的二分类的mlp</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">def mlp():</span><br><span class="line">    label, feature = load_libsvm(&quot;data/agaricus.txt&quot;)</span><br><span class="line"></span><br><span class="line">    x = bp.Variable(&quot;x&quot;)</span><br><span class="line">    w1 = bp.Variable(&quot;w1&quot;)</span><br><span class="line">    b1 = bp.Variable(&quot;b1&quot;)</span><br><span class="line">    w2 = bp.Variable(&quot;w2&quot;)</span><br><span class="line">    b2 = bp.Variable(&quot;b2&quot;)</span><br><span class="line">    y = bp.Variable(&quot;y&quot;)</span><br><span class="line"></span><br><span class="line">    h1 = bp.relu_op(bp.matmul_op(x, w1) + b1)</span><br><span class="line">    y_pred = bp.matmul_op(h1, w2) + b2</span><br><span class="line">    prob = bp.sigmoid_op(y_pred)</span><br><span class="line">    single_loss = bp.sigmoid_cross_entropy_op(logit=y_pred, label = y)</span><br><span class="line"></span><br><span class="line">    w1_val = np.random.rand(126, 32)</span><br><span class="line">    b1_val = np.random.rand(1, 32)</span><br><span class="line">    w2_val = np.random.rand(32, 1)</span><br><span class="line">    b2_val = np.random.rand(1, 1)</span><br><span class="line"></span><br><span class="line">    ln = 0.001</span><br><span class="line"></span><br><span class="line">    excutor = bp.Executor()</span><br><span class="line"></span><br><span class="line">    for i in range(10000000):</span><br><span class="line">        index = i % len(feature)</span><br><span class="line">        if i % 1000 == 0:</span><br><span class="line">            loss_val, prob_val = excutor.forward([single_loss, prob], feed_dict=&#123;</span><br><span class="line">                x: feature,</span><br><span class="line">                w1: w1_val,</span><br><span class="line">                b1: b1_val,</span><br><span class="line">                w2: w2_val,</span><br><span class="line">                b2: b2_val,</span><br><span class="line">                y: label</span><br><span class="line">            &#125;)</span><br><span class="line">            print(&quot;step &#123;&#125;, loss=&#123;&#125;, acc=&#123;&#125;, ln=&#123;&#125;&quot;.format(i, np.mean(loss_val), cal_acc(label, prob_val), ln))</span><br><span class="line">        if i % 500000 == 0:</span><br><span class="line">            ln = ln / 10</span><br><span class="line">        w1_grad, b1_grad, w2_grad, b2_grad = excutor.backward(single_loss, [w1, b1, w2, b2], feed_dict=&#123;</span><br><span class="line">            x: feature[index:index+1],</span><br><span class="line">            w1: w1_val,</span><br><span class="line">            b1: b1_val,</span><br><span class="line">            w2: w2_val,</span><br><span class="line">            b2: b2_val,</span><br><span class="line">            y: label[index:index+1]</span><br><span class="line">        &#125;)</span><br><span class="line">        w1_val = w1_val - ln * w1_grad</span><br><span class="line">        b1_val = b1_val - ln * b1_grad</span><br><span class="line">        w2_val = w2_val - ln * w2_grad</span><br><span class="line">        b2_val = b2_val - ln * b2_grad</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/反向传播/" rel="tag"># 反向传播</a>
+          
+            <a href="/tags/机器学习/" rel="tag"># 机器学习</a>
+          
+            <a href="/tags/神经网络/" rel="tag"># 神经网络</a>
+          
+            <a href="/tags/梯度下降/" rel="tag"># 梯度下降</a>
+          
+            <a href="/tags/求导/" rel="tag"># 求导</a>
+          
+            <a href="/tags/深度学习/" rel="tag"># 深度学习</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/20/tensorflow-inputdata/" rel="next" title="tensorflow 数据读取">
+                <i class="fa fa-chevron-left"></i> tensorflow 数据读取
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/31/lime/" rel="prev" title="论文阅读-"Why Should I Trust You" Explaining the Prediction of Any Classifier">
+                论文阅读-"Why Should I Trust You" Explaining the Prediction of Any Classifier <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://7q5fny.com1.z0.glb.clouddn.com/bloghead.jpg"
+                alt="Xie Jun" />
+            
+              <p class="site-author-name" itemprop="name">Xie Jun</p>
+              <p class="site-description motion-element" itemprop="description">一个随便写写的博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">92</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#常见的求梯度方法"><span class="nav-number">1.</span> <span class="nav-text">常见的求梯度方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#符号求导"><span class="nav-number">1.1.</span> <span class="nav-text">符号求导</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数值求导"><span class="nav-number">1.2.</span> <span class="nav-text">数值求导</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#反向传播"><span class="nav-number">1.3.</span> <span class="nav-text">反向传播</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自动求导"><span class="nav-number">1.4.</span> <span class="nav-text">自动求导</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#反向传播-1"><span class="nav-number">2.</span> <span class="nav-text">反向传播</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#节点和运算符的表示"><span class="nav-number">2.1.</span> <span class="nav-text">节点和运算符的表示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#前向计算和反向传播"><span class="nav-number">2.2.</span> <span class="nav-text">前向计算和反向传播</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常见运算符的实现"><span class="nav-number">2.3.</span> <span class="nav-text">常见运算符的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#导数与微分方程关系"><span class="nav-number">2.3.1.</span> <span class="nav-text">导数与微分方程关系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#矩阵微分运算法则"><span class="nav-number">2.3.2.</span> <span class="nav-text">矩阵微分运算法则</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#迹技巧"><span class="nav-number">2.3.3.</span> <span class="nav-text">迹技巧</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Placeholder"><span class="nav-number">2.3.4.</span> <span class="nav-text">Placeholder</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#加法"><span class="nav-number">2.3.5.</span> <span class="nav-text">加法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#矩阵乘法"><span class="nav-number">2.3.6.</span> <span class="nav-text">矩阵乘法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#逐元素乘法"><span class="nav-number">2.3.7.</span> <span class="nav-text">逐元素乘法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#逐元素函数"><span class="nav-number">2.3.8.</span> <span class="nav-text">逐元素函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#其他"><span class="nav-number">2.3.9.</span> <span class="nav-text">其他</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用反向传播实现基本的算法"><span class="nav-number">2.4.</span> <span class="nav-text">使用反向传播实现基本的算法</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Xie Jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="oh7q5wMOdjRcmVFjX93pPiUFrQVKtcRZn8klDgVplII" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="tensorflow,machine learning,mnist,cnn," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本文是 fast.ai 上的深度学习教程 的学习笔记，在课程上，讲到了使用 mnist 数据集训练 CNN 的例子，课程上使用的是 keras 来实现，为了加强理解和熟悉 tensorflow， 此处使用tensorflow 实现一遍。 获取数据集tensorflow 直接提供了 mnist的数据集，只需要导入exam">
+<meta name="keywords" content="tensorflow,machine learning,mnist,cnn">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用tensorflow和mnist数据集训练CNN">
+<meta property="og:url" content="http://xiangruix.com/2017/07/18/tensorflow-mnist-example/index.html">
+<meta property="og:site_name" content="Learning and Coding">
+<meta property="og:description" content="本文是 fast.ai 上的深度学习教程 的学习笔记，在课程上，讲到了使用 mnist 数据集训练 CNN 的例子，课程上使用的是 keras 来实现，为了加强理解和熟悉 tensorflow， 此处使用tensorflow 实现一遍。 获取数据集tensorflow 直接提供了 mnist的数据集，只需要导入example中的包就行，然后获取数据的时候会自动检测指定目录下是否存在数据，不存在则会">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://7q5fny.com1.z0.glb.clouddn.com/number3.png">
+<meta property="og:updated_time" content="2019-07-27T08:19:37.117Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用tensorflow和mnist数据集训练CNN">
+<meta name="twitter:description" content="本文是 fast.ai 上的深度学习教程 的学习笔记，在课程上，讲到了使用 mnist 数据集训练 CNN 的例子，课程上使用的是 keras 来实现，为了加强理解和熟悉 tensorflow， 此处使用tensorflow 实现一遍。 获取数据集tensorflow 直接提供了 mnist的数据集，只需要导入example中的包就行，然后获取数据的时候会自动检测指定目录下是否存在数据，不存在则会">
+<meta name="twitter:image" content="http://7q5fny.com1.z0.glb.clouddn.com/number3.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://xiangruix.com/2017/07/18/tensorflow-mnist-example/"/>
+
+
+
+
+
+  <title>使用tensorflow和mnist数据集训练CNN | Learning and Coding</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?ea5bfefdcd245de6354e704415c17ae7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Learning and Coding</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'tP3YmrvjTZUH813-kAhg','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xiangruix.com/2017/07/18/tensorflow-mnist-example/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Xie Jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://7q5fny.com1.z0.glb.clouddn.com/bloghead.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Learning and Coding">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">使用tensorflow和mnist数据集训练CNN</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-18T23:33:23+00:00">
+                2017-07-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/machine-learning/" itemprop="url" rel="index">
+                    <span itemprop="name">machine learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文是 <a href="http://course.fast.ai/" target="_blank" rel="noopener">fast.ai 上的深度学习教程</a> 的学习笔记，在课程上，讲到了使用 mnist 数据集训练 CNN 的例子，课程上使用的是 keras 来实现，为了加强理解和熟悉 tensorflow， 此处使用tensorflow 实现一遍。</p>
+<h3 id="获取数据集"><a href="#获取数据集" class="headerlink" title="获取数据集"></a>获取数据集</h3><p>tensorflow 直接提供了 mnist的数据集，只需要导入example中的包就行，然后获取数据的时候会自动检测指定目录下是否存在数据，不存在则会自动从网上下载</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> tensorflow.examples.tutorials.mnist <span class="keyword">import</span> input_data</span><br><span class="line">mnist = input_data.read_data_sets(<span class="string">'MNIST_DATA/'</span>, one_hot=<span class="keyword">True</span>)</span><br></pre></td></tr></table></figure>
+<p>获取到的数据包含了训练集，测试集和验证集合, 其中训练集的大小为 55000 张, 测试集 10000 张, 验证集 5000 张. 每张图片的大小事28*28=784, 可以通过以下指令查看数据集的大小</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mnist.train.images.shape</span><br></pre></td></tr></table></figure>
+<p>可以得到结果是 (55000, 784)</p>
+<p>可以将图片画出来看看</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot <span class="keyword">as</span> plt</span><br><span class="line">plt.gray()</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">plot</span><span class="params">(img)</span>:</span></span><br><span class="line">    plt.imshow(img.reshape((<span class="number">28</span>, <span class="number">28</span>)))</span><br><span class="line"></span><br><span class="line">plot(mnist.train.images[<span class="number">1</span>])</span><br></pre></td></tr></table></figure>
+<p><img src="http://7q5fny.com1.z0.glb.clouddn.com/number3.png" alt=""></p>
+<p>查看一下label</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mnist.train.labels[<span class="number">1</span>]</span><br><span class="line">array([ <span class="number">0.</span>,  <span class="number">0.</span>,  <span class="number">0.</span>,  <span class="number">1.</span>,  <span class="number">0.</span>,  <span class="number">0.</span>,  <span class="number">0.</span>,  <span class="number">0.</span>,  <span class="number">0.</span>,  <span class="number">0.</span>])</span><br></pre></td></tr></table></figure>
+<h3 id="建立模型"><a href="#建立模型" class="headerlink" title="建立模型"></a>建立模型</h3><p>先写两个工具函数建立指定的大小的便令，用作卷积filter和偏置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">def weight_variable(shape):</span><br><span class="line">    initial = tf.truncated_normal(shape, stddev=0.1)</span><br><span class="line">    return tf.Variable(initial)</span><br><span class="line">def bias_variable(shape):</span><br><span class="line">    initial = tf.constant(0.1, shape=shape)</span><br><span class="line">    return tf.Variable(initial)</span><br></pre></td></tr></table></figure>
+<p>在tensorflow中，Variable 是变量，用来存储可以修改的值, 例如模型参数，在 weight_variable 中，按照正态分布初始化一个指定形状的张量用来作卷积的参数。bias_variable 是初始化一个指定形状为常数的张量来作为偏置项。</p>
+<p>可以通过如下方式来查看一下这两个函数的返回值</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sess = tf.Session()</span><br><span class="line">conv = weight_variable([<span class="number">3</span>, <span class="number">3</span>])</span><br><span class="line">bias = bias_variable([<span class="number">5</span>])</span><br><span class="line">sess.run(tf.global_variables_initializer())</span><br><span class="line">print(sess.run(conv))</span><br><span class="line">print(sess.run(bias))</span><br></pre></td></tr></table></figure>
+<pre><code>[[-0.06172315  0.12105345  0.01371539]
+ [ 0.10928184 -0.03302958 -0.12141398]
+ [ 0.07855338  0.05833388  0.02793374]]
+[ 0.1  0.1  0.1  0.1  0.1]
+</code></pre><p>图片的输入格式是55000张 1 * 584 的数组，首先需要对输入进行reshape, 好用于做二维的卷积运算。将每张图片输入的584维 reshape 成 28 * 28 * 1 最后的1表示一个通道，可以理解为这个地方是黑白图片，所以只需要一维，如果是彩色图片的话就可能是3维。总之就是每张图片变成了一个 28 * 28 * 1的张量。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x = tf.placeholder(tf.float32, [None, 584])</span><br><span class="line">x_images = tf.reshape(x, [-1, 28, 28, 1])</span><br></pre></td></tr></table></figure>
+<p>placeholder 在 tensorflow 中叫做占位符，用来接受输入数据。可以通过以下方式将输入传入网络中并进行计算</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sess.run(x_images, &#123;x: train_imgs[<span class="number">0</span>:<span class="number">1</span>]&#125;)</span><br></pre></td></tr></table></figure>
+<p>在CNN中，一般会对输入的对象先进行卷积运算，提取图像的特征。</p>
+<p>这儿再引入两个函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">def conv2d(x, W):</span><br><span class="line">    return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding=&apos;SAME&apos;)</span><br><span class="line">def max_pool_2x2(x):</span><br><span class="line">    return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding=&apos;SAME&apos;)</span><br></pre></td></tr></table></figure>
+<p>conv2d 使用来做2D卷积运算的, max_pool_2x2 是用来进行一个 2*2 的maxpolling, 图像的大小会减半。</p>
+<p>接下来就可以开始建立我们的神经网络了, 本例中使用两层卷积网络加两层全连接层</p>
+<p>第一层卷积层</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">conv1_w = weight_variable([<span class="number">3</span>, <span class="number">3</span>, <span class="number">1</span>, <span class="number">32</span>])</span><br><span class="line">conv1_b = bias_variable([<span class="number">32</span>])</span><br><span class="line">h_conv1 = tf.nn.relu(conv2d(x_images, conv1_w)+conv1_b)</span><br><span class="line">h_pool1 = tf.nn.relu(max_pool_2x2(h_conv1))</span><br></pre></td></tr></table></figure>
+<p>使用了一个 3<em>3</em>1*32  的filter, 输入的图像是1通道的，进行第一次卷积运算之后，图像的shape变成了 (-1, 28, 28, 32), 然后经过max pooling 之后，图像的大小变成了 (-1, 14, 14, 32), 可以通过以下代码看一下图像的大小。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sess = tf.Session()</span><br><span class="line">init = tf.global_variables_initializer()</span><br><span class="line">sess.run(init)</span><br><span class="line">sess.run(h_pool1, &#123;x: train_imgs[<span class="number">0</span>:<span class="number">1</span>]&#125;).shape</span><br></pre></td></tr></table></figure>
+<p>可以看到结果是 (1, 14, 14, 32)</p>
+<p>第二层卷积层</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">conv2_w = weight_variable([<span class="number">3</span>, <span class="number">3</span>, <span class="number">32</span>, <span class="number">64</span>])</span><br><span class="line">conv2_b = bias_variable([<span class="number">64</span>])</span><br><span class="line">h_conv2 = tf.nn.relu(conv2d(h_pool1, conv2_w) + conv2_b)</span><br><span class="line"><span class="comment"># after the convolution, the shape is (-1, 14, 14, 64)</span></span><br><span class="line">h_pool2 = tf.nn.relu(max_pool_2x2(h_conv2))</span><br><span class="line"><span class="comment"># after the max pooling, the shape is (-1, 7, 7, 64)</span></span><br></pre></td></tr></table></figure>
+<p>第二层卷积层使用了一个 3<em>3</em>32*64 的filter, 经过这次卷积运算之后，图像会变成64通道的，图像的shape 变成了 (-1, 14, 14, 64), 然后通过max pooling 之后，图像的大小变为 (-1, 7, 7, 64)</p>
+<p>可以通过上一层相同的方式查看这一步运算后的中间结果。</p>
+<p>第一层全连接层</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">h_flatten = tf.reshape(h_pool2, (<span class="number">-1</span>, <span class="number">7</span>*<span class="number">7</span>*<span class="number">64</span>))</span><br><span class="line">fc1_w = weight_variable([<span class="number">7</span>*<span class="number">7</span>*<span class="number">64</span>, <span class="number">1024</span>])</span><br><span class="line">fc1_b = bias_variable([<span class="number">1024</span>])</span><br><span class="line">h_fc1 = tf.nn.relu(tf.matmul(h_flatten, fc1_w) + fc1_b)</span><br></pre></td></tr></table></figure>
+<p>在进入全连接层之前，由于一张图片的数据是7<em>7</em>64的张量，需要先将张量铺平为1*3136的向量，再经过一层全连接层后，图片的大小变为(-1, 1024)</p>
+<p>在第一层全连接之后加入drop out 来减少过拟合，drop out 的比例由参数来控制</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">keep_prop = tf.placeholder(tf.float32)</span><br><span class="line">h_drop1 = tf.nn.dropout(h_fc1, keep_prop)</span><br></pre></td></tr></table></figure>
+<p>第二层全连接层</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">fc2_w = weight_variable([<span class="number">1024</span>, <span class="number">10</span>])</span><br><span class="line">fc2_b = weight_variable([<span class="number">10</span>])</span><br><span class="line">y_conv = tf.matmul(h_drop1, fc2_w) + fc2_b</span><br></pre></td></tr></table></figure>
+<p>在经过第二层的全连接层之后，输出变为了(-1, 10)的向量，正好对应着进行onehot编码之后的label。</p>
+<p>y_conv 就是我们创建得包含两层卷积层，两层全连接层的神经网络结构。</p>
+<h3 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h3><p>模型的驯良就是优化模型参数的过程，通过将模型的输出值(y_conv)与实际的label进行对比，不断的调整参数(卷积层和全连接层的w,b)来使得模型的输出与实际的label之间的误差(损失函数)逐渐降低的过程。梯度下降则是最常见的一种优化算法。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">y_ = tf.placeholder(tf.float32, [<span class="keyword">None</span>, <span class="number">10</span>])</span><br><span class="line">cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y_conv)</span><br><span class="line">train_step = tf.train.AdamOptimizer(<span class="number">1e-4</span>).minimize(cross_entropy)</span><br></pre></td></tr></table></figure>
+<p>上面一段代码直观的翻译过来就是，给label建立一个占位符，每一张图片的label是一个10维的向量。使用交叉熵作为目标函数，使用 学习率为1e-4 的 adam 算法来最小化交叉熵。这就是我们的训练过程。</p>
+<p>可以通过以下方式使用100个样本对模型进行优化</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sess = tf.Session()</span><br><span class="line">init = tf.global_variables_initializer()</span><br><span class="line">sess.run(init)</span><br><span class="line">sess.run(train_step, &#123;x: train_imgs[<span class="number">0</span>:<span class="number">100</span>], keep_prop: <span class="number">0.5</span>, y_: train_labels[<span class="number">0</span>:<span class="number">100</span>]&#125;)</span><br></pre></td></tr></table></figure>
+<p>同时，为了观察训练都效果，我们需要评估模型的准确性，这儿我们使用acc来评价</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">correct_prediction = tf.equal(tf.arg_max(y_conv, <span class="number">1</span>), tf.arg_max(y_, <span class="number">1</span>))</span><br><span class="line">accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))</span><br></pre></td></tr></table></figure>
+<p>开始训练</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">sess = tf.Session()</span><br><span class="line">init = tf.global_variables_initializer()</span><br><span class="line">sess.run(init)</span><br><span class="line">train_round = <span class="number">10000</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(train_round):</span><br><span class="line">    batch = mnist.train.next_batch(<span class="number">100</span>)</span><br><span class="line">    <span class="keyword">if</span> i % <span class="number">1000</span> == <span class="number">0</span>:</span><br><span class="line">        acc = sess.run(accuracy, &#123;x: batch[<span class="number">0</span>], y_: batch[<span class="number">1</span>], keep_prop: <span class="number">0.5</span>&#125;)</span><br><span class="line">        print(<span class="string">"step: %d, training accuracy %g"</span> %(i, acc))</span><br><span class="line">    sess.run(train_step, &#123;x: batch[<span class="number">0</span>], keep_prop: <span class="number">0.5</span>, y_: batch[<span class="number">1</span>]&#125;)</span><br><span class="line">acc = sess.run(accuracy, &#123;x: mnist.test.images, y_: mnist.test.labels, keep_prop:<span class="number">1.0</span>&#125;)</span><br><span class="line">print(<span class="string">"test accuracy %g"</span> %acc)</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/tensorflow/" rel="tag"># tensorflow</a>
+          
+            <a href="/tags/machine-learning/" rel="tag"># machine learning</a>
+          
+            <a href="/tags/mnist/" rel="tag"># mnist</a>
+          
+            <a href="/tags/cnn/" rel="tag"># cnn</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/03/sgd-intro/" rel="next" title="sgd 中的优化方法">
+                <i class="fa fa-chevron-left"></i> sgd 中的优化方法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/21/rl-mdp/" rel="prev" title="强化学习-MDP">
+                强化学习-MDP <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://7q5fny.com1.z0.glb.clouddn.com/bloghead.jpg"
+                alt="Xie Jun" />
+            
+              <p class="site-author-name" itemprop="name">Xie Jun</p>
+              <p class="site-description motion-element" itemprop="description">一个随便写写的博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">92</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#获取数据集"><span class="nav-number">1.</span> <span class="nav-text">获取数据集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#建立模型"><span class="nav-number">2.</span> <span class="nav-text">建立模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#训练"><span class="nav-number">3.</span> <span class="nav-text">训练</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Xie Jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

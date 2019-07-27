@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="oh7q5wMOdjRcmVFjX93pPiUFrQVKtcRZn8klDgVplII" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="机器学习,强化学习,DP,MC,TD,Random Walk,SARSA," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前面的几个笔记讲了强化学习的一些基本概念和算法, 上一篇的符号都有些混乱了, 这一篇以 random walk 举例, 再进一步针对具体的问题描述各个算法, 起到一个回顾和加深理解的作用。为什么要选择 random walk 呢, 因为这个问题足够简单, 更有利于理解基本概念和问题的本质。 基本概念 如上图所示，一共存">
+<meta name="keywords" content="机器学习,强化学习,DP,MC,TD,Random Walk,SARSA">
+<meta property="og:type" content="article">
+<meta property="og:title" content="强化学习-Random Walk 实例">
+<meta property="og:url" content="http://xiangruix.com/2017/09/11/rl-random-walk/index.html">
+<meta property="og:site_name" content="Learning and Coding">
+<meta property="og:description" content="前面的几个笔记讲了强化学习的一些基本概念和算法, 上一篇的符号都有些混乱了, 这一篇以 random walk 举例, 再进一步针对具体的问题描述各个算法, 起到一个回顾和加深理解的作用。为什么要选择 random walk 呢, 因为这个问题足够简单, 更有利于理解基本概念和问题的本质。 基本概念 如上图所示，一共存在A, B, C, D, E 五个状态和两个终止状态。对于五个状态存在向左和向右">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://7q5fny.com1.z0.glb.clouddn.com/randomwalk.png">
+<meta property="og:updated_time" content="2019-07-27T08:19:37.117Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="强化学习-Random Walk 实例">
+<meta name="twitter:description" content="前面的几个笔记讲了强化学习的一些基本概念和算法, 上一篇的符号都有些混乱了, 这一篇以 random walk 举例, 再进一步针对具体的问题描述各个算法, 起到一个回顾和加深理解的作用。为什么要选择 random walk 呢, 因为这个问题足够简单, 更有利于理解基本概念和问题的本质。 基本概念 如上图所示，一共存在A, B, C, D, E 五个状态和两个终止状态。对于五个状态存在向左和向右">
+<meta name="twitter:image" content="http://7q5fny.com1.z0.glb.clouddn.com/randomwalk.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://xiangruix.com/2017/09/11/rl-random-walk/"/>
+
+
+
+
+
+  <title>强化学习-Random Walk 实例 | Learning and Coding</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?ea5bfefdcd245de6354e704415c17ae7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Learning and Coding</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'tP3YmrvjTZUH813-kAhg','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xiangruix.com/2017/09/11/rl-random-walk/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Xie Jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://7q5fny.com1.z0.glb.clouddn.com/bloghead.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Learning and Coding">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">强化学习-Random Walk 实例</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-11T00:24:16+00:00">
+                2017-09-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/machine-learning/" itemprop="url" rel="index">
+                    <span itemprop="name">machine learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>前面的几个笔记讲了强化学习的一些基本概念和算法, 上一篇的符号都有些混乱了, 这一篇以 random walk 举例, 再进一步针对具体的问题描述各个算法, 起到一个回顾和加深理解的作用。<br>为什么要选择 random walk 呢, 因为这个问题足够简单, 更有利于理解基本概念和问题的本质。</p>
+<h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p><img src="http://7q5fny.com1.z0.glb.clouddn.com/randomwalk.png" alt=""></p>
+<p>如上图所示，一共存在A, B, C, D, E 五个状态和两个终止状态。对于五个状态存在向左和向右两种动作。到达非终止状态的时候获得得回报都是0, 只有到达最右边的终止状态的时候能得到1的回报。</p>
+<p>一些基本概念:</p>
+<p><strong>State</strong>: A, B, C, D, E都是状态。 $s \in {\{ A, B, C, D, E\} }$<br><strong>Action</strong>: 一共有两个动作, 向左，向右。 $a \in { \{向左, 向右 \}}$<br><strong>episode</strong>: 从MDP中产出的一个序列, 例如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C-&gt;D-&gt;E-&gt;END2</span><br><span class="line">C-&gt;B-&gt;A-&gt;B-&gt;A-&gt;B-&gt;A-&gt;END1</span><br><span class="line">C-&gt;B-&gt;C-&gt;D-&gt;C-&gt;B-&gt;A-&gt;A-&gt;B-&gt;C-&gt;D-&gt;E-&gt;END2</span><br></pre></td></tr></table></figure>
+<p><strong>策略</strong>: 从状态产生动作的函数, 例如随机策略, 在每个状态上都是以0.5的概率选作向左和向右</p>
+<p>$\pi(A=向左|S=E)=0.5$ ,  $\pi(A=向右|S=E)=0.5$</p>
+<p><strong>Return</strong>: 对于一个指定的episode, 可以计算得到一个return</p>
+<p>对于<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C-&gt;D-&gt;E-&gt;END2</span><br></pre></td></tr></table></figure></p>
+<p>$$G=0+\gamma * 0 + \gamma^2 * 1$$</p>
+<p><strong>State-value function</strong> : 对于指定的策略，可以求得每个状态上将来能获得得回报</p>
+<p>$$<br>V_\pi(s)=E_\pi[G_t|S_t=s]<br>$$</p>
+<p><strong>Action-value function</strong> : 同样, 对于指定的策略，可以求得每组动作-状态未来可以获得得回报</p>
+<p>$$<br>Q_\pi(s, a) = E_\pi[G_t|S_t=s, A_t=a]<br>$$</p>
+<p>在后文中, 需要示例对指定状态求值的时候, 都是通过随机策略进行举例。</p>
+<p><strong>最优策略</strong> : 在所有的策略中，能够使得所有的状态都取得最大的状态值函数或者动作值函数的的策略被称为最优策略。对应的值函数称为最优状态值函数和最优动作值函数。整个强化学习的核心内容就是求解最优策略。</p>
+<h3 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h3><h4 id="直接求解"><a href="#直接求解" class="headerlink" title="直接求解"></a>直接求解</h4><p>对于已知的, 简单的MDP, 实际上是可以直接求得指定策略下的状态值函数。对于random walk, 可以通过bellman 方程列出如下式子</p>
+<p>状态值函数的 bellman 方程</p>
+<p>$$<br>V(s)=\sum_{a \in A}(R_s^a + \gamma \sum_{s^\prime \in S}P_{ss^\prime}^a V(s^\prime))<br>$$</p>
+<p>对于每个状态都可以使用 bellman 方程列出式子, 然后联立求解。</p>
+<p>$$<br>\left\{<br>\begin{array}{cc}<br>V(A) = 0.5(0 + \gamma \ast 0 ) + 0.5(0 + \gamma \ast V(B)) \\<br>V(B) = 0.5(0 + \gamma \ast V(A)) + 0.5(0 + \gamma \ast V(C)) \\<br>V(C) = 0.5(0 + \gamma \ast V(B)) + 0.5(0 + \gamma \ast V(D)) \\<br>V(D) = 0.5(0 + \gamma \ast V(C)) + 0.5(0 + \gamma \ast V(E)) \\<br>V(E) = 0.5(0 + \gamma \ast V(D)) + 0.5(1 + \gamma \ast 0)<br>\end{array}<br>\right.<br>$$</p>
+<p>求解以上式子就可以得到:</p>
+<p>$$<br>\left\{<br>\begin{array}{c}<br>V(A) = \frac{1}{6} \ <br>V(B) = \frac{1}{3} \ <br>V(C) = \frac{1}{2} \\<br>V(D) = \frac{2}{3} \\<br>V(E) = \frac{5}{6}<br>\end{array}<br>\right.<br>$$</p>
+<p>同样也可以使用动作值函数的bellman方程列出等式, 然后求解, 不过由于需要一组(s, a)才能对应到Q，因此列出的等式更多, 求解的复杂度更高。</p>
+<p>$$<br>Q(s, a) = R_s^a + \gamma \sum_{s^\prime \in S} P_{ss^\prime}^a \sum_{a^\prime \in A} \pi(a^\prime | s^\prime) Q(s^\prime, a^\prime)<br>$$</p>
+<h4 id="DP"><a href="#DP" class="headerlink" title="DP"></a>DP</h4><p>直接计算的具有较高的复杂度。可以利用 bellman 方程迭代求解。首先介绍一下使用DP进行策略评估的算法。</p>
+<p>这儿试用计算$v_\pi$举例<br>更新公式如下:</p>
+<p>$$<br>v(s) = \sum_{a \in A}{\pi(a|s)(R_s^a + \gamma \sum_{s^\prime \in S}P_{ss^\prime}^a v(s^\prime))}<br>$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">v=[<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">gamma=<span class="number">1</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">500</span>):</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">6</span>):</span><br><span class="line">        <span class="keyword">if</span>(j == <span class="number">5</span>):</span><br><span class="line">            v[j] = <span class="number">0.5</span> * (<span class="number">0</span> + gamma * v[j<span class="number">-1</span>]) + <span class="number">0.5</span> * (<span class="number">1</span> + gamma * <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            v[j] = <span class="number">0.5</span> * (<span class="number">0</span> + gamma * v[j<span class="number">-1</span>]) + <span class="number">0.5</span> * (<span class="number">0</span> + gamma * v[j+<span class="number">1</span>])</span><br><span class="line">print(v)</span><br></pre></td></tr></table></figure>
+<p>可以看到结果为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[0, 0.16666666666666663, 0.33333333333333326, 0.4999999999999999, 0.6666666666666665, 0.8333333333333333, 0]</span><br></pre></td></tr></table></figure>
+<p>与上一部直接计算的基本一致</p>
+<h4 id="MC-Prediciton"><a href="#MC-Prediciton" class="headerlink" title="MC-Prediciton"></a>MC-Prediciton</h4><p>上面讲到的DP有很多的缺陷，比如必须要知道各个状态间的转移概率，而 MC<br>使用采样来进行求解。通过与环境交互或者一个个episode, 然后使用各个 episode 的 return 的均值作为状态的值函数。</p>
+<p>使用如下的更新公式:</p>
+<p>$$<br>v(s) = v(s) + \alpha(G_t - v(s))<br>$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">v=[<span class="number">0.0</span>, <span class="number">0.5</span>, <span class="number">0.5</span>, <span class="number">0.5</span>, <span class="number">0.5</span>, <span class="number">0.5</span>, <span class="number">1.0</span>]</span><br><span class="line">gamma=<span class="number">1</span></span><br><span class="line">alpha = <span class="number">0.0001</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_episode</span><span class="params">()</span>:</span></span><br><span class="line">    s = <span class="number">3</span></span><br><span class="line">    res = []</span><br><span class="line">    reward = []</span><br><span class="line">    res.append(s)</span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">        action = random.randint(<span class="number">0</span>,<span class="number">2</span>)</span><br><span class="line">        <span class="keyword">if</span>(action == <span class="number">0</span>):</span><br><span class="line">            s -= <span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            s += <span class="number">1</span></span><br><span class="line">        res.append(s)</span><br><span class="line">        <span class="keyword">if</span>(s == <span class="number">6</span>):</span><br><span class="line">            reward.append(<span class="number">1.0</span>)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">elif</span>(s == <span class="number">0</span>):</span><br><span class="line">            reward.append(<span class="number">0.0</span>)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        reward.append(<span class="number">0.0</span>)</span><br><span class="line">    <span class="keyword">return</span> res, reward</span><br><span class="line"><span class="keyword">for</span> n <span class="keyword">in</span> range(<span class="number">100000</span>):</span><br><span class="line">    states, rewards = get_episode()</span><br><span class="line">    g=<span class="number">0.0</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(states)<span class="number">-1</span><span class="number">-1</span>, <span class="number">0</span>, <span class="number">-1</span>):</span><br><span class="line">        g = gamma * g + rewards[i]</span><br><span class="line">        v[states[i]] = v[states[i]] + alpha * (g - v[states[i]])</span><br><span class="line">print(v)</span><br></pre></td></tr></table></figure>
+<h4 id="MC-Control"><a href="#MC-Control" class="headerlink" title="MC-Control"></a>MC-Control</h4><p>强化学习的最终目的是要学得最优策略，因此在进行策略评估之后还需要对策略进行改进, 策略改进可以是在策略求值到收敛之后进行, 也可以计算一步就更新。</p>
+<p>对于 MC-Control 与 MC-Prediction 不一样的仅仅是产生 episode 的时候要用更新后的策略，不再是一直使用指定策略。</p>
+<p>这个地方将$gamma$设置为小于1才能体现出各个状态之间的差别。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">v=[<span class="number">0.0</span>, <span class="number">0.5</span>, <span class="number">0.5</span>, <span class="number">0.5</span>, <span class="number">0.5</span>, <span class="number">0.5</span>, <span class="number">1.0</span>]</span><br><span class="line">gamma = <span class="number">0.9</span></span><br><span class="line">alpha = <span class="number">0.0001</span></span><br><span class="line">epsilon = <span class="number">0.05</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_episode</span><span class="params">()</span>:</span></span><br><span class="line">    s = <span class="number">3</span></span><br><span class="line">    res = []</span><br><span class="line">    reward = []</span><br><span class="line">    res.append(s)</span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">        action = <span class="number">1</span></span><br><span class="line">        <span class="keyword">if</span>(v[s<span class="number">-1</span>] &gt; v[s+<span class="number">1</span>]):</span><br><span class="line">            action = <span class="number">0</span></span><br><span class="line">        <span class="keyword">if</span>(random.random() &lt; epsilon):</span><br><span class="line">            action = random.randint(<span class="number">0</span>,<span class="number">2</span>)</span><br><span class="line">        <span class="keyword">if</span>(action == <span class="number">0</span>):</span><br><span class="line">            s -= <span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            s += <span class="number">1</span></span><br><span class="line">        res.append(s)</span><br><span class="line">        <span class="keyword">if</span>(s == <span class="number">6</span>):</span><br><span class="line">            reward.append(<span class="number">1.0</span>)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">elif</span>(s == <span class="number">0</span>):</span><br><span class="line">            reward.append(<span class="number">0.0</span>)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        reward.append(<span class="number">0.0</span>)</span><br><span class="line">    <span class="keyword">return</span> res, reward</span><br><span class="line"><span class="keyword">for</span> n <span class="keyword">in</span> range(<span class="number">10000000</span>):</span><br><span class="line">    states, rewards = get_episode()</span><br><span class="line">    g=<span class="number">0.0</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(states)<span class="number">-1</span><span class="number">-1</span>, <span class="number">0</span>, <span class="number">-1</span>):</span><br><span class="line">        g = gamma * g + rewards[i]</span><br><span class="line">        v[states[i]] = v[states[i]] + alpha * (g - v[states[i]])</span><br><span class="line">print(v)</span><br></pre></td></tr></table></figure>
+<h4 id="TD-Prediction"><a href="#TD-Prediction" class="headerlink" title="TD-Prediction"></a>TD-Prediction</h4><p>MC 需要等到一个 episode 结束才能进行计算。 TD是可以执行一次行为计算一次，不需要等到 episode 结束, 同时还具有更好的效率。</p>
+<p>TD 的更新公式如下</p>
+<p>$$<br>v(s) = v(s) + \alpha (R + \gamma v(s^\prime) - v(s))<br>$$ </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">v=[<span class="number">0.0</span>, <span class="number">0.1</span>, <span class="number">0.3</span>, <span class="number">0.5</span>, <span class="number">0.6</span>, <span class="number">0.8</span>, <span class="number">0.0</span>]</span><br><span class="line">gamma = <span class="number">1.0</span></span><br><span class="line">alpha = <span class="number">0.001</span></span><br><span class="line"><span class="keyword">for</span> n <span class="keyword">in</span> range(<span class="number">100000</span>):</span><br><span class="line">    s = <span class="number">3</span></span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">        action = random.randint(<span class="number">0</span>,<span class="number">2</span>)</span><br><span class="line">        s_next = s + <span class="number">1</span></span><br><span class="line">        <span class="keyword">if</span>(action == <span class="number">0</span>):</span><br><span class="line">            s_next = s - <span class="number">1</span></span><br><span class="line">        reward = <span class="number">0.0</span></span><br><span class="line">        <span class="keyword">if</span>(s_next == <span class="number">6</span>):</span><br><span class="line">            reward = <span class="number">1.0</span> </span><br><span class="line">        v[s] = v[s] + alpha * (reward + gamma * v[s_next] - v[s])</span><br><span class="line">        <span class="keyword">if</span>(s_next == <span class="number">0</span> <span class="keyword">or</span> s_next == <span class="number">6</span>):</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        s = s_next</span><br><span class="line"></span><br><span class="line">print(v)</span><br></pre></td></tr></table></figure>
+<p>这个地方我们可以改变v的初值试试，比如改成 [0.0, 0.1, 0.3, 0.5, 0.6, 0.8, 1.0] 就会发现不收敛，因为TD是有偏置的,如果初值设置的很不好那么会得不到好的好的结果。</p>
+<h4 id="SARSA"><a href="#SARSA" class="headerlink" title="SARSA"></a>SARSA</h4><p>SARSA 是一种基于 TD 的 control 的方法, 是典型的策略评估和策略提升的过程。通过$\epsilon-greedy$ 提升策略产生动作$a^\prime$, 然后使用如下公式进行策略评估。最终收敛到最优策略。</p>
+<p>$$<br>Q(s,a) = Q(s,a) + \alpha (R + \gamma Q(s^\prime, a^\prime) - Q(s,a))<br>$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">q=&#123;</span><br><span class="line">    (<span class="number">0</span>, <span class="number">0</span>): <span class="number">0.0</span>,</span><br><span class="line">    (<span class="number">0</span>, <span class="number">1</span>): <span class="number">0.0</span>,</span><br><span class="line">    (<span class="number">1</span>, <span class="number">0</span>): random.random(),</span><br><span class="line">    (<span class="number">1</span>, <span class="number">1</span>): random.random(),</span><br><span class="line">    (<span class="number">2</span>, <span class="number">0</span>): random.random(),</span><br><span class="line">    (<span class="number">2</span>, <span class="number">1</span>): random.random(),</span><br><span class="line">    (<span class="number">3</span>, <span class="number">0</span>): random.random(),</span><br><span class="line">    (<span class="number">3</span>, <span class="number">1</span>): random.random(),</span><br><span class="line">    (<span class="number">4</span>, <span class="number">0</span>): random.random(),</span><br><span class="line">    (<span class="number">4</span>, <span class="number">1</span>): random.random(),</span><br><span class="line">    (<span class="number">5</span>, <span class="number">0</span>): random.random(),</span><br><span class="line">    (<span class="number">5</span>, <span class="number">1</span>): random.random(),</span><br><span class="line">    (<span class="number">6</span>, <span class="number">0</span>): <span class="number">0.0</span>,</span><br><span class="line">    (<span class="number">6</span>, <span class="number">1</span>): <span class="number">0.0</span>,</span><br><span class="line">&#125;</span><br><span class="line">gamma = <span class="number">0.9</span></span><br><span class="line">alpha = <span class="number">0.001</span></span><br><span class="line">epsilon = <span class="number">0.05</span></span><br><span class="line"><span class="keyword">for</span> n <span class="keyword">in</span> range(<span class="number">10000</span>):</span><br><span class="line">    s = <span class="number">3</span></span><br><span class="line">    a = <span class="number">1</span></span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">        <span class="comment"># epsilon greedy</span></span><br><span class="line">        a_ = <span class="number">1</span></span><br><span class="line">        <span class="keyword">if</span>(q[(s, <span class="number">0</span>)] &gt; q[(s, <span class="number">1</span>)]):</span><br><span class="line">            a_ = <span class="number">0</span></span><br><span class="line">        <span class="keyword">if</span>(random.random() &lt; epsilon):</span><br><span class="line">            a_ = random.randint(<span class="number">0</span>,<span class="number">2</span>)</span><br><span class="line">        <span class="comment"># the next action</span></span><br><span class="line">        s_ = s + <span class="number">1</span></span><br><span class="line">        <span class="keyword">if</span>(a_ == <span class="number">0</span>):</span><br><span class="line">            s_ = s - <span class="number">1</span></span><br><span class="line">        reward = <span class="number">0.0</span></span><br><span class="line">        <span class="keyword">if</span>(s_ == <span class="number">6</span>):</span><br><span class="line">            reward = <span class="number">1.0</span> </span><br><span class="line">        q[(s,a)] = q[(s,a)] + alpha * (reward + gamma * q[(s_,a_)] - q[(s,a)])</span><br><span class="line">        <span class="keyword">if</span>(s_ == <span class="number">0</span> <span class="keyword">or</span> s_ == <span class="number">6</span>):</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        s, a = s_, a_</span><br><span class="line"></span><br><span class="line">print(q)</span><br></pre></td></tr></table></figure>
+<h4 id="Q-Learning"><a href="#Q-Learning" class="headerlink" title="Q-Learning"></a>Q-Learning</h4><p>Q-Learning 是另外一种基于 TD 学习最优策略的方法,  使用一种策略$\mu$ ($epsilon-greedy$)来产生行为并执行，然后使用另一种策略$\pi$ (greedy) 进行策略提升, 然后再进行策略评估, 直到收敛到最优值函数$q_{*}$</p>
+<p>值函数更新公式, 首先, 通过 greedy 的方式选出 action</p>
+<p>$$<br>a^\prime=\mathop{argmax}_{a \in A}q(s^\prime, a)<br>$$</p>
+<p>然后使用 TD 公式对策略进行评估</p>
+<p>$$<br>\begin{align}<br>Q(s, a) &amp;= Q(s, a) + \alpha(R + \gamma Q(s^\prime, a^\prime) - Q(s,a)) \\<br>&amp;= Q(s, a) + \alpha( R + \gamma \mathop{max}_{a^\prime \in A}Q(s^\prime, a^\prime) - Q(s,a))<br>\end{align}<br>$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">q=&#123;</span><br><span class="line">    (<span class="number">0</span>, <span class="number">0</span>): <span class="number">0.0</span>,</span><br><span class="line">    (<span class="number">0</span>, <span class="number">1</span>): <span class="number">0.0</span>,</span><br><span class="line">    (<span class="number">1</span>, <span class="number">0</span>): random.random(),</span><br><span class="line">    (<span class="number">1</span>, <span class="number">1</span>): random.random(),</span><br><span class="line">    (<span class="number">2</span>, <span class="number">0</span>): random.random(),</span><br><span class="line">    (<span class="number">2</span>, <span class="number">1</span>): random.random(),</span><br><span class="line">    (<span class="number">3</span>, <span class="number">0</span>): random.random(),</span><br><span class="line">    (<span class="number">3</span>, <span class="number">1</span>): random.random(),</span><br><span class="line">    (<span class="number">4</span>, <span class="number">0</span>): random.random(),</span><br><span class="line">    (<span class="number">4</span>, <span class="number">1</span>): random.random(),</span><br><span class="line">    (<span class="number">5</span>, <span class="number">0</span>): random.random(),</span><br><span class="line">    (<span class="number">5</span>, <span class="number">1</span>): random.random(),</span><br><span class="line">    (<span class="number">6</span>, <span class="number">0</span>): <span class="number">0.0</span>,</span><br><span class="line">    (<span class="number">6</span>, <span class="number">1</span>): <span class="number">0.0</span>,</span><br><span class="line">&#125;</span><br><span class="line">gamma = <span class="number">0.9</span></span><br><span class="line">alpha = <span class="number">0.001</span></span><br><span class="line">epsilon = <span class="number">0.05</span></span><br><span class="line"><span class="keyword">for</span> n <span class="keyword">in</span> range(<span class="number">10000</span>):</span><br><span class="line">    s = <span class="number">3</span></span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">        <span class="comment">#print("s:%s" %s)</span></span><br><span class="line">        <span class="comment"># epsilon greedy</span></span><br><span class="line">        a = <span class="number">1</span></span><br><span class="line">        <span class="keyword">if</span>(q[(s, <span class="number">0</span>)] &gt; q[(s, <span class="number">1</span>)]):</span><br><span class="line">            a = <span class="number">0</span></span><br><span class="line">        <span class="keyword">if</span>(random.random() &lt; epsilon):</span><br><span class="line">            a = random.randint(<span class="number">0</span>,<span class="number">2</span>)</span><br><span class="line">        <span class="comment"># the next action</span></span><br><span class="line">        s_ = s + <span class="number">1</span></span><br><span class="line">        <span class="keyword">if</span>(a == <span class="number">0</span>):</span><br><span class="line">            s_ = s - <span class="number">1</span></span><br><span class="line">        reward = <span class="number">0.0</span></span><br><span class="line">        <span class="keyword">if</span>(s_ == <span class="number">6</span>):</span><br><span class="line">            reward = <span class="number">1.0</span> </span><br><span class="line">        q[(s,a)] = q[(s,a)] + alpha * (reward + gamma * max(q[(s_, <span class="number">0</span>)], q[(s_, <span class="number">1</span>)]) - q[(s,a)])</span><br><span class="line">        <span class="keyword">if</span>(s_ == <span class="number">0</span> <span class="keyword">or</span> s_ == <span class="number">6</span>):</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        s = s_</span><br><span class="line">    <span class="comment">#print("\n\n")</span></span><br><span class="line"></span><br><span class="line">print(q)</span><br></pre></td></tr></table></figure>
+<h4 id="TD-lambda"><a href="#TD-lambda" class="headerlink" title="TD($\lambda$)"></a>TD($\lambda$)</h4><p>这儿使用 back-froward </p>
+<p>$$<br>E_0(s) = 0<br>$$</p>
+<p>$$<br>E_t(s) = \gamma \lambda E_{t-1}(s) + 1(S_t=s)<br>$$</p>
+<p>$$<br>\delta_t= R_{t+1} + \gamma V(S_{t+1}) - V(S_t)<br>$$</p>
+<p>$$<br>V(S_t) = V(S_t) + \alpha \delta_t E_t(S_t)<br>$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">v=[<span class="number">0.0</span>, <span class="number">0.1</span>, <span class="number">0.3</span>, <span class="number">0.5</span>, <span class="number">0.6</span>, <span class="number">0.8</span>, <span class="number">0.0</span>]</span><br><span class="line">gamma = <span class="number">1.0</span></span><br><span class="line">alpha = <span class="number">0.001</span></span><br><span class="line">lamb = <span class="number">0.9</span></span><br><span class="line">e=[<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>]</span><br><span class="line"><span class="keyword">for</span> n <span class="keyword">in</span> range(<span class="number">10000</span>):</span><br><span class="line">    s = <span class="number">3</span></span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">        action = random.randint(<span class="number">0</span>,<span class="number">2</span>)</span><br><span class="line">        s_next = s + <span class="number">1</span></span><br><span class="line">        <span class="keyword">if</span>(action == <span class="number">0</span>):</span><br><span class="line">            s_next = s - <span class="number">1</span></span><br><span class="line">        reward = <span class="number">0.0</span></span><br><span class="line">        <span class="keyword">if</span>(s_next == <span class="number">6</span>):</span><br><span class="line">            reward = <span class="number">1.0</span> </span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">6</span>):</span><br><span class="line">            e[i] = lamb*gamma*e[i]</span><br><span class="line">        e[s] = e[s] + <span class="number">1</span></span><br><span class="line">        delta = reward + gamma * v[s_next] - v[s]</span><br><span class="line">        v[s] = v[s] + alpha * delta * e[s]</span><br><span class="line">        <span class="keyword">if</span>(s_next == <span class="number">0</span> <span class="keyword">or</span> s_next == <span class="number">6</span>):</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        s = s_next</span><br><span class="line"></span><br><span class="line">print(v)</span><br></pre></td></tr></table></figure>
+<h4 id="SARSA-lambda"><a href="#SARSA-lambda" class="headerlink" title="SARSA($\lambda$)"></a>SARSA($\lambda$)</h4><p>使用TD($\lambda$)进行更新的SARSA就是SARSA($\lambda$)</p>
+<p>$$<br>E_0(s,a) = 0<br>$$</p>
+<p>$$<br>E_t(s,a) = E_{t-1}(s, a) + 1(s=S_t, a=A_t)<br>$$</p>
+<p>$$<br>delta_t = R_{t+1} + \gamma Q(S_{t+1},A_{t+1}) -Q(S_t, A_t)<br>$$</p>
+<p>$$<br>Q(S_t, A_t) = Q(S_t, A_t) + \alpha \delta_t E_t(S_t, A_t)<br>$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">q=&#123;</span><br><span class="line">    (<span class="number">0</span>, <span class="number">0</span>): <span class="number">0.0</span>,</span><br><span class="line">    (<span class="number">0</span>, <span class="number">1</span>): <span class="number">0.0</span>,</span><br><span class="line">    (<span class="number">1</span>, <span class="number">0</span>): random.random(),</span><br><span class="line">    (<span class="number">1</span>, <span class="number">1</span>): random.random(),</span><br><span class="line">    (<span class="number">2</span>, <span class="number">0</span>): random.random(),</span><br><span class="line">    (<span class="number">2</span>, <span class="number">1</span>): random.random(),</span><br><span class="line">    (<span class="number">3</span>, <span class="number">0</span>): random.random(),</span><br><span class="line">    (<span class="number">3</span>, <span class="number">1</span>): random.random(),</span><br><span class="line">    (<span class="number">4</span>, <span class="number">0</span>): random.random(),</span><br><span class="line">    (<span class="number">4</span>, <span class="number">1</span>): random.random(),</span><br><span class="line">    (<span class="number">5</span>, <span class="number">0</span>): random.random(),</span><br><span class="line">    (<span class="number">5</span>, <span class="number">1</span>): random.random(),</span><br><span class="line">    (<span class="number">6</span>, <span class="number">0</span>): <span class="number">0.0</span>,</span><br><span class="line">    (<span class="number">6</span>, <span class="number">1</span>): <span class="number">0.0</span>,</span><br><span class="line">&#125;</span><br><span class="line">e=&#123;</span><br><span class="line">    (<span class="number">0</span>, <span class="number">0</span>): <span class="number">0.0</span>,</span><br><span class="line">    (<span class="number">0</span>, <span class="number">1</span>): <span class="number">0.0</span>,</span><br><span class="line">    (<span class="number">1</span>, <span class="number">0</span>): <span class="number">0.0</span>,</span><br><span class="line">    (<span class="number">1</span>, <span class="number">1</span>): <span class="number">0.0</span>,</span><br><span class="line">    (<span class="number">2</span>, <span class="number">0</span>): <span class="number">0.0</span>,</span><br><span class="line">    (<span class="number">2</span>, <span class="number">1</span>): <span class="number">0.0</span>,</span><br><span class="line">    (<span class="number">3</span>, <span class="number">0</span>): <span class="number">0.0</span>,</span><br><span class="line">    (<span class="number">3</span>, <span class="number">1</span>): <span class="number">0.0</span>,</span><br><span class="line">    (<span class="number">4</span>, <span class="number">0</span>): <span class="number">0.0</span>,</span><br><span class="line">    (<span class="number">4</span>, <span class="number">1</span>): <span class="number">0.0</span>,</span><br><span class="line">    (<span class="number">5</span>, <span class="number">0</span>): <span class="number">0.0</span>,</span><br><span class="line">    (<span class="number">5</span>, <span class="number">1</span>): <span class="number">0.0</span>,</span><br><span class="line">    (<span class="number">6</span>, <span class="number">0</span>): <span class="number">0.0</span>,</span><br><span class="line">    (<span class="number">6</span>, <span class="number">1</span>): <span class="number">0.0</span>,</span><br><span class="line">&#125;</span><br><span class="line">gamma = <span class="number">0.9</span></span><br><span class="line">alpha = <span class="number">0.001</span></span><br><span class="line">epsilon = <span class="number">0.05</span></span><br><span class="line">lambd = <span class="number">0.9</span></span><br><span class="line"><span class="keyword">for</span> n <span class="keyword">in</span> range(<span class="number">10000</span>):</span><br><span class="line">    s = <span class="number">3</span></span><br><span class="line">    a = <span class="number">1</span></span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">        <span class="comment"># epsilon greedy</span></span><br><span class="line">        a_ = <span class="number">1</span></span><br><span class="line">        <span class="keyword">if</span>(q[(s, <span class="number">0</span>)] &gt; q[(s, <span class="number">1</span>)]):</span><br><span class="line">            a_ = <span class="number">0</span></span><br><span class="line">        <span class="keyword">if</span>(random.random() &lt; epsilon):</span><br><span class="line">            a_ = random.randint(<span class="number">0</span>,<span class="number">2</span>)</span><br><span class="line">        <span class="comment"># the next action</span></span><br><span class="line">        s_ = s + <span class="number">1</span></span><br><span class="line">        <span class="keyword">if</span>(a_ == <span class="number">0</span>):</span><br><span class="line">            s_ = s - <span class="number">1</span></span><br><span class="line">        reward = <span class="number">0.0</span></span><br><span class="line">        <span class="keyword">if</span>(s_ == <span class="number">6</span>):</span><br><span class="line">            reward = <span class="number">1.0</span> </span><br><span class="line">        <span class="keyword">for</span> k, v <span class="keyword">in</span> e.iteritems():</span><br><span class="line">            e[k] = gamma * lambd * v</span><br><span class="line">        e[(s,a)] = e[(s,a)] + <span class="number">1</span></span><br><span class="line">        delta = reward + gamma * q[(s_,a_)] - q[(s,a)]</span><br><span class="line">        q[(s,a)] = q[(s,a)] + alpha * delta * e[(s, a)]</span><br><span class="line">        <span class="keyword">if</span>(s_ == <span class="number">0</span> <span class="keyword">or</span> s_ == <span class="number">6</span>):</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        s, a = s_, a_</span><br><span class="line"></span><br><span class="line">print(q)</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/机器学习/" rel="tag"># 机器学习</a>
+          
+            <a href="/tags/强化学习/" rel="tag"># 强化学习</a>
+          
+            <a href="/tags/DP/" rel="tag"># DP</a>
+          
+            <a href="/tags/MC/" rel="tag"># MC</a>
+          
+            <a href="/tags/TD/" rel="tag"># TD</a>
+          
+            <a href="/tags/Random-Walk/" rel="tag"># Random Walk</a>
+          
+            <a href="/tags/SARSA/" rel="tag"># SARSA</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/27/rl-dp-mc-td/" rel="next" title="强化学习-DP, MC, TD">
+                <i class="fa fa-chevron-left"></i> 强化学习-DP, MC, TD
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/05/spark-groupbykey-aggregatebykey/" rel="prev" title="spark 中 groupByKey 和 aggregateByKey(reduceByKey) 差距的一次真实体验">
+                spark 中 groupByKey 和 aggregateByKey(reduceByKey) 差距的一次真实体验 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://7q5fny.com1.z0.glb.clouddn.com/bloghead.jpg"
+                alt="Xie Jun" />
+            
+              <p class="site-author-name" itemprop="name">Xie Jun</p>
+              <p class="site-description motion-element" itemprop="description">一个随便写写的博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">92</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本概念"><span class="nav-number">1.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#算法"><span class="nav-number">2.</span> <span class="nav-text">算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#直接求解"><span class="nav-number">2.1.</span> <span class="nav-text">直接求解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DP"><span class="nav-number">2.2.</span> <span class="nav-text">DP</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MC-Prediciton"><span class="nav-number">2.3.</span> <span class="nav-text">MC-Prediciton</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MC-Control"><span class="nav-number">2.4.</span> <span class="nav-text">MC-Control</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TD-Prediction"><span class="nav-number">2.5.</span> <span class="nav-text">TD-Prediction</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SARSA"><span class="nav-number">2.6.</span> <span class="nav-text">SARSA</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Q-Learning"><span class="nav-number">2.7.</span> <span class="nav-text">Q-Learning</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TD-lambda"><span class="nav-number">2.8.</span> <span class="nav-text">TD($\lambda$)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SARSA-lambda"><span class="nav-number">2.9.</span> <span class="nav-text">SARSA($\lambda$)</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Xie Jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="oh7q5wMOdjRcmVFjX93pPiUFrQVKtcRZn8klDgVplII" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="tensorflow,machine learning,dataset," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="tensorflow 读取数据tensorflow 读取数据主要有以下几种方式:  Feeding: 在运行的通过代码中的feed_dict来提供数据，这种方式在数据量小或者简单搭建一个网络调试的时候可以使用，但是如果数据量太大就比较麻烦了，需要自己去控制数据的读取，然后分batch输入到网络中  QueueRunne">
+<meta name="keywords" content="tensorflow,machine learning,dataset">
+<meta property="og:type" content="article">
+<meta property="og:title" content="tensorflow 数据读取">
+<meta property="og:url" content="http://xiangruix.com/2018/05/20/tensorflow-inputdata/index.html">
+<meta property="og:site_name" content="Learning and Coding">
+<meta property="og:description" content="tensorflow 读取数据tensorflow 读取数据主要有以下几种方式:  Feeding: 在运行的通过代码中的feed_dict来提供数据，这种方式在数据量小或者简单搭建一个网络调试的时候可以使用，但是如果数据量太大就比较麻烦了，需要自己去控制数据的读取，然后分batch输入到网络中  QueueRunner: 基于队列的方式读取数据，可以一边使用数据一边从磁盘读取，现在已经完全可以使">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-07-27T08:19:37.117Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="tensorflow 数据读取">
+<meta name="twitter:description" content="tensorflow 读取数据tensorflow 读取数据主要有以下几种方式:  Feeding: 在运行的通过代码中的feed_dict来提供数据，这种方式在数据量小或者简单搭建一个网络调试的时候可以使用，但是如果数据量太大就比较麻烦了，需要自己去控制数据的读取，然后分batch输入到网络中  QueueRunner: 基于队列的方式读取数据，可以一边使用数据一边从磁盘读取，现在已经完全可以使">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://xiangruix.com/2018/05/20/tensorflow-inputdata/"/>
+
+
+
+
+
+  <title>tensorflow 数据读取 | Learning and Coding</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?ea5bfefdcd245de6354e704415c17ae7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Learning and Coding</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'tP3YmrvjTZUH813-kAhg','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xiangruix.com/2018/05/20/tensorflow-inputdata/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Xie Jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://7q5fny.com1.z0.glb.clouddn.com/bloghead.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Learning and Coding">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">tensorflow 数据读取</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-20T01:10:07+00:00">
+                2018-05-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/machine-learning/" itemprop="url" rel="index">
+                    <span itemprop="name">machine learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="tensorflow-读取数据"><a href="#tensorflow-读取数据" class="headerlink" title="tensorflow 读取数据"></a>tensorflow 读取数据</h2><p>tensorflow 读取数据主要有以下几种方式:</p>
+<ul>
+<li><p>Feeding: 在运行的通过代码中的feed_dict来提供数据，这种方式在数据量小或者简单搭建一个网络调试的时候可以使用，但是如果数据量太大就比较麻烦了，需要自己去控制数据的读取，然后分batch输入到网络中</p>
+</li>
+<li><p>QueueRunner: 基于队列的方式读取数据，可以一边使用数据一边从磁盘读取，现在已经完全可以使用tf.data 这一套api 来代替了</p>
+</li>
+<li><p>tf.data : 这一套api提供了一个 Dataset的抽象，可以从文件，内存，已有的tensor里面读取数据生成dataset，然后在已有的dataset上面可以进行数据的解析，过滤，缓存，shuffle，控制batch的大小等操作，是最方便的一种读取数据的方法</p>
+</li>
+</ul>
+<h3 id="Dataset-的创建"><a href="#Dataset-的创建" class="headerlink" title="Dataset 的创建"></a>Dataset 的创建</h3><p>dataset 可以认为是由很多行数据构成，每一行的结构是相同的，每一行包含了一个或者多个tensor。可以通过 Dataset.output_types 输出每一行的tensor的数据类型，Dataset.output_shapes输出每一行的tensor的shape。dataset的数据源可以从内存读入，也可以从磁盘读入。从磁盘读入的时候可以读取tfrecord格式的数据或者文本格式的数据。</p>
+<p>这儿举个例子我们有<br>一些数据，需要用来使用，这儿介绍以下几种方式从原始数据创建dataset的方法</p>
+<p>假设数据以文本方式存储，以空格进行分割，第一列是label，第二列是一种feature,由以逗号分割的5个浮点数组成，第三列是另外一种feature，是以逗号分割的两个字符串构成</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1 1.0,2.0,3.0,4.0,5.0 beijing,shanghai</span><br><span class="line">0 6.0,7.0,8.0,9.0,10.0 chengdu,chongqing</span><br></pre></td></tr></table></figure>
+<h4 id="从内存中的数据创建"><a href="#从内存中的数据创建" class="headerlink" title="从内存中的数据创建"></a>从内存中的数据创建</h4><p>当我们的数据量很小的时候，我们可以直接把数据读入内存，然后创建dataset.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line">sess = tf.Session()</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">labels = []</span><br><span class="line">features1 = []</span><br><span class="line">features2 = []</span><br><span class="line"><span class="keyword">with</span> open(<span class="string">"data.txt"</span>) <span class="keyword">as</span> f:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> f:</span><br><span class="line">        splits = line.strip().split(<span class="string">" "</span>)</span><br><span class="line">        label = int(splits[<span class="number">0</span>].strip())</span><br><span class="line">        fe1 = list(map(<span class="keyword">lambda</span> x: float(x.strip()), splits[<span class="number">1</span>].strip().split(<span class="string">","</span>)))</span><br><span class="line">        fe2 = list(map(<span class="keyword">lambda</span> x: x.strip(), splits[<span class="number">2</span>].strip().split(<span class="string">","</span>)))</span><br><span class="line">        labels.append(label)</span><br><span class="line">        features1.append(fe1)</span><br><span class="line">        features2.append(fe2)                    </span><br><span class="line">dataset = tf.data.Dataset.from_tensor_slices((labels, features1, features2))</span><br><span class="line">print(dataset.output_types)</span><br><span class="line">print(dataset.output_shapes)</span><br></pre></td></tr></table></figure>
+<pre><code>(tf.int32, tf.float32, tf.string)
+(TensorShape([]), TensorShape([Dimension(5)]), TensorShape([Dimension(2)]))
+</code></pre><p>可以看到通过以上代码构造了一个dataset，dataset的每行的类型是 一个由 tf.int32, tf.float32, tf.string 构成的tuple. 同时也能看到dataset的shape</p>
+<h4 id="从tfrecord格式的数据创建"><a href="#从tfrecord格式的数据创建" class="headerlink" title="从tfrecord格式的数据创建"></a>从tfrecord格式的数据创建</h4><p>也可以从存成tfrecord格式的文件中读取数据创建dataset, 这个地方由于没有存成tfrecord格式的数据，因此先生成一个。<br>tfrecord使用protobuffer来序列化和存储样本数据，定义了以下几个结构</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">message Feature&#123;</span><br><span class="line">    oneof kind&#123;</span><br><span class="line">        ByteList bytes_list = 1;</span><br><span class="line">        FloatList float_list = 2;</span><br><span class="line">        Int64List int64_list = 3;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">message Features&#123;</span><br><span class="line">    map&lt;string, Feature&gt; feature = 1;</span><br><span class="line">&#125;</span><br><span class="line">message Example &#123;</span><br><span class="line">    Features features = 1;</span><br><span class="line">&#125;</span><br><span class="line">message BytesList &#123;</span><br><span class="line">  repeated bytes value = 1;</span><br><span class="line">&#125;</span><br><span class="line">message FloatList &#123;</span><br><span class="line">  repeated float value = 1 [packed = true];</span><br><span class="line">&#125;</span><br><span class="line">message Int64List &#123;</span><br><span class="line">  repeated int64 value = 1 [packed = true];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以将我们的数据用这几个结构来存储</p>
+<p>通过以下代码生成 tfrecord 文件</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_int64_feature</span><span class="params">(x)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> tf.train.Feature(int64_list=tf.train.Int64List(value=x))</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_float_feature</span><span class="params">(x)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> tf.train.Feature(float_list=tf.train.FloatList(value=x))</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_bytes_feature</span><span class="params">(x)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> tf.train.Feature(bytes_list=tf.train.BytesList(value=x))</span><br><span class="line">writer = tf.python_io.TFRecordWriter(<span class="string">"data.tfrecords"</span>)</span><br><span class="line"><span class="keyword">with</span> open(<span class="string">"data.txt"</span>) <span class="keyword">as</span> f:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> f:</span><br><span class="line">        splits = line.strip().split(<span class="string">" "</span>)</span><br><span class="line">        label = int(splits[<span class="number">0</span>].strip())</span><br><span class="line">        fe1 = list(map(<span class="keyword">lambda</span> x: float(x.strip()), splits[<span class="number">1</span>].strip().split(<span class="string">","</span>)))</span><br><span class="line">        fe2 = list(map(<span class="keyword">lambda</span> x: x.strip().encode(), splits[<span class="number">2</span>].strip().split(<span class="string">","</span>)))</span><br><span class="line">        example = tf.train.Example(</span><br><span class="line">            features=tf.train.Features(</span><br><span class="line">                feature=&#123;</span><br><span class="line">                    <span class="string">"label"</span>: _int64_feature([label]),</span><br><span class="line">                    <span class="string">"feature1"</span>: _float_feature(fe1),</span><br><span class="line">                    <span class="string">"feature2"</span>: _bytes_feature(fe2)</span><br><span class="line">                &#125;</span><br><span class="line">            )</span><br><span class="line">        )</span><br><span class="line">        writer.write(example.SerializeToString())</span><br><span class="line">writer.close()</span><br></pre></td></tr></table></figure>
+<p>在有了tfrecord文件之后，我们就可以读取数据创建dataset了，读进来之后，dataset的每一个元素的类型是tf.string,因此是需要解析的</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_parse_function</span><span class="params">(example_proto)</span>:</span></span><br><span class="line">    features=&#123;</span><br><span class="line">        <span class="string">"label"</span>: tf.FixedLenFeature((), tf.int64),</span><br><span class="line">        <span class="string">"feature1"</span>: tf.FixedLenFeature((<span class="number">5</span>), tf.float32),</span><br><span class="line">        <span class="string">"feature2"</span>: tf.FixedLenFeature((<span class="number">2</span>), tf.string)</span><br><span class="line">    &#125;</span><br><span class="line">    parsed_feature = tf.parse_single_example(example_proto,features)</span><br><span class="line">    <span class="keyword">return</span> parsed_feature[<span class="string">"label"</span>], parsed_feature[<span class="string">"feature1"</span>], parsed_feature[<span class="string">"feature2"</span>]  </span><br><span class="line">dataset = tf.data.TFRecordDataset(<span class="string">"data.tfrecords"</span>)</span><br><span class="line">print(dataset.output_types)</span><br><span class="line">print(dataset.output_shapes)</span><br><span class="line">dataset = dataset.map(_parse_function)</span><br><span class="line">print(dataset.output_types)</span><br><span class="line">print(dataset.output_shapes)</span><br></pre></td></tr></table></figure>
+<pre><code>&lt;dtype: &apos;string&apos;&gt;
+()
+(tf.int64, tf.float32, tf.string)
+(TensorShape([]), TensorShape([Dimension(5)]), TensorShape([Dimension(2)]))
+</code></pre><h4 id="从文本数据读入"><a href="#从文本数据读入" class="headerlink" title="从文本数据读入"></a>从文本数据读入</h4><p>dataset也可以直接从文本文件里面读取数据，进行解析。读进来每个元素是一个tf.string类型的tensor，然后可以对它进行解析等操作。不过由于tensorflow的字符串处理函数不是很好用，所有在这个地方可以通过tf.py_func使用python的函数来解析字符串</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_parse_line_py</span><span class="params">(line)</span>:</span></span><br><span class="line">    splits = line.split(<span class="string">b" "</span>)</span><br><span class="line">    label = int(splits[<span class="number">0</span>].strip())</span><br><span class="line">    fe1 = list(map(<span class="keyword">lambda</span> x: float(x.strip()), splits[<span class="number">1</span>].strip().split(<span class="string">b","</span>)))</span><br><span class="line">    fe2 = list(map(<span class="keyword">lambda</span> x: x.strip(), splits[<span class="number">2</span>].strip().split(<span class="string">b","</span>)))</span><br><span class="line">    <span class="keyword">return</span> label, fe1, fe2</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_parse_function</span><span class="params">(line)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> tf.py_func(_parse_line_py, [line], [tf.int64, tf.float64, tf.string])</span><br><span class="line">dataset = tf.data.TextLineDataset([<span class="string">"data.txt"</span>])</span><br><span class="line">print(dataset.output_shapes)</span><br><span class="line">print(dataset.output_types)</span><br><span class="line">dataset = dataset.map(_parse_function)</span><br><span class="line">print(dataset.output_shapes)</span><br><span class="line">print(dataset.output_types)</span><br></pre></td></tr></table></figure>
+<pre><code>()
+&lt;dtype: &apos;string&apos;&gt;
+(TensorShape(None), TensorShape(None), TensorShape(None))
+(tf.int64, tf.float64, tf.string)
+</code></pre><h3 id="Dataset-的转换"><a href="#Dataset-的转换" class="headerlink" title="Dataset 的转换"></a>Dataset 的转换</h3><p>在已经存在的dataset上，我们可以使用各种转换操作，将一个dataset转换乘另外一个dataset，主要有以下这些操作</p>
+<h4 id="Dataset-map"><a href="#Dataset-map" class="headerlink" title="Dataset.map"></a>Dataset.map</h4><p>使用map操作可以对dataset中的每个元素进行一个操作，变成另外一个dataset，例如上面的解析操作就是通过 map 来完成的。 map操作中有一个参数 num_parallel_calls 来控制并行度，通常我们可以将这个参数设置为cpu的核数，来最快速度的完成数据的预处理。如果这个地方并行度太低，有可能会导致cpu读取速度太慢，gpu在进行完运算之后需要等待数据，成为系统的瓶颈</p>
+<h4 id="Dataset-cache"><a href="#Dataset-cache" class="headerlink" title="Dataset.cache"></a>Dataset.cache</h4><p>cache操作，可以将dataset缓存在内存或者磁盘上，如果dataset的大小比较小或者是解析非常费事，可以使用这个来缓存结果。</p>
+<h4 id="Dataset-prefetch"><a href="#Dataset-prefetch" class="headerlink" title="Dataset.prefetch"></a>Dataset.prefetch</h4><p>提前获取数据存在缓存里来减少gpu因为缺少数据而等待的情况。</p>
+<h4 id="Dataset-shuffle"><a href="#Dataset-shuffle" class="headerlink" title="Dataset.shuffle"></a>Dataset.shuffle</h4><p>对数据进行打乱</p>
+<h4 id="Dataset-repeat"><a href="#Dataset-repeat" class="headerlink" title="Dataset.repeat"></a>Dataset.repeat</h4><p>对数据进行重复，如果不使用repeat，在数据处理完一个epoch后会扔出tf.errors.OutOfRangeError的异常。如果同时有shuffle和repeat操作，将shuffle放在repeat前面可以有更好的数据顺序保证，将repeat放在shuffle前面会有更好的性能，官方文档上面建议将 shuffle放在前面</p>
+<h4 id="Dataset-batch"><a href="#Dataset-batch" class="headerlink" title="Dataset.batch"></a>Dataset.batch</h4><p>对数据划分batch， 参数给n就表示一次提取出n条数据</p>
+<p>一些关于dataset使用性能方面的说明可以看这里 <a href="https://www.tensorflow.org/performance/datasets_performance" target="_blank" rel="noopener">Input Pipeline Performance Guide</a></p>
+<h3 id="Dataset-的使用"><a href="#Dataset-的使用" class="headerlink" title="Dataset 的使用"></a>Dataset 的使用</h3><p>构建好了dataset之后主要是通过Iterator来使用的。现在主要有以下几种使用方式</p>
+<ul>
+<li>one-shot</li>
+<li>initializable</li>
+<li>reinitializable</li>
+<li>feedable</li>
+</ul>
+<p>在有了iterator之后，是通过 iterator.get_next()来使用迭代器中的值</p>
+<h4 id="one-shot"><a href="#one-shot" class="headerlink" title="one-shot"></a>one-shot</h4><p>one-shot的方式是最简单的方式，通过dataset生成iterator，然后这个iterator只能从这个dataset中读取数据， 代码使用上面从text中读取的数据作为例子. 当我们读取完dataset中的所有数据的时候会抛出 tf.errors.OutOfRangeError 异常，我们可以通过捕获这个异常来控制epochs</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">iterator = dataset.make_one_shot_iterator()</span><br><span class="line">label, feature1, feature2 = iterator.get_next()</span><br><span class="line"><span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        print(sess.run([label, feature1, feature2]))</span><br><span class="line">    <span class="keyword">except</span> tf.errors.OutOfRangeError:</span><br><span class="line">        print(<span class="string">"End of dataset"</span>)</span><br><span class="line">        <span class="keyword">break</span></span><br></pre></td></tr></table></figure>
+<pre><code>[1, array([ 1.,  2.,  3.,  4.,  5.]), array([b&apos;beijing&apos;, b&apos;shanghai&apos;], dtype=object)]
+[0, array([  6.,   7.,   8.,   9.,  10.]), array([b&apos;chengdu&apos;, b&apos;chongqing&apos;], dtype=object)]
+[1, array([ 1.,  2.,  3.,  4.,  5.]), array([b&apos;beijing&apos;, b&apos;shanghai&apos;], dtype=object)]
+End of dataset
+</code></pre><h4 id="initializable"><a href="#initializable" class="headerlink" title="initializable"></a>initializable</h4><p>通过这种方式使用iterator需要显式的去调用 iterator.initializer来进行初始化，不过由于需要自己初始化，也就提供了在初始化的时候使用不同的参数来定义dataset的能力,例如我们可以通过不同的文件名来构建dataset</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">filenames = tf.placeholder(tf.string)</span><br><span class="line">dataset = tf.data.TextLineDataset(filenames).map(_parse_function)</span><br><span class="line">iterator = dataset.make_initializable_iterator()</span><br><span class="line">label, feature1, feature2 = iterator.get_next()</span><br><span class="line">sess.run(iterator.initializer, feed_dict=&#123;filenames: [<span class="string">"data.txt"</span>]&#125;)</span><br><span class="line">print(sess.run([label, feature1, feature2]))</span><br></pre></td></tr></table></figure>
+<pre><code>[1, array([ 1.,  2.,  3.,  4.,  5.]), array([b&apos;beijing&apos;, b&apos;shanghai&apos;], dtype=object)]
+</code></pre><h4 id="reinitializable"><a href="#reinitializable" class="headerlink" title="reinitializable"></a>reinitializable</h4><p>initializable 提供了使用不同的参数来创建dataset的能力，reinitializable则提供了使用不同的dataset来初始化iterator的能力，这个要求使用的不同的dataset的output_shape 和 output_type是相同的。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 直接使用Dataset.range 构造两个简单的dataset, 当然也可以使用前面提到过的其他方式来构造</span></span><br><span class="line">dataset1 = tf.data.Dataset.range(<span class="number">1</span>, <span class="number">5</span>)</span><br><span class="line">dataset2 = tf.data.Dataset.range(<span class="number">6</span>, <span class="number">15</span>)</span><br><span class="line">iterator = tf.data.Iterator.from_structure(</span><br><span class="line">    dataset1.output_types, dataset1.output_shapes)</span><br><span class="line">x = iterator.get_next()</span><br><span class="line"><span class="comment"># 使用第一个dataset初始化</span></span><br><span class="line">init_op_1 = iterator.make_initializer(dataset1)</span><br><span class="line">sess.run(init_op_1)</span><br><span class="line">print(sess.run(x))</span><br><span class="line"><span class="comment"># 使用第二个dataset初始化</span></span><br><span class="line">init_op_2 = iterator.make_initializer(dataset2)</span><br><span class="line">sess.run(init_op_2)</span><br><span class="line">print(sess.run(x))</span><br></pre></td></tr></table></figure>
+<pre><code>1
+6
+</code></pre><h4 id="feedable"><a href="#feedable" class="headerlink" title="feedable"></a>feedable</h4><p>feedable 提供的是在sess.run()的时候选择哪个iterator的能力。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建要使用的数据和数据对应的iterator</span></span><br><span class="line">dataset1 = tf.data.Dataset.range(<span class="number">1</span>, <span class="number">5</span>)</span><br><span class="line">dataset2 = tf.data.Dataset.range(<span class="number">6</span>, <span class="number">15</span>)</span><br><span class="line">iterator1 = dataset1.make_one_shot_iterator()</span><br><span class="line">iterator2 = dataset2.make_initializable_iterator() <span class="comment"># initializable生成的iterator需要初始化</span></span><br><span class="line">handle1 = sess.run(iterator1.string_handle())</span><br><span class="line">handle2 = sess.run(iterator2.string_handle())</span><br><span class="line"><span class="comment"># 创建要使用的iterator, 通过 handle的方式留出placheholder供后边初始化</span></span><br><span class="line">handle = tf.placeholder(tf.string)</span><br><span class="line">iterator = tf.data.Iterator.from_string_handle(</span><br><span class="line">    handle,dataset1.output_types, dataset1.output_shapes)</span><br><span class="line">x = iterator.get_next()</span><br><span class="line"><span class="comment"># 使用handle1来初始化iterator并使用</span></span><br><span class="line">print(sess.run(x, feed_dict=&#123;handle: handle1&#125;))</span><br><span class="line"><span class="comment"># 使用handle2来初始化iterator并使用， iterator在使用前需要先初始化</span></span><br><span class="line">sess.run(iterator2.initializer)</span><br><span class="line">print(sess.run(x, feed_dict=&#123;handle: handle2&#125;))</span><br></pre></td></tr></table></figure>
+<pre><code>1
+6
+</code></pre><h4 id="总结一下"><a href="#总结一下" class="headerlink" title="总结一下"></a>总结一下</h4><ul>
+<li>one-shot:</li>
+</ul>
+<p>直接使用dataset创建iterator，不需要初始化，但是iterator创建好后对应的dataset就不会由任何改变了</p>
+<p>只能通过编写不同的代码来控制使用的数据</p>
+<ul>
+<li>initializable</li>
+</ul>
+<p>使用dataset来创建iterator，iterator需要初始化之后才能使用，但是在创建dataset的时候可以使用参数，然后在初始化iterator的时候通过feed_dict的方式来提供参数控制dataset的创建。</p>
+<p>通过使用不同参数来控制使用的数据</p>
+<ul>
+<li>reinitializable</li>
+</ul>
+<p>创建好一个iterator之后，这个iterator可以使用不同的dataset来初始化</p>
+<p>通过使用不同的dataset来控制使用的数据</p>
+<ul>
+<li>feedable</li>
+</ul>
+<p>通过 handle，iterator的类型和shape来构造iterator，然后在使用的时候可以使用不同的iterator的handle来初始化。由于iterator是可以使用不同参数来初始化的，因此这种方式提供最大的灵活度。</p>
+<p>通过使用不同的iterator来控制使用的数据，iterator通过string_handle来表示</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/tensorflow/" rel="tag"># tensorflow</a>
+          
+            <a href="/tags/machine-learning/" rel="tag"># machine learning</a>
+          
+            <a href="/tags/dataset/" rel="tag"># dataset</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/04/xgboost-gbm/" rel="next" title="XGBoost 源码阅读gbm模块">
+                <i class="fa fa-chevron-left"></i> XGBoost 源码阅读gbm模块
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/11/back-propagation/" rel="prev" title="反向传播">
+                反向传播 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://7q5fny.com1.z0.glb.clouddn.com/bloghead.jpg"
+                alt="Xie Jun" />
+            
+              <p class="site-author-name" itemprop="name">Xie Jun</p>
+              <p class="site-description motion-element" itemprop="description">一个随便写写的博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">92</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#tensorflow-读取数据"><span class="nav-number">1.</span> <span class="nav-text">tensorflow 读取数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Dataset-的创建"><span class="nav-number">1.1.</span> <span class="nav-text">Dataset 的创建</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#从内存中的数据创建"><span class="nav-number">1.1.1.</span> <span class="nav-text">从内存中的数据创建</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#从tfrecord格式的数据创建"><span class="nav-number">1.1.2.</span> <span class="nav-text">从tfrecord格式的数据创建</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#从文本数据读入"><span class="nav-number">1.1.3.</span> <span class="nav-text">从文本数据读入</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dataset-的转换"><span class="nav-number">1.2.</span> <span class="nav-text">Dataset 的转换</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Dataset-map"><span class="nav-number">1.2.1.</span> <span class="nav-text">Dataset.map</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Dataset-cache"><span class="nav-number">1.2.2.</span> <span class="nav-text">Dataset.cache</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Dataset-prefetch"><span class="nav-number">1.2.3.</span> <span class="nav-text">Dataset.prefetch</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Dataset-shuffle"><span class="nav-number">1.2.4.</span> <span class="nav-text">Dataset.shuffle</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Dataset-repeat"><span class="nav-number">1.2.5.</span> <span class="nav-text">Dataset.repeat</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Dataset-batch"><span class="nav-number">1.2.6.</span> <span class="nav-text">Dataset.batch</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dataset-的使用"><span class="nav-number">1.3.</span> <span class="nav-text">Dataset 的使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#one-shot"><span class="nav-number">1.3.1.</span> <span class="nav-text">one-shot</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#initializable"><span class="nav-number">1.3.2.</span> <span class="nav-text">initializable</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#reinitializable"><span class="nav-number">1.3.3.</span> <span class="nav-text">reinitializable</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#feedable"><span class="nav-number">1.3.4.</span> <span class="nav-text">feedable</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#总结一下"><span class="nav-number">1.3.5.</span> <span class="nav-text">总结一下</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Xie Jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

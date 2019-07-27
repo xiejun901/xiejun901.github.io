@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="oh7q5wMOdjRcmVFjX93pPiUFrQVKtcRZn8klDgVplII" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="operating system,file system,modern operating systems," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="文件系统简介为什么需要文件系统 程序有需要存储大量信息的需求  所有的计算机应用都需要存储和读取信息，如果将这些信息都放在地址空间中，那么信息的容量将会受到限制。  在程序关闭之后信息依然需要被保留  如果将信息存储在地址空间中，如果进程结束，那么信息就会丢失。当进程被杀掉的时候，有些信息也需要被存储。  多个进程能同">
+<meta name="keywords" content="operating system,file system,modern operating systems">
+<meta property="og:type" content="article">
+<meta property="og:title" content="&lt;&lt;现代操作系统&gt;&gt;学习笔记之文件系统">
+<meta property="og:url" content="http://xiangruix.com/2016/02/22/modern-operating-systems-file-systems/index.html">
+<meta property="og:site_name" content="Learning and Coding">
+<meta property="og:description" content="文件系统简介为什么需要文件系统 程序有需要存储大量信息的需求  所有的计算机应用都需要存储和读取信息，如果将这些信息都放在地址空间中，那么信息的容量将会受到限制。  在程序关闭之后信息依然需要被保留  如果将信息存储在地址空间中，如果进程结束，那么信息就会丢失。当进程被杀掉的时候，有些信息也需要被存储。  多个进程能同时访问信息  如果将信息存储在地址空间，那么多个进程将无法访问这些信息。（采用进">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://7q5fny.com1.z0.glb.clouddn.com/blogFILE%20SYSTEM%20LAYOUT.jpg">
+<meta property="og:image" content="http://7q5fny.com1.z0.glb.clouddn.com/blogi-nodes.jpg">
+<meta property="og:image" content="http://7q5fny.com1.z0.glb.clouddn.com/blog-VFS1.jpg">
+<meta property="og:image" content="http://7q5fny.com1.z0.glb.clouddn.com/blog-VFS2.jpg">
+<meta property="og:updated_time" content="2019-07-27T08:19:37.113Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="&lt;&lt;现代操作系统&gt;&gt;学习笔记之文件系统">
+<meta name="twitter:description" content="文件系统简介为什么需要文件系统 程序有需要存储大量信息的需求  所有的计算机应用都需要存储和读取信息，如果将这些信息都放在地址空间中，那么信息的容量将会受到限制。  在程序关闭之后信息依然需要被保留  如果将信息存储在地址空间中，如果进程结束，那么信息就会丢失。当进程被杀掉的时候，有些信息也需要被存储。  多个进程能同时访问信息  如果将信息存储在地址空间，那么多个进程将无法访问这些信息。（采用进">
+<meta name="twitter:image" content="http://7q5fny.com1.z0.glb.clouddn.com/blogFILE%20SYSTEM%20LAYOUT.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://xiangruix.com/2016/02/22/modern-operating-systems-file-systems/"/>
+
+
+
+
+
+  <title><<现代操作系统>>学习笔记之文件系统 | Learning and Coding</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?ea5bfefdcd245de6354e704415c17ae7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Learning and Coding</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'tP3YmrvjTZUH813-kAhg','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xiangruix.com/2016/02/22/modern-operating-systems-file-systems/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Xie Jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://7q5fny.com1.z0.glb.clouddn.com/bloghead.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Learning and Coding">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline"><<现代操作系统>>学习笔记之文件系统</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-02-22T17:18:15+00:00">
+                2016-02-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Operating-Systems/" itemprop="url" rel="index">
+                    <span itemprop="name">Operating Systems</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="文件系统简介"><a href="#文件系统简介" class="headerlink" title="文件系统简介"></a>文件系统简介</h3><h4 id="为什么需要文件系统"><a href="#为什么需要文件系统" class="headerlink" title="为什么需要文件系统"></a>为什么需要文件系统</h4><ol>
+<li><p>程序有需要存储大量信息的需求</p>
+<p> 所有的计算机应用都需要存储和读取信息，如果将这些信息都放在地址空间中，那么信息的容量将会受到限制。</p>
+</li>
+<li><p>在程序关闭之后信息依然需要被保留</p>
+<p> 如果将信息存储在地址空间中，如果进程结束，那么信息就会丢失。当进程被杀掉的时候，有些信息也需要被存储。</p>
+</li>
+<li><p>多个进程能同时访问信息</p>
+<p> 如果将信息存储在地址空间，那么多个进程将无法访问这些信息。（采用进程间通信是另外一回事～～）</p>
+</li>
+</ol>
+<h4 id="对长期存储器进行抽象"><a href="#对长期存储器进行抽象" class="headerlink" title="对长期存储器进行抽象"></a>对长期存储器进行抽象</h4><p>通常我们用来存储这些信息的设备由磁盘，固态硬盘，光盘，磁带。在这部分内容中我们只需要将这些设备看做一个提供了读某个区块(block)和写某个区块的区块序列就行。但是如果只有读写区块的操作，那么在使用中，就会非常的不方便，需要考虑很多额外的问题，比如， 如何找到数据，如何隔离不同用户的信息，如何释放数据等等。</p>
+<p>正如操作系统将处理器抽象为进程，将主存储器抽象为地址空间，磁盘被抽象为了文件。<br>进程，地址空间，文件是操作系统中非常重要的三个抽象。</p>
+<h3 id="文件"><a href="#文件" class="headerlink" title="文件"></a>文件</h3><h4 id="文件命名"><a href="#文件命名" class="headerlink" title="文件命名"></a>文件命名</h4><p>文件名在进程创建文件时指定，在进程结束时依然存在并可以被其他进程使用，不同的操作系统对文件名的要求不同，当前所有的操作系统都允许1-8个字母构成的文件名。通常情况下，操作系统也允许文件名包含数字和特殊字符。</p>
+<p>UNIX的文件系统中区分文件名的大小写，MS-DOS不区分。Windows 95，Windows 98采用的是MS-DOS的文件系统FAT16， Windows 98引入了一种FAT16的扩展，称之为FAT32. Windows NT，Windows 2000，Windows XP，Windows Vista， Windows 7，Windows 8 依然支持FAT文件系统，同事也也引入了更先进的文件系统NTFS。</p>
+<p>很多操作系统都支持两部分的文件名，包括文件名和扩展名，通过 . 来进行分割。在 UNIX 中扩展名仅仅是为了阅读方便，在 Windows 中，扩展名被赋予了意义，可以将某个文件扩展名注册为属于某软件。</p>
+<h4 id="文件结构"><a href="#文件结构" class="headerlink" title="文件结构"></a>文件结构</h4><p>文件通常可以按照以下三种方式进行组织</p>
+<ol>
+<li>字节流： UNIX Windows 采用这种方式组织文件， 在这种组织方式中， 操作系统不对文件提供额外的帮助或者阻拦， 仅仅当作一串字节序列， 提供了最大的灵活性。</li>
+<li>记录序列： 在比较早期的主机上， 文件按照80个字符(穿孔卡为80列)或者132个字符(打印机为132列)组织成记录序列</li>
+<li>树形结构： 这种方案可以更快的查询指定key的文件和提供下一个的操作， 在一些大型主机上使用来处理商业数据。</li>
+</ol>
+<h4 id="文件类型"><a href="#文件类型" class="headerlink" title="文件类型"></a>文件类型</h4><p>在 UNIX 和 Windows 中，文件被分为普通文件和目录。目录包含了文件系统的结构。 普通文件又分为 ASCII 文件和 二进制文件</p>
+<h4 id="文件存取"><a href="#文件存取" class="headerlink" title="文件存取"></a>文件存取</h4><p>早期的操作系统只提供了顺序存取， 值能从文件开始处依次读取文件， 后来的操作系统支持随机读取文件， 在 UNIX 和 Windows 中是通过 seek 来实现</p>
+<h4 id="文件属性"><a href="#文件属性" class="headerlink" title="文件属性"></a>文件属性</h4><p>每个文件除了由名字和数据之外， 操作系统还为文件保存了一些其他的信息， 这些额外的信息被称为文件的属性</p>
+<ol>
+<li>Protection<br> 谁可以访问此文件</li>
+<li>Password<br> 访问此文件的密码</li>
+<li>Creator<br> 文件的创建者</li>
+<li>Owner<br> 文件当前的拥有者</li>
+<li>Read-only flag<br> 0 为读写， 1 为只读</li>
+<li>Hidden flag<br> 0 为普通， 1 为隐藏</li>
+<li>Syste flag<br> 0 为普通， 1 为系统文件</li>
+<li>Archive flag<br> 0 为已经备份， 1 为需要备份</li>
+<li>ASCII/binary flag<br> 0 为 ASCII 文件， 1 为二进制问津啊</li>
+<li>Random access flag<br>0 为只能顺序读写， 1 为可以随机访问</li>
+<li>Temporary flag<br>0 为普通文件， 1 为临时文件， 在进程结束时删除</li>
+<li>Lock flag<br>0 表示未加锁， 非零表示文件已加锁</li>
+<li>Record length<br>记录中的字节数</li>
+<li>Key position<br>每条记录的偏移</li>
+<li>Key length<br>key的字节数</li>
+<li>Create time<br>文件创建的时间</li>
+<li>Time of last access<br>文件的最后访问时间</li>
+<li>Time of last change<br>文件的最后修改时间</li>
+<li>Current size<br>当前文件的大小(字节数)</li>
+<li>Maximum size<br>文件的最大大小(字节数)</li>
+</ol>
+<p>以上的属性并不是每个系统都全部拥有， 但是每个都出现在某一个操作系统中</p>
+<h4 id="文件的操作"><a href="#文件的操作" class="headerlink" title="文件的操作"></a>文件的操作</h4><ol>
+<li>Create<br> 创建一个不含数据的文件</li>
+<li>Delete<br> 删除一个文件</li>
+<li>Open<br> 进程通过此操作打开一个文件</li>
+<li>Close<br> 进程通过此操作关闭一个文件</li>
+<li>Read<br> 从文件中读取数据，通常需要提供长度</li>
+<li>Write<br> 向文件中写入数据</li>
+<li>Append<br> 在文件结尾处添加数据， 有的操作系统不提供此操作</li>
+<li>Seek<br> 对于随机访问文件，通过此操作移动到某个位置</li>
+<li>Get attributes<br> 读取文件的属性</li>
+<li>Set attributes<br>设置文件的树形</li>
+<li>Rename<br>对已经存在的文件进行重命名</li>
+</ol>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><h4 id="一级目录系统与层次目录系统"><a href="#一级目录系统与层次目录系统" class="headerlink" title="一级目录系统与层次目录系统"></a>一级目录系统与层次目录系统</h4><p>一级目录系统只在早期的个人计算机上使用过， 它的优点是方案简单。<br>为了管理大量的文件， 需要使用层次目录系统， 几乎所有的现代文件系统都采用这种方案</p>
+<h4 id="路径名"><a href="#路径名" class="headerlink" title="路径名"></a>路径名</h4><ul>
+<li><p>绝对路径： 从根目录到文件目录， 例如 /usr/ast/mailbox 表示在根目录下的usr文件夹中的ast文件中的mailbox文件<br>  Windows    \usr\ast\mailbox<br>  UNIX       /usr/ast/mailbox<br>  MULTICS    &gt;usr&gt;ast&gt;mailbox</p>
+</li>
+<li><p>相对路径： 结合当前路径进行使用， 比如上个例子中， 如果当前目录为 /usr  那么 ast/mailbox 指的就是根目录下的 usr 文件夹中的 ast 文件中的 mailbox 文件</p>
+</li>
+<li><p>当前目录： 大部分操作系统支持 “.” 表示当前目录， 读作 dot</p>
+</li>
+<li><p>上一级目录： 使用 “..” 表示上一级目录， 读作dotdot, 在根目录下 “..” 表示它本身，还是根目录。</p>
+</li>
+</ul>
+<h4 id="目录的操作"><a href="#目录的操作" class="headerlink" title="目录的操作"></a>目录的操作</h4><ol>
+<li>Create<br> 创建目录， 刚被创建的目录下只有 “.” 和 “..” ， 它们有操作系统创建或者少数情况下由 mkdir 程序创建</li>
+<li>Delete<br> 删除目录， 只有空目录能够被删除， 只有 “.” 和 “..” 会被当作是空目录。 “.” 和 “..” 通常不能被删除</li>
+<li>Opendir<br> 打开目录， 在打开目录之后才能读取目录。</li>
+<li>Closedir<br> 关闭目录</li>
+<li>Readdir<br> 读取目录， 会返回打开目录的下一个入口    </li>
+<li>Rename<br> 重命名</li>
+<li>Link<br> 链接， 通过这项技术可以让文件出现在不同的目录</li>
+<li>Unlink<br> 删除目录项， 如果对一个只出现在一处的文件进行 Unlink 那么此文件会被删除， 否则的话只是删除当前这个， 其他的还会存在。 在 UNIX 下， 删除文件的系统调用实际上是Unlink</li>
+</ol>
+<p>还有一种称之为符号链接， 效率会更一点， 但是能够跨越磁盘的界限。 这个的实现方式是在建立的文件名指向了被链接的文件， 操作时， 会沿着文件树找到末尾， 找到名字， 然后通过名字再搜索要真正操作的文件</p>
+<h3 id="文件系统的实现"><a href="#文件系统的实现" class="headerlink" title="文件系统的实现"></a>文件系统的实现</h3><p>文件系统实现者对于文件系统的关注点在 文件和目录是如何被存储的， 磁盘空间是怎样被管理的以及一切的一切是如何工作的</p>
+<h4 id="文件系统的布局"><a href="#文件系统的布局" class="headerlink" title="文件系统的布局"></a>文件系统的布局</h4><p>通常， 磁盘被分为多个分区， 每个分区上都由独立的文件系统。 分区0被称为 MBR(Master Boot Record), 是用来引导计算机的。<br>在 MBR 的结尾是分区表， 这个表给出了每个分区的起止地址， 其中一个分区会被标记为活动分区。<br>当计算机在引导时， BIOS 读取和执行 MBR 。 MBR 的第一件事就是找到活动分区， 读入活动分区的第一个块， 称为引导块(boot block)， 然后执行。 引导块中的程序将装载该分区上的操作系统。<br>为了统一， 所有的分区上都有引导块， 即便此分区上并没有操作系统。并且， 现在此分区上没有操作系统不代表将来也没有。</p>
+<p><img src="http://7q5fny.com1.z0.glb.clouddn.com/blogFILE%20SYSTEM%20LAYOUT.jpg" alt="一种可能的文件系统布局"> </p>
+<p>从上图我们可以看出来， 在整个磁盘上， 包含了 MBR 和各个分区， 在 MBR 的末端由分区表。 在每个分区中， 又包含了下面这些项</p>
+<ul>
+<li>Superblock, 包含了文件系统的关键信息， 通常在操作系统启动或者文件系统第一次被使用的时候会读入内存， 通常包含了一个魔数来区分文件系统的类型， 文件系统中的区块数量和一些其他的管理信息。</li>
+<li>Free space mgmt，  文件系统的空闲块信息， 可以通过位图或者链表来实现</li>
+<li>I-nodes， i 节点信息， 可能是一个结构体数组， 每个文件一个， 存储了文件的各方面信息</li>
+<li>Root dir， 根目录</li>
+<li>Files and directories, 文件和目录</li>
+</ul>
+<p>以上只是一种可能的结构， 不同的文件系统可能是有区别的</p>
+<h4 id="文件的实现"><a href="#文件的实现" class="headerlink" title="文件的实现"></a>文件的实现</h4><h5 id="连续分配"><a href="#连续分配" class="headerlink" title="连续分配"></a>连续分配</h5><p>此方案中， 文件被存储在一段连续的磁盘块中， 假如磁盘分为1kb每块， 那么一个50kb的文件会被存储在连续的50个块中， 新的文件会从一个新的块开始存储。 如果文件的大小导致存不满一个块， 那么剩余的空间将会被浪费掉。<br>连续分配方案有两个明显的优点，</p>
+<ol>
+<li>简单易实现， 跟踪文件存储的块只需要记录下文件占据的第一个块的磁盘地址和块的数量就行了。</li>
+<li>读性能非常好， 由于读取整个文件只需要对磁盘进行一次读操作。 只需要一次seek操作， 因此可以达到磁盘读取的最大带宽。</li>
+</ol>
+<p>但是呢， 连续分配方案也具有严重的缺点，<br>随着使用时间的增加， 磁盘会产生碎片。 由于当文件从磁盘移除时， 会产生一些空闲的块， 文件系统并不会通过拷贝文件来消除这些空闲的块， 因此随着时间越来越长， 磁盘就变成了很多文件和很多洞。 同时， 创建文件的时候， 因为需要被填入某个洞中， 那么就需要提前知道文件的大小， 如果预设的文件大小太小， 那么程序可能就会因为空间不够用了结束掉。<br>尽管如此， 连续分配还是有应用场景的， 比如在 CD-ROMs 中， 因为通常， 在这种场景之下， 文件的大小都是已知的和不可改变的。<br>DVDs的使用上会更复杂一点， 因为通常一部90分钟的电影由4.5G大， 但是由于在 UDF(Universal Disk Format) 中， 采用一个 30bit 的数字来表示文件长度， 30位只能表示1GB的大小， 因此电影会被存储为几个1GB大小的文件， 每个文件是相邻的。 每个逻辑文件对应的物理块称为extents。</p>
+<h5 id="链表分配"><a href="#链表分配" class="headerlink" title="链表分配"></a>链表分配</h5><p>此方案中， 文件被存储为磁盘块的链表， 每个块的第一个字长被用来当作指针指向下一个块， 剩下的用来存储数据。<br>通过链表分配， 就不会产生磁盘碎片了， 浪费掉的仅仅是最后一个block未被填满的空间。 同时， 目录只需要存储第一个block的地址就行了。<br>不过， 随机访问的性能会变差， 读取中间的块需要从第一个块开始遍历。<br>由于每个block的头部使用了一个字长当作指针使用， 因此存储数据的容量就不在是2的整数次幂， 这会导致性能的下降。</p>
+<h5 id="在内存中采用表的链表分配"><a href="#在内存中采用表的链表分配" class="headerlink" title="在内存中采用表的链表分配"></a>在内存中采用表的链表分配</h5><p>这种方案就是将链表的地址存储在了内存的一个表当中， 我们假设用了个数组来存储这个表， 比如我们A文件所占用的块是4-&gt;7-&gt;2-&gt;10-&gt;12, 那么在这个数组中， a[4] = 7, a[7] = 2, a[2] = 10, a[10] = 12, a[12] = -1, 这个表称为 FAT(File Allocation Table)<br>通过这种组织方式， 磁盘上的 block 都用来存储数据了， 同时， 随机访问也更简单了， 因为内存的读取是要比磁盘读取快很多的。</p>
+<p>此方案的缺陷就是由于整个表需要一直保存与内存中， 如果磁盘很大的话，就需要很大的内存来存储这个表， 所以 FAT 方案不适合用在大磁盘上， 这个是 MS-DOS 最初的文件系统</p>
+<h5 id="I-nodes"><a href="#I-nodes" class="headerlink" title="I-nodes"></a>I-nodes</h5><p>这种方案为每个文件关联一个i节点(index-node), i节点中包含了文件属性和文件块的磁盘地址。通过给出的i节点，就可以找到存储文件的块。与跟在内存中存储一个链表信息的table相比，这个方案的好处在于内存中只需要存储打开文件的i节点。</p>
+<p><img src="http://7q5fny.com1.z0.glb.clouddn.com/blogi-nodes.jpg" alt="i节点的示例"></p>
+<p>如何处理每个文件需要可变动的文件块的数量，从上图来看就是i节点中的格子数量是变化的</p>
+<p>一种解决方案是如上图展示的那样，最后一项中不存储磁盘block的地址，存储一个包含了更多磁盘块的磁盘快的地址</p>
+<h4 id="目录的实现"><a href="#目录的实现" class="headerlink" title="目录的实现"></a>目录的实现</h4><p>目录实现的是当我们给出目录的路径的时候，操作系统需要路径对应的文件块，对于连续分配方案，需要找到的是文件的第一个块。对于链表方案需要找到第一个磁盘块的序号。对于i节点方案，需要找到文件对应的i节点序号。<br>目录系统的主要功能就是将 ASCII 的文件名对应到定位数据的信息</p>
+<p>属性的存储位置</p>
+<ol>
+<li>存在目录里，每个目录包含了一个列表，每项对应一个文件，包含了文件名，文件的属性和磁盘地址</li>
+<li>对于使用i节点的文件系统， 属性被存储在i节点中，因此目录中只存放文件名和i节点序号</li>
+</ol>
+<p>变长文件名的的实现</p>
+<ol>
+<li>限制最大长度，比如255字节，用0来标示结尾。</li>
+<li>将所有名字存在一起，文件入口处指定为文件名的位置，可以省略掉文件结尾标志。</li>
+</ol>
+<p>文件名的查找</p>
+<ol>
+<li>线性搜索</li>
+<li>hash表</li>
+<li>使用缓存</li>
+</ol>
+<h4 id="共享文件"><a href="#共享文件" class="headerlink" title="共享文件"></a>共享文件</h4><p>如果直接复制文件的磁盘地址，那么当一边发生改变时，另外一边是看不见的，因此通常由以下两种解决方法</p>
+<ol>
+<li>路径中保存的不是文件的磁盘快而是一段额外的信息，比如说i节点，共享文件的时候共享i节点就行</li>
+<li>通过在链接的路径下建立一个新文件，这个文件存储着被链接路径的路径名。这种称为符号链接(Symbolic linking), 也叫软链接</li>
+</ol>
+<h4 id="日志结构文件系统-Log-Structure-File-System"><a href="#日志结构文件系统-Log-Structure-File-System" class="headerlink" title="日志结构文件系统(Log-Structure File System)"></a>日志结构文件系统(Log-Structure File System)</h4><p>这种文件系统主要解决的问题是随着CPU越来越快，存储器越来越大，读文件的操作很多时候都是通过从缓存中读取，所以写操作成为了文件系统的瓶颈。同时，在频繁写入小文件的时候，由于要修改文件的i节点，路径的i节点，路径的磁盘块，导致了写小文件的时候大量时间消耗在了seek和旋转磁盘的操作上。</p>
+<p>LFS文件系统是将整个磁盘看做一个文件，所有写的操作先在内存中组成一个单一的segment，然后再将此segement写如磁盘log的最后面。这样的话，i节点也是散落在磁盘的各处的，所以使用了一个i节点map，通过i节点map来找到i节点。<br>为了防止文件未被写入磁盘系统就崩溃了，因此i节点是直接写入磁盘的。</p>
+<p>为了对磁盘进行整理和压缩，以便清楚已经删除的内容，写入新的内容，LFS文件系统会开启一个清理线程，此线程会扫描磁盘，从第一个segment开始，读取概要查看本segement中有哪些i节点和文件，然后根绝i节点映射表查看哪些i节点和文件还在使用，如果没由使用了就将信息丢弃，如果还在使用就更新i节点并重新写入memory中，然后将新的segement写入文件最后，并将之前的标记为未使用。</p>
+<h4 id="日志文件系统-Journaling-File-System"><a href="#日志文件系统-Journaling-File-System" class="headerlink" title="日志文件系统(Journaling File System)"></a>日志文件系统(Journaling File System)</h4><p>继承了日志结构文件系统的思想，增加在系统崩溃时的鲁棒性，先通过日志记录下将要进行的操作，如果系统崩溃了，可以通过日志继续完成操作。微软的NTFS，LINUX的ext3，ReiserFs和都采用了这种方式，OS X上也提供了日志文件系统作为可选项。</p>
+<h4 id="虚拟文件系统"><a href="#虚拟文件系统" class="headerlink" title="虚拟文件系统"></a>虚拟文件系统</h4><p>同一个操作系统上可能由不同的文件系统，Windows上使用 C：  D： 的方式来区分， UNIX把不同的文件系统倾向于将不同的文件抽象成统一的结构。<br>通常采用了VFS（virtual file system）来实现，抽象层向用户提供posix接口，供用户层进行调用，同事文件系统向抽象层注册一系列函数使得VFS能调用这些函数来完成磁盘的读取。</p>
+<p><img src="http://7q5fny.com1.z0.glb.clouddn.com/blog-VFS1.jpg" alt="虚拟文件系统"></p>
+<p><img src="http://7q5fny.com1.z0.glb.clouddn.com/blog-VFS2.jpg" alt="通过虚拟文件系统read的例子"></p>
+<h3 id="文件系统的管理和优化"><a href="#文件系统的管理和优化" class="headerlink" title="文件系统的管理和优化"></a>文件系统的管理和优化</h3><h4 id="磁盘空间管理"><a href="#磁盘空间管理" class="headerlink" title="磁盘空间管理"></a>磁盘空间管理</h4><h5 id="块的大小"><a href="#块的大小" class="headerlink" title="块的大小"></a>块的大小</h5><p>很显然，块的大小越大，那么浪费的磁盘空间越大，但是性能会越好</p>
+<h5 id="空闲块的跟踪"><a href="#空闲块的跟踪" class="headerlink" title="空闲块的跟踪"></a>空闲块的跟踪</h5><p>有两种方式来记录空闲快</p>
+<ul>
+<li>链表</li>
+<li>位图</li>
+</ul>
+<h4 id="文件系统备份"><a href="#文件系统备份" class="headerlink" title="文件系统备份"></a>文件系统备份</h4><h4 id="文件系统的一致性"><a href="#文件系统的一致性" class="headerlink" title="文件系统的一致性"></a>文件系统的一致性</h4><h4 id="文件系统的性能"><a href="#文件系统的性能" class="headerlink" title="文件系统的性能"></a>文件系统的性能</h4><h4 id="磁盘碎片的整理"><a href="#磁盘碎片的整理" class="headerlink" title="磁盘碎片的整理"></a>磁盘碎片的整理</h4>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/operating-system/" rel="tag"># operating system</a>
+          
+            <a href="/tags/file-system/" rel="tag"># file system</a>
+          
+            <a href="/tags/modern-operating-systems/" rel="tag"># modern operating systems</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/01/12/tcp-closed-without-fin/" rel="next" title="Linux 下 TCP 连接断开未发送 FIN">
+                <i class="fa fa-chevron-left"></i> Linux 下 TCP 连接断开未发送 FIN
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/02/29/book-list/" rel="prev" title="书单备忘">
+                书单备忘 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://7q5fny.com1.z0.glb.clouddn.com/bloghead.jpg"
+                alt="Xie Jun" />
+            
+              <p class="site-author-name" itemprop="name">Xie Jun</p>
+              <p class="site-description motion-element" itemprop="description">一个随便写写的博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">92</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#文件系统简介"><span class="nav-number">1.</span> <span class="nav-text">文件系统简介</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#为什么需要文件系统"><span class="nav-number">1.1.</span> <span class="nav-text">为什么需要文件系统</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#对长期存储器进行抽象"><span class="nav-number">1.2.</span> <span class="nav-text">对长期存储器进行抽象</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件"><span class="nav-number">2.</span> <span class="nav-text">文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#文件命名"><span class="nav-number">2.1.</span> <span class="nav-text">文件命名</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#文件结构"><span class="nav-number">2.2.</span> <span class="nav-text">文件结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#文件类型"><span class="nav-number">2.3.</span> <span class="nav-text">文件类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#文件存取"><span class="nav-number">2.4.</span> <span class="nav-text">文件存取</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#文件属性"><span class="nav-number">2.5.</span> <span class="nav-text">文件属性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#文件的操作"><span class="nav-number">2.6.</span> <span class="nav-text">文件的操作</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目录"><span class="nav-number">3.</span> <span class="nav-text">目录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一级目录系统与层次目录系统"><span class="nav-number">3.1.</span> <span class="nav-text">一级目录系统与层次目录系统</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#路径名"><span class="nav-number">3.2.</span> <span class="nav-text">路径名</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#目录的操作"><span class="nav-number">3.3.</span> <span class="nav-text">目录的操作</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件系统的实现"><span class="nav-number">4.</span> <span class="nav-text">文件系统的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#文件系统的布局"><span class="nav-number">4.1.</span> <span class="nav-text">文件系统的布局</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#文件的实现"><span class="nav-number">4.2.</span> <span class="nav-text">文件的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#连续分配"><span class="nav-number">4.2.1.</span> <span class="nav-text">连续分配</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#链表分配"><span class="nav-number">4.2.2.</span> <span class="nav-text">链表分配</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#在内存中采用表的链表分配"><span class="nav-number">4.2.3.</span> <span class="nav-text">在内存中采用表的链表分配</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#I-nodes"><span class="nav-number">4.2.4.</span> <span class="nav-text">I-nodes</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#目录的实现"><span class="nav-number">4.3.</span> <span class="nav-text">目录的实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#共享文件"><span class="nav-number">4.4.</span> <span class="nav-text">共享文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#日志结构文件系统-Log-Structure-File-System"><span class="nav-number">4.5.</span> <span class="nav-text">日志结构文件系统(Log-Structure File System)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#日志文件系统-Journaling-File-System"><span class="nav-number">4.6.</span> <span class="nav-text">日志文件系统(Journaling File System)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#虚拟文件系统"><span class="nav-number">4.7.</span> <span class="nav-text">虚拟文件系统</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件系统的管理和优化"><span class="nav-number">5.</span> <span class="nav-text">文件系统的管理和优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#磁盘空间管理"><span class="nav-number">5.1.</span> <span class="nav-text">磁盘空间管理</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#块的大小"><span class="nav-number">5.1.1.</span> <span class="nav-text">块的大小</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#空闲块的跟踪"><span class="nav-number">5.1.2.</span> <span class="nav-text">空闲块的跟踪</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#文件系统备份"><span class="nav-number">5.2.</span> <span class="nav-text">文件系统备份</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#文件系统的一致性"><span class="nav-number">5.3.</span> <span class="nav-text">文件系统的一致性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#文件系统的性能"><span class="nav-number">5.4.</span> <span class="nav-text">文件系统的性能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#磁盘碎片的整理"><span class="nav-number">5.5.</span> <span class="nav-text">磁盘碎片的整理</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Xie Jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

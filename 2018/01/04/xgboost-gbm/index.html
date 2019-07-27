@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="oh7q5wMOdjRcmVFjX93pPiUFrQVKtcRZn8klDgVplII" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="机器学习,machine learning,xgboost,tree,gbdt,gbm," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="GBLinearCoordinate DescentCoordinate Descent 是一种优化算法，主要的思想是固定其他的坐标方向，先将其中一个左边方向优化到目标函数的最小值，然后再重新选取坐标轴，重复进行优化，直到优化到收敛，这种方法对于可导不可导的都可以进行优化。 Stochastic Coordinate ">
+<meta name="keywords" content="机器学习,machine learning,xgboost,tree,gbdt,gbm">
+<meta property="og:type" content="article">
+<meta property="og:title" content="XGBoost 源码阅读gbm模块">
+<meta property="og:url" content="http://xiangruix.com/2018/01/04/xgboost-gbm/index.html">
+<meta property="og:site_name" content="Learning and Coding">
+<meta property="og:description" content="GBLinearCoordinate DescentCoordinate Descent 是一种优化算法，主要的思想是固定其他的坐标方向，先将其中一个左边方向优化到目标函数的最小值，然后再重新选取坐标轴，重复进行优化，直到优化到收敛，这种方法对于可导不可导的都可以进行优化。 Stochastic Coordinate Descent对于目标函数 $$\mathop {min}_{w \in R^d">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://7q5fny.com1.z0.glb.clouddn.com/scd.jpg">
+<meta property="og:image" content="http://7q5fny.com1.z0.glb.clouddn.com/shooting.png">
+<meta property="og:image" content="http://7q5fny.com1.z0.glb.clouddn.com/shotgun.png">
+<meta property="og:updated_time" content="2019-07-27T08:19:37.117Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="XGBoost 源码阅读gbm模块">
+<meta name="twitter:description" content="GBLinearCoordinate DescentCoordinate Descent 是一种优化算法，主要的思想是固定其他的坐标方向，先将其中一个左边方向优化到目标函数的最小值，然后再重新选取坐标轴，重复进行优化，直到优化到收敛，这种方法对于可导不可导的都可以进行优化。 Stochastic Coordinate Descent对于目标函数 $$\mathop {min}_{w \in R^d">
+<meta name="twitter:image" content="http://7q5fny.com1.z0.glb.clouddn.com/scd.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://xiangruix.com/2018/01/04/xgboost-gbm/"/>
+
+
+
+
+
+  <title>XGBoost 源码阅读gbm模块 | Learning and Coding</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?ea5bfefdcd245de6354e704415c17ae7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Learning and Coding</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'tP3YmrvjTZUH813-kAhg','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xiangruix.com/2018/01/04/xgboost-gbm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Xie Jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://7q5fny.com1.z0.glb.clouddn.com/bloghead.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Learning and Coding">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">XGBoost 源码阅读gbm模块</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-04T23:15:04+00:00">
+                2018-01-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/machine-learning/" itemprop="url" rel="index">
+                    <span itemprop="name">machine learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="GBLinear"><a href="#GBLinear" class="headerlink" title="GBLinear"></a>GBLinear</h2><h3 id="Coordinate-Descent"><a href="#Coordinate-Descent" class="headerlink" title="Coordinate Descent"></a>Coordinate Descent</h3><p>Coordinate Descent 是一种优化算法，主要的思想是固定其他的坐标方向，先将其中一个左边方向优化到目标函数的最小值，然后再重新选取坐标轴，重复进行优化，直到优化到收敛，这种方法对于可导不可导的都可以进行优化。</p>
+<h3 id="Stochastic-Coordinate-Descent"><a href="#Stochastic-Coordinate-Descent" class="headerlink" title="Stochastic Coordinate Descent"></a>Stochastic Coordinate Descent</h3><p>对于目标函数</p>
+<p>$$<br>\mathop {min}_{w \in R^d} \frac{1}{m} \sum_{i=1}^m L(\langle w, x_i \rangle, y_i) + \lambda {||w||}_1<br>$$</p>
+<p>将其中的内容简写一下</p>
+<p>$$<br>C(w) \equiv \frac{1}{m} \sum_{i=1}^m L(\langle w, x_i \rangle, y_i)<br>$$</p>
+<p>$$<br>P(w) \equiv \frac{1}{m} \sum_{i=1}^m L(\langle w, x_i \rangle, y_i) + \lambda {||w||}_1<br>$$</p>
+<p>SCD 的其中一种实现如下</p>
+<p><img src="http://7q5fny.com1.z0.glb.clouddn.com/scd.jpg" alt=""></p>
+<p>其中 $g_j=(\Delta C(w))_j$, $\beta$ 是loss的二阶导数的上界</p>
+<p><img src="http://7q5fny.com1.z0.glb.clouddn.com/shooting.png" alt=""></p>
+<p><img src="http://7q5fny.com1.z0.glb.clouddn.com/shotgun.png" alt=""></p>
+<h3 id="Elastic-Net"><a href="#Elastic-Net" class="headerlink" title="Elastic Net"></a>Elastic Net</h3><h4 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h4><p>elastice net 是同时使用 $L_1$ 范数和 $L_2$范数正则项的一种线性模型, xgboost里面的gblinear就是实现了使用坐标下降算法来优化的elastice net</p>
+<p>$$<br>obj =  \sum_{i=1}^m l(\langle w, x_i \rangle, y_i) + \lambda_2 {||w||}_2 + \lambda_1 {||w||}_1<br>$$</p>
+<p>其中</p>
+<p>$$<br>\hat{y_i} = \langle w, x_i \rangle = w_0 + w_1 x_1 + w_2 x_2 + w_3 x_4 + ….<br>$$</p>
+<p>那么求一下其中的 $g_i$ 和 $\beta$</p>
+<p>对于 $w_0$</p>
+<p>$$<br>\frac{\partial obj}{\partial w_0} = \sum_{i=1}^m l^\prime(\hat{y_i}, y_i) + 2\lambda_2 w_0<br>$$</p>
+<p>$$<br>\frac{\partial^2 obj}{\partial w_0^2} = \sum_{i=1}^m l^{\prime \prime}(\hat{y_i}, y_i) + 2\lambda_2<br>$$</p>
+<p>对于 $w_j$</p>
+<p>$$<br>\frac{\partial obj}{\partial w_j} = \sum_{i=1}^m l^\prime(\hat{y_i}, y_i) x_j + 2\lambda_2 w_j<br>$$</p>
+<p>$$<br>\frac{\partial^2 obj}{\partial w_j^2} = \sum_{i=1}^m l^{\prime \prime}(\hat{y_i}, y_i) x_j^2  + 2\lambda_2<br>$$</p>
+<p>根据之前的算法描述，每次迭代的更新值</p>
+<p>对于 $w_0$</p>
+<p>$$<br>\delta w_0 = - \frac{\sum_{i=1}^m l^\prime(\hat{y_i}, y_i) + 2\lambda_2 w_0}{\sum_{i=1}^m l^{\prime \prime}(\hat{y_i}, y_i) + 2\lambda_2}<br>$$</p>
+<p>对于 $w_j$</p>
+<p>当 $w_j &gt; \frac{\sum_{i=1}^m l^\prime(\hat{y_i}, y_i) x_j + 2\lambda_2 w_j}{\sum_{i=1}^m l^{\prime \prime}(\hat{y_i}, y_i) x_j^2  + 2\lambda_2}$</p>
+<p>$$<br>\delta w_j = - \frac{\sum_{i=1}^m l^\prime(\hat{y_i}, y_i) x_j + 2\lambda_2 w_j + \lambda_1}{\sum_{i=1}^m l^{\prime \prime}(\hat{y_i}, y_i) x_j^2  + 2\lambda_2}<br>$$</p>
+<p>当小于</p>
+<p>$$<br>\delta w_j = - \frac{\sum_{i=1}^m l^\prime(\hat{y_i}, y_i) x_j + 2\lambda_2 w_j - \lambda_1}{\sum_{i=1}^m l^{\prime \prime}(\hat{y_i}, y_i) x_j^2  + 2\lambda_2}<br>$$</p>
+<p>描述一下使用shotgun 的elastic net, 为了和原文对照，使用跟代码里面相同的变量来描述</p>
+<p>$L_2$ : reg_lambda</p>
+<p>$L_1$ : reg_alpha</p>
+<p>针对偏置的 $L_2$ : reg_lambda_bias</p>
+<p>针对偏置的更新算法:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">对所有样本:</span><br><span class="line">    sum_grad: 样本的g的和</span><br><span class="line">    sun_hess: 样本的h的和</span><br><span class="line">delta_w = - (sum_grad + reg_lambda_bias * w ) / (sum_hess + reg_lambda_bias)</span><br><span class="line">w = w + delta_w</span><br><span class="line">对所有的样本:</span><br><span class="line">    更新样本的梯度 g = h * dw</span><br></pre></td></tr></table></figure>
+<p>针对$w_j$的更新算法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">对所有的样本</span><br><span class="line">    sum_grad = sum_grad + g * v</span><br><span class="line">    sum_hess = sum_hess + h * v *v</span><br><span class="line">if(sum_hess &lt; eps) </span><br><span class="line">    delta_w = 0</span><br><span class="line">if(w &gt; (sum_grad + reg_lambda * w)/ (sum_hess + reg_lambda))</span><br><span class="line">    delta_w = max(-(sum_grad + reg_lambda*w + reg_alpha)/ (sum_hess + reg_lambda), -w)</span><br><span class="line">else </span><br><span class="line">    delta_w = min(-(sum_grad + reg_lambda*w - reg_alpha)/ (sum_hess + reg_lambda), -w)</span><br><span class="line">w = w + delta_w</span><br><span class="line"></span><br><span class="line">对所有的样本</span><br><span class="line">    更新 g = h * v * dw</span><br></pre></td></tr></table></figure>
+<h4 id="预测"><a href="#预测" class="headerlink" title="预测"></a>预测</h4><p>由于是线性模型，预测很简单，就是把系数和特征值乘起来相加就行了</p>
+<h2 id="GBTree"><a href="#GBTree" class="headerlink" title="GBTree"></a>GBTree</h2><p>GBTree 在这一部分的代码很简单，根据数据集产生新的树加入模型中。</p>
+<h2 id="Dart"><a href="#Dart" class="headerlink" title="Dart"></a>Dart</h2><p>Dart 是在GBTree的基础上增加了drop机制，在没每轮迭代的时候，会随机将一些树丢掉，然后使用剩下的树来生成新的树</p>
+<p>假设在第m轮训练，选择了k颗树进行丢弃</p>
+<p>$D$表示要丢掉的树</p>
+<p>$$<br>D=\sum_{i \in K} F_i<br>$$</p>
+<p>$F_m$ 表示新增加的树</p>
+<p>$$<br>F_m=\eta \tilde{F_m}<br>$$</p>
+<p>目标函数可以写作</p>
+<p>$$<br>obj=\sum_{j=1}^{n}L(y_j, \hat{y}_{j}^{m-1}-D_j+\tilde{F_m}) + \Omega(\tilde{F_m})<br>$$</p>
+<p>由于系数的不一致，需要对系数进行调整</p>
+<p>$$<br>\hat{y}_j^m=\sum_{i \notin K}F_i + a(\sum_{i \in k} F_i + bF_m)<br>$$</p>
+<p>归一化</p>
+<p>有两种归一化的方式，通过参数可以进行设置</p>
+<p>tree: 新增加的树的权重与被丢弃的每一颗树的权重相等</p>
+<p>$b$取$\frac{1}{k}$</p>
+<p>$$<br>a(\sum_{i \in k} F_i + \frac{1}{k}F_m) = a(\sum_{i \in k} F_i + \frac{\eta}{k}\tilde{F}_m)<br>$$</p>
+<p>由于 $\tilde{F}_m$ 是在去掉$D$的基础上学出来的，那么 $\tilde{F}_m$ 的值应该是和$D$差不多的, 同时在将新的树和丢掉的树放回去的时候，应该保持权重也基本为$D$, 可以得到</p>
+<p>$$<br>a(1+\frac{\eta}{k})D = D<br>$$</p>
+<p>可以得到 </p>
+<p>$$<br>a=\frac{k}{k+\eta}<br>$$</p>
+<p>forest: 新增加的树的权重与被丢掉的树的和相等</p>
+<p>同样可以得到</p>
+<p>$$<br>a=\frac{1}{1+\eta}<br>$$</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/机器学习/" rel="tag"># 机器学习</a>
+          
+            <a href="/tags/machine-learning/" rel="tag"># machine learning</a>
+          
+            <a href="/tags/xgboost/" rel="tag"># xgboost</a>
+          
+            <a href="/tags/tree/" rel="tag"># tree</a>
+          
+            <a href="/tags/gbdt/" rel="tag"># gbdt</a>
+          
+            <a href="/tags/gbm/" rel="tag"># gbm</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/30/xgboost-intro/" rel="next" title="xgboost 学习笔记 - 原理简介">
+                <i class="fa fa-chevron-left"></i> xgboost 学习笔记 - 原理简介
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/20/tensorflow-inputdata/" rel="prev" title="tensorflow 数据读取">
+                tensorflow 数据读取 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://7q5fny.com1.z0.glb.clouddn.com/bloghead.jpg"
+                alt="Xie Jun" />
+            
+              <p class="site-author-name" itemprop="name">Xie Jun</p>
+              <p class="site-description motion-element" itemprop="description">一个随便写写的博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">92</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#GBLinear"><span class="nav-number">1.</span> <span class="nav-text">GBLinear</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Coordinate-Descent"><span class="nav-number">1.1.</span> <span class="nav-text">Coordinate Descent</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Stochastic-Coordinate-Descent"><span class="nav-number">1.2.</span> <span class="nav-text">Stochastic Coordinate Descent</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Elastic-Net"><span class="nav-number">1.3.</span> <span class="nav-text">Elastic Net</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#更新"><span class="nav-number">1.3.1.</span> <span class="nav-text">更新</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#预测"><span class="nav-number">1.3.2.</span> <span class="nav-text">预测</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GBTree"><span class="nav-number">2.</span> <span class="nav-text">GBTree</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dart"><span class="nav-number">3.</span> <span class="nav-text">Dart</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Xie Jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

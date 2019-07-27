@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="oh7q5wMOdjRcmVFjX93pPiUFrQVKtcRZn8klDgVplII" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="nlp,bert,attention,self attention," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="使用的图片来自于  http://jalammar.github.io/illustrated-transformer/   1from comment_pretrain.utils.bert_util import CommentBertModelWrapper, GoogleBertModelWrapper 读入一">
+<meta name="keywords" content="nlp,bert,attention,self attention">
+<meta property="og:type" content="article">
+<meta property="og:title" content="bert">
+<meta property="og:url" content="http://xiangruix.com/2019/07/27/bert/index.html">
+<meta property="og:site_name" content="Learning and Coding">
+<meta property="og:description" content="使用的图片来自于  http://jalammar.github.io/illustrated-transformer/   1from comment_pretrain.utils.bert_util import CommentBertModelWrapper, GoogleBertModelWrapper 读入一个已经训练好的bert12model_path=&quot;/mnt/comment/mo">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://jalammar.github.io/images/t/transformer_resideual_layer_norm.png">
+<meta property="og:image" content="http://jalammar.github.io/images/t/transformer_self_attention_vectors.png">
+<meta property="og:image" content="http://jalammar.github.io/images/t/transformer_self_attention_score.png">
+<meta property="og:image" content="http://jalammar.github.io/images/t/self-attention_softmax.png">
+<meta property="og:image" content="http://jalammar.github.io/images/t/self-attention-output.png">
+<meta property="og:updated_time" content="2019-07-27T08:19:37.113Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="bert">
+<meta name="twitter:description" content="使用的图片来自于  http://jalammar.github.io/illustrated-transformer/   1from comment_pretrain.utils.bert_util import CommentBertModelWrapper, GoogleBertModelWrapper 读入一个已经训练好的bert12model_path=&quot;/mnt/comment/mo">
+<meta name="twitter:image" content="http://jalammar.github.io/images/t/transformer_resideual_layer_norm.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://xiangruix.com/2019/07/27/bert/"/>
+
+
+
+
+
+  <title>bert | Learning and Coding</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?ea5bfefdcd245de6354e704415c17ae7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Learning and Coding</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'tP3YmrvjTZUH813-kAhg','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xiangruix.com/2019/07/27/bert/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Xie Jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://7q5fny.com1.z0.glb.clouddn.com/bloghead.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Learning and Coding">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">bert</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-27T15:52:02+00:00">
+                2019-07-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/machine-learning/" itemprop="url" rel="index">
+                    <span itemprop="name">machine learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>使用的图片来自于  <a href="http://jalammar.github.io/illustrated-transformer/" target="_blank" rel="noopener">http://jalammar.github.io/illustrated-transformer/</a>  </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> comment_pretrain.utils.bert_util <span class="keyword">import</span> CommentBertModelWrapper, GoogleBertModelWrapper</span><br></pre></td></tr></table></figure>
+<h1 id="读入一个已经训练好的bert"><a href="#读入一个已经训练好的bert" class="headerlink" title="读入一个已经训练好的bert"></a>读入一个已经训练好的bert</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">model_path=<span class="string">"/mnt/comment/model/bert_models/en_bert_v0"</span></span><br><span class="line">model = CommentBertModelWrapper(model_path)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">config = model.model.config</span><br><span class="line">print(config)</span><br></pre></td></tr></table></figure>
+<pre><code>{
+  &quot;attention_probs_dropout_prob&quot;: 0.1,
+  &quot;hidden_act&quot;: &quot;gelu&quot;,
+  &quot;hidden_dropout_prob&quot;: 0.1,
+  &quot;hidden_size&quot;: 256,
+  &quot;initializer_range&quot;: 0.02,
+  &quot;intermediate_size&quot;: 1024,
+  &quot;layer_norm_eps&quot;: 1e-12,
+  &quot;max_position_embeddings&quot;: 256,
+  &quot;num_attention_heads&quot;: 8,
+  &quot;num_hidden_layers&quot;: 8,
+  &quot;type_vocab_size&quot;: 2,
+  &quot;vocab_size&quot;: 50100
+}
+</code></pre><p>vocab_size: 词表的大小<br>type_vocab_size: token的type，因为是两句话拼接起来的，用这个来区分是第一句话还是第二句话<br>hidden_size: 隐层的大小，token的embedding，position的embedding，token_type的embedding</p>
+<p>以下是一整个bert的模型结构：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">model.model.bert</span><br></pre></td></tr></table></figure>
+<pre><code>BertModel(
+  (embeddings): BertEmbeddings(
+    (word_embeddings): Embedding(50100, 256, padding_idx=0)
+    (position_embeddings): Embedding(256, 256)
+    (token_type_embeddings): Embedding(2, 256)
+    (LayerNorm): BertLayerNorm()
+    (dropout): Dropout(p=0.1)
+  )
+  (encoder): BertEncoder(
+    (layer): ModuleList(
+      (0): BertLayer(
+        (attention): BertAttention(
+          (self): BertSelfAttention(
+            (query): Linear(in_features=256, out_features=256, bias=True)
+            (key): Linear(in_features=256, out_features=256, bias=True)
+            (value): Linear(in_features=256, out_features=256, bias=True)
+            (dropout): Dropout(p=0.1)
+          )
+          (output): BertSelfOutput(
+            (dense): Linear(in_features=256, out_features=256, bias=True)
+            (LayerNorm): BertLayerNorm()
+            (dropout): Dropout(p=0.1)
+          )
+        )
+        (intermediate): BertIntermediate(
+          (dense): Linear(in_features=256, out_features=1024, bias=True)
+        )
+        (output): BertOutput(
+          (dense): Linear(in_features=1024, out_features=256, bias=True)
+          (LayerNorm): BertLayerNorm()
+          (dropout): Dropout(p=0.1)
+        )
+      )
+      (1): BertLayer(
+        (attention): BertAttention(
+          (self): BertSelfAttention(
+            (query): Linear(in_features=256, out_features=256, bias=True)
+            (key): Linear(in_features=256, out_features=256, bias=True)
+            (value): Linear(in_features=256, out_features=256, bias=True)
+            (dropout): Dropout(p=0.1)
+          )
+          (output): BertSelfOutput(
+            (dense): Linear(in_features=256, out_features=256, bias=True)
+            (LayerNorm): BertLayerNorm()
+            (dropout): Dropout(p=0.1)
+          )
+        )
+        (intermediate): BertIntermediate(
+          (dense): Linear(in_features=256, out_features=1024, bias=True)
+        )
+        (output): BertOutput(
+          (dense): Linear(in_features=1024, out_features=256, bias=True)
+          (LayerNorm): BertLayerNorm()
+          (dropout): Dropout(p=0.1)
+        )
+      )
+      (2): BertLayer(
+        (attention): BertAttention(
+          (self): BertSelfAttention(
+            (query): Linear(in_features=256, out_features=256, bias=True)
+            (key): Linear(in_features=256, out_features=256, bias=True)
+            (value): Linear(in_features=256, out_features=256, bias=True)
+            (dropout): Dropout(p=0.1)
+          )
+          (output): BertSelfOutput(
+            (dense): Linear(in_features=256, out_features=256, bias=True)
+            (LayerNorm): BertLayerNorm()
+            (dropout): Dropout(p=0.1)
+          )
+        )
+        (intermediate): BertIntermediate(
+          (dense): Linear(in_features=256, out_features=1024, bias=True)
+        )
+        (output): BertOutput(
+          (dense): Linear(in_features=1024, out_features=256, bias=True)
+          (LayerNorm): BertLayerNorm()
+          (dropout): Dropout(p=0.1)
+        )
+      )
+      (3): BertLayer(
+        (attention): BertAttention(
+          (self): BertSelfAttention(
+            (query): Linear(in_features=256, out_features=256, bias=True)
+            (key): Linear(in_features=256, out_features=256, bias=True)
+            (value): Linear(in_features=256, out_features=256, bias=True)
+            (dropout): Dropout(p=0.1)
+          )
+          (output): BertSelfOutput(
+            (dense): Linear(in_features=256, out_features=256, bias=True)
+            (LayerNorm): BertLayerNorm()
+            (dropout): Dropout(p=0.1)
+          )
+        )
+        (intermediate): BertIntermediate(
+          (dense): Linear(in_features=256, out_features=1024, bias=True)
+        )
+        (output): BertOutput(
+          (dense): Linear(in_features=1024, out_features=256, bias=True)
+          (LayerNorm): BertLayerNorm()
+          (dropout): Dropout(p=0.1)
+        )
+      )
+      (4): BertLayer(
+        (attention): BertAttention(
+          (self): BertSelfAttention(
+            (query): Linear(in_features=256, out_features=256, bias=True)
+            (key): Linear(in_features=256, out_features=256, bias=True)
+            (value): Linear(in_features=256, out_features=256, bias=True)
+            (dropout): Dropout(p=0.1)
+          )
+          (output): BertSelfOutput(
+            (dense): Linear(in_features=256, out_features=256, bias=True)
+            (LayerNorm): BertLayerNorm()
+            (dropout): Dropout(p=0.1)
+          )
+        )
+        (intermediate): BertIntermediate(
+          (dense): Linear(in_features=256, out_features=1024, bias=True)
+        )
+        (output): BertOutput(
+          (dense): Linear(in_features=1024, out_features=256, bias=True)
+          (LayerNorm): BertLayerNorm()
+          (dropout): Dropout(p=0.1)
+        )
+      )
+      (5): BertLayer(
+        (attention): BertAttention(
+          (self): BertSelfAttention(
+            (query): Linear(in_features=256, out_features=256, bias=True)
+            (key): Linear(in_features=256, out_features=256, bias=True)
+            (value): Linear(in_features=256, out_features=256, bias=True)
+            (dropout): Dropout(p=0.1)
+          )
+          (output): BertSelfOutput(
+            (dense): Linear(in_features=256, out_features=256, bias=True)
+            (LayerNorm): BertLayerNorm()
+            (dropout): Dropout(p=0.1)
+          )
+        )
+        (intermediate): BertIntermediate(
+          (dense): Linear(in_features=256, out_features=1024, bias=True)
+        )
+        (output): BertOutput(
+          (dense): Linear(in_features=1024, out_features=256, bias=True)
+          (LayerNorm): BertLayerNorm()
+          (dropout): Dropout(p=0.1)
+        )
+      )
+      (6): BertLayer(
+        (attention): BertAttention(
+          (self): BertSelfAttention(
+            (query): Linear(in_features=256, out_features=256, bias=True)
+            (key): Linear(in_features=256, out_features=256, bias=True)
+            (value): Linear(in_features=256, out_features=256, bias=True)
+            (dropout): Dropout(p=0.1)
+          )
+          (output): BertSelfOutput(
+            (dense): Linear(in_features=256, out_features=256, bias=True)
+            (LayerNorm): BertLayerNorm()
+            (dropout): Dropout(p=0.1)
+          )
+        )
+        (intermediate): BertIntermediate(
+          (dense): Linear(in_features=256, out_features=1024, bias=True)
+        )
+        (output): BertOutput(
+          (dense): Linear(in_features=1024, out_features=256, bias=True)
+          (LayerNorm): BertLayerNorm()
+          (dropout): Dropout(p=0.1)
+        )
+      )
+      (7): BertLayer(
+        (attention): BertAttention(
+          (self): BertSelfAttention(
+            (query): Linear(in_features=256, out_features=256, bias=True)
+            (key): Linear(in_features=256, out_features=256, bias=True)
+            (value): Linear(in_features=256, out_features=256, bias=True)
+            (dropout): Dropout(p=0.1)
+          )
+          (output): BertSelfOutput(
+            (dense): Linear(in_features=256, out_features=256, bias=True)
+            (LayerNorm): BertLayerNorm()
+            (dropout): Dropout(p=0.1)
+          )
+        )
+        (intermediate): BertIntermediate(
+          (dense): Linear(in_features=256, out_features=1024, bias=True)
+        )
+        (output): BertOutput(
+          (dense): Linear(in_features=1024, out_features=256, bias=True)
+          (LayerNorm): BertLayerNorm()
+          (dropout): Dropout(p=0.1)
+        )
+      )
+    )
+  )
+  (pooler): BertPooler(
+    (dense): Linear(in_features=256, out_features=256, bias=True)
+    (activation): Tanh()
+  )
+)
+</code></pre><h2 id="输入处理"><a href="#输入处理" class="headerlink" title="输入处理"></a>输入处理</h2><p>首先文本需要转化为token， token需要通过词典转换为id</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">text = <span class="string">"you are soooocute"</span></span><br><span class="line">print(<span class="string">f"原始文本:    <span class="subst">&#123;text&#125;</span>"</span>)</span><br><span class="line">print(<span class="string">f"转化为token: <span class="subst">&#123;model.tokenizer.encode_pieces(text)&#125;</span>"</span>)</span><br><span class="line">print(<span class="string">f"转化为id   : <span class="subst">&#123;model.tokenizer.tokenize(text)&#125;</span> "</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>原始文本:    you are soooocute
+转化为token: [&apos;you&apos;, &apos;are&apos;, &apos;soooo&apos;, &apos;##cute&apos;]
+转化为id   : [12221, 12323, 12856, 17824] 
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">input_ids, segment_ids, input_masked = model.covert_text_to_features(text)</span><br><span class="line">print(<span class="string">f"token ids: <span class="subst">&#123;input_ids&#125;</span>"</span>)</span><br><span class="line">print(<span class="string">f"token types: <span class="subst">&#123;segment_ids&#125;</span>"</span>)</span><br><span class="line">input_ids = torch.tensor(np.array([input_ids]))</span><br><span class="line">segment_ids = torch.tensor(np.array([segment_ids]))</span><br><span class="line">input_masked = torch.tensor(np.array([input_masked]))</span><br><span class="line">print(<span class="string">f"input_ids的shape: <span class="subst">&#123;input_ids.shape&#125;</span>"</span>)</span><br><span class="line">print(<span class="string">f"token type的shape: <span class="subst">&#123;segment_ids.shape&#125;</span>"</span>)</span><br><span class="line">print(<span class="string">f"mask的shape: <span class="subst">&#123;input_masked.shape&#125;</span>"</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>token ids: [3, 12221, 12323, 12856, 17824, 2]
+token types: [0, 0, 0, 0, 0, 0]
+input_ids的shape: torch.Size([1, 6])
+token type的shape: torch.Size([1, 6])
+mask的shape: torch.Size([1, 6])
+</code></pre><h1 id="模型"><a href="#模型" class="headerlink" title="模型"></a>模型</h1><h2 id="embedding"><a href="#embedding" class="headerlink" title="embedding"></a>embedding</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">words_embeddings = self.word_embeddings(input_ids)</span><br><span class="line">position_embeddings = self.position_embeddings(position_ids)</span><br><span class="line">token_type_embeddings = self.token_type_embeddings(token_type_ids)</span><br><span class="line"></span><br><span class="line">embeddings = words_embeddings + position_embeddings + token_type_embeddings</span><br><span class="line">embeddings = self.LayerNorm(embeddings)</span><br><span class="line">embeddings = self.dropout(embeddings)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">embedding_output = model.model.bert.embeddings(input_ids, segment_ids)</span><br><span class="line">print(<span class="string">f"对输入id取embeding <span class="subst">&#123;model.model.bert.embeddings(input_ids, segment_ids).shape&#125;</span>"</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>对输入id取embeding torch.Size([1, 6, 256])
+</code></pre><h2 id="encoder"><a href="#encoder" class="headerlink" title="encoder"></a>encoder</h2><p>对输入做attention，然后一层全连接，然后将attention的输出和全连接的输出加在一起再过一层全连接，然后normalize，输出跟输入相同的shape, 这个就是一个encoder，然后这个过程重复多次，这个对应的就是参数中的 num_hidden_layers </p>
+<p><img src="http://jalammar.github.io/images/t/transformer_resideual_layer_norm.png" alt=""></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">attention_output = self.attention(hidden_states, attention_mask)</span><br><span class="line">intermediate_output = self.intermediate(attention_output)</span><br><span class="line">layer_output = self.output(intermediate_output, attention_output)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">attention_mask = input_masked.unsqueeze(<span class="number">1</span>).unsqueeze(<span class="number">2</span>).to(dtype=next(model.model.parameters()).dtype)</span><br><span class="line">encoder0_output = model.model.bert.encoder.layer[<span class="number">0</span>](embedding_output, attention_mask)</span><br><span class="line">print(<span class="string">f"经过一层encoder的shape <span class="subst">&#123;encoder0_output.shape&#125;</span>"</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>经过一层encoder的shape torch.Size([1, 6, 256])
+</code></pre><h3 id="attention"><a href="#attention" class="headerlink" title="attention"></a>attention</h3><h4 id="self-attention"><a href="#self-attention" class="headerlink" title="self attention"></a>self attention</h4><p><img src="http://jalammar.github.io/images/t/transformer_self_attention_vectors.png" alt=""></p>
+<p><img src="http://jalammar.github.io/images/t/transformer_self_attention_score.png" alt=""></p>
+<p><img src="http://jalammar.github.io/images/t/self-attention_softmax.png" alt=""></p>
+<p><img src="http://jalammar.github.io/images/t/self-attention-output.png" alt=""></p>
+<p>将单个attention写成矩阵形式</p>
+<p>输入 $x \in R^{n*h}$ 每一行是一个token对应的向量</p>
+<p>$Q$ 矩阵 $Q \in R^{h * \hat{h}}$ ,  $K$ 矩阵 $K \in R^{h * \hat{h}}$ ,  $V$ 矩阵 $V \in R^{h*\hat{h}}$ 这块输出长度取的 $\hat{h}$ 是 h / num_attention_head, 目的是为了在经过多头multihead attention之后每个token对应向量的长度跟之前是一样的。</p>
+<p>然后通过计算 $q$ $k$ $v$</p>
+<p>$q=Qx \in R^{n*\hat{h}}$  每行是一个token对应的向量</p>
+<p>$k=Kx \in R^{n*\hat{h}}$  每行是一个token对应的向量</p>
+<p>$v=Vx \in R^{n*\hat{h}}$  每行是一个token对应的向量</p>
+<p>然后计算attention score，即某一个位置对其他每个位置的分数</p>
+<p>$score = q * k^T  \in R^{n * n} $ 这个地方第一行是每个token对应的k和第一个token对应的q计算出来的score，$score$ 第一行的第一维需要取乘以第一个token对应的v，第二维度乘以第二个token对应的v，第三维乘以第三个token对应的v 写出来就是<br>$$<br>z_{1,:} = s_{11}  v_{1,:} + s_{12}  v_{2,:} + s_{13}  v_{3,:} + s_{14}  v_{4,:}<br>$$</p>
+<p>$$<br>z_{2,:} = s_{21}  v_{1,:} + s_{22}  v_{2,:} + s_{23}  v_{3,:} + s_{24} v_{4,:}<br>$$</p>
+<p>相当于第一个元素就是 </p>
+<p>$$<br>z_{11} = s_{11}  v_{11} + s_{12} v_{21} + s_{13}v_{31} + s_{14}v_{41}<br>$$</p>
+<p>写成矩阵形式就是 $SCORE*V$</p>
+<p>完整的就是 </p>
+<p>$$<br>Z=softmax(\frac{Q*K^T}{\sqrt{d_k}})V<br>$$</p>
+<p>$$<br>Z \in R^{n*\hat{h}}<br>$$</p>
+<p>multihead attention的做法就是相当于有多个$Q$ $K$ $V$ 分别去做上面的计算，计算出来 多个 $Z$ ，实际上就是使用列数更多的$Q$ $K$ $V$就实现列这个效果，计算的时候通过维度变换可以实现. </p>
+<p>经过attention计算后的token的向量会和输入concat，实现一个短路的操作，然后再做normalize再进行后续操作</p>
+<p>因为经过短路操作和multi-head之后向量的宽度就发生变化来，不再是$h$了，为了能完全复用的送如下一层(同时也能表达更多的信息)，将维度映射回h。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BertSelfAttention</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, config)</span>:</span></span><br><span class="line">        super(BertSelfAttention, self).__init__()</span><br><span class="line">        self.num_attention_heads = config.num_attention_heads</span><br><span class="line">        self.attention_head_size = int(config.hidden_size / config.num_attention_heads)</span><br><span class="line">        self.all_head_size = self.num_attention_heads * self.attention_head_size</span><br><span class="line"></span><br><span class="line">        self.query = nn.Linear(config.hidden_size, self.all_head_size)</span><br><span class="line">        self.key = nn.Linear(config.hidden_size, self.all_head_size)</span><br><span class="line">        self.value = nn.Linear(config.hidden_size, self.all_head_size)</span><br><span class="line"></span><br><span class="line">        self.dropout = nn.Dropout(config.attention_probs_dropout_prob)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">transpose_for_scores</span><span class="params">(self, x)</span>:</span></span><br><span class="line">        new_x_shape = x.size()[:<span class="number">-1</span>] + (self.num_attention_heads, self.attention_head_size)</span><br><span class="line">        x = x.view(*new_x_shape)</span><br><span class="line">        <span class="keyword">return</span> x.permute(<span class="number">0</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">3</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, hidden_states, attention_mask)</span>:</span></span><br><span class="line">        mixed_query_layer = self.query(hidden_states)</span><br><span class="line">        mixed_key_layer = self.key(hidden_states)</span><br><span class="line">        mixed_value_layer = self.value(hidden_states)</span><br><span class="line"></span><br><span class="line">        query_layer = self.transpose_for_scores(mixed_query_layer)</span><br><span class="line">        key_layer = self.transpose_for_scores(mixed_key_layer)</span><br><span class="line">        value_layer = self.transpose_for_scores(mixed_value_layer)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Take the dot product between "query" and "key" to get the raw attention scores.</span></span><br><span class="line">        attention_scores = torch.matmul(query_layer, key_layer.transpose(<span class="number">-1</span>, <span class="number">-2</span>))</span><br><span class="line">        attention_scores = attention_scores / math.sqrt(self.attention_head_size)</span><br><span class="line">        <span class="comment"># Apply the attention mask is (precomputed for all layers in BertModel forward() function)</span></span><br><span class="line">        attention_scores = attention_scores + attention_mask</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Normalize the attention scores to probabilities.</span></span><br><span class="line">        attention_probs = nn.Softmax(dim=<span class="number">-1</span>)(attention_scores)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># This is actually dropping out entire tokens to attend to, which might</span></span><br><span class="line">        <span class="comment"># seem a bit unusual, but is taken from the original Transformer paper.</span></span><br><span class="line">        attention_probs = self.dropout(attention_probs)</span><br><span class="line"></span><br><span class="line">        context_layer = torch.matmul(attention_probs, value_layer)</span><br><span class="line">        context_layer = context_layer.permute(<span class="number">0</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">3</span>).contiguous()</span><br><span class="line">        new_context_layer_shape = context_layer.size()[:<span class="number">-2</span>] + (self.all_head_size,)</span><br><span class="line">        context_layer = context_layer.view(*new_context_layer_shape)</span><br><span class="line">        <span class="keyword">return</span> context_layer</span><br><span class="line">    </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BertSelfOutput</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, config)</span>:</span></span><br><span class="line">        super(BertSelfOutput, self).__init__()</span><br><span class="line">        self.dense = nn.Linear(config.hidden_size, config.hidden_size)</span><br><span class="line">        self.LayerNorm = BertLayerNorm(config.hidden_size, eps=config.layer_norm_eps)</span><br><span class="line">        self.dropout = nn.Dropout(config.hidden_dropout_prob)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, hidden_states, input_tensor)</span>:</span></span><br><span class="line">        hidden_states = self.dense(hidden_states)</span><br><span class="line">        hidden_states = self.dropout(hidden_states)</span><br><span class="line">        hidden_states = self.LayerNorm(hidden_states + input_tensor)</span><br><span class="line">        <span class="keyword">return</span> hidden_states</span><br><span class="line">    </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BertAttention</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, config)</span>:</span></span><br><span class="line">        super(BertAttention, self).__init__()</span><br><span class="line">        self.output_attentions = output_attentions</span><br><span class="line">        self.self = BertSelfAttention(config)</span><br><span class="line">        self.output = BertSelfOutput(config)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, input_tensor, attention_mask)</span>:</span></span><br><span class="line">        self_output = self.self(input_tensor, attention_mask)</span><br><span class="line">        self_output = self_output</span><br><span class="line">        attention_output = self.output(self_output, input_tensor)</span><br><span class="line">        <span class="keyword">return</span> attention_output</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">attention_head_size = int(config.hidden_size / config.num_attention_heads)</span><br><span class="line">all_head_size = config.num_attention_heads * attention_head_size</span><br><span class="line">print(<span class="string">f"每个self attention head 输出维度 <span class="subst">&#123;attention_head_size&#125;</span>"</span>)</span><br><span class="line">print(<span class="string">f"所有的multi-head输出维度 <span class="subst">&#123;all_head_size&#125;</span>"</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>每个self attention head 输出维度 32
+所有的multi-head输出维度 256
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Q = torch.nn.Linear(config.hidden_size, all_head_size)</span><br><span class="line">K = torch.nn.Linear(config.hidden_size, all_head_size)</span><br><span class="line">V = torch.nn.Linear(config.hidden_size, all_head_size)</span><br><span class="line">print(<span class="string">f"Q的shape <span class="subst">&#123;Q&#125;</span>"</span>)</span><br><span class="line">print(<span class="string">f"K的shape <span class="subst">&#123;K&#125;</span>"</span>)</span><br><span class="line">print(<span class="string">f"V的shape <span class="subst">&#123;V&#125;</span>"</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>Q的shape Linear(in_features=256, out_features=256, bias=True)
+K的shape Linear(in_features=256, out_features=256, bias=True)
+V的shape Linear(in_features=256, out_features=256, bias=True)
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">transpose_for_scores</span><span class="params">(x)</span>:</span></span><br><span class="line">    new_x_shape = x.size()[:<span class="number">-1</span>] + (config.num_attention_heads, attention_head_size)</span><br><span class="line">    <span class="comment">## batch_size * seq_length * attention_head * attention_head_size</span></span><br><span class="line">    x = x.view(*new_x_shape)</span><br><span class="line">    <span class="comment">## batch_size * attention_head * seq_length * attention_head_size</span></span><br><span class="line">    <span class="keyword">return</span> x.permute(<span class="number">0</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">hidden_states = embedding_output</span><br><span class="line">mixed_query_layer = Q(hidden_states)</span><br><span class="line">mixed_key_layer = K(hidden_states)</span><br><span class="line">mixed_value_layer = V(hidden_states)</span><br><span class="line"></span><br><span class="line">query_layer = transpose_for_scores(mixed_query_layer)</span><br><span class="line">key_layer = transpose_for_scores(mixed_key_layer)</span><br><span class="line">value_layer = transpose_for_scores(mixed_value_layer)</span><br><span class="line"></span><br><span class="line">print(mixed_value_layer.shape)</span><br><span class="line">print(value_layer.shape)</span><br></pre></td></tr></table></figure>
+<pre><code>torch.Size([1, 6, 256])
+torch.Size([1, 8, 6, 32])
+</code></pre><p>实际上每个multi-head的输出应该是 32 维，但是因为将多个Q K V整合在了一起，这个地方输出的是256维，因此使用 transpose_for_scores 将维度进行变换，还原成 batch_size <em> num_attention_heads </em> seq_length * attention_head_size</p>
+<p>然后使用矩阵乘都是在后两个维度进行，保持了batch size 和 head num 的不变</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">attention_scores = torch.matmul(query_layer, key_layer.transpose(<span class="number">-1</span>, <span class="number">-2</span>))</span><br><span class="line">attention_scores = attention_scores / math.sqrt(attention_head_size)</span><br><span class="line"><span class="comment"># Apply the attention mask is (precomputed for all layers in BertModel forward() function)</span></span><br><span class="line">attention_scores = attention_scores + attention_mask</span><br><span class="line">attention_probs = torch.nn.Softmax(dim=<span class="number">-1</span>)(attention_scores)</span><br><span class="line">print(<span class="string">f"计算出来的 scores 的维度 <span class="subst">&#123;attention_probs.shape&#125;</span>"</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>计算出来的 scores 的维度 torch.Size([1, 8, 6, 6])
+</code></pre><p>然后根据之前的公式，计算出输出, 然后再将维度变换到原来的形状  batch_size <em> seq_length </em> (context_layer <em> attention_head_size) = batch_size </em> seq_length * hidden_size</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">context_layer = torch.matmul(attention_probs, value_layer)</span><br><span class="line">context_layer = context_layer.permute(<span class="number">0</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">3</span>).contiguous()</span><br><span class="line">new_context_layer_shape = context_layer.size()[:<span class="number">-2</span>] + (all_head_size,)</span><br><span class="line">context_layer = context_layer.view(*new_context_layer_shape)</span><br><span class="line">print(<span class="string">f"在self attention计算结束后的输出 <span class="subst">&#123;context_layer.shape&#125;</span>"</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>在self attention计算结束后的输出 torch.Size([1, 6, 256])
+</code></pre><h4 id="self-attention-output"><a href="#self-attention-output" class="headerlink" title="self attention output"></a>self attention output</h4><p>这一层的目的是对self attention的输出进行一层全连接变换，然后与self attention的输入相加，过layer normalize 然后输出到后面</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hidden_states = model.model.bert.encoder.layer[<span class="number">0</span>].attention.output.dense(context_layer)</span><br><span class="line">hidden_states = model.model.bert.encoder.layer[<span class="number">0</span>].attention.output.dropout(context_layer)</span><br><span class="line">hidden_states = model.model.bert.encoder.layer[<span class="number">0</span>].attention.output.LayerNorm(context_layer + hidden_states)</span><br><span class="line"></span><br><span class="line">print(<span class="string">f"经过output这一层之后的shape <span class="subst">&#123;hidden_states.shape&#125;</span>"</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>经过output这一层之后的shape torch.Size([1, 6, 256])
+</code></pre><h3 id="中间层"><a href="#中间层" class="headerlink" title="中间层"></a>中间层</h3><p>这一层就是简单的将attention的输出做一个全连接激活变换，然后输到下一层</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BertIntermediate</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, config)</span>:</span></span><br><span class="line">        super(BertIntermediate, self).__init__()</span><br><span class="line">        self.dense = nn.Linear(config.hidden_size, config.intermediate_size)</span><br><span class="line">        <span class="keyword">if</span> isinstance(config.hidden_act, str) <span class="keyword">or</span> (sys.version_info[<span class="number">0</span>] == <span class="number">2</span> <span class="keyword">and</span> isinstance(config.hidden_act, unicode)):</span><br><span class="line">            self.intermediate_act_fn = ACT2FN[config.hidden_act]</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.intermediate_act_fn = config.hidden_act</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, hidden_states)</span>:</span></span><br><span class="line">        hidden_states = self.dense(hidden_states)</span><br><span class="line">        hidden_states = self.intermediate_act_fn(hidden_states)</span><br><span class="line">        <span class="keyword">return</span> hidden_states</span><br></pre></td></tr></table></figure>
+<h3 id="输出层"><a href="#输出层" class="headerlink" title="输出层"></a>输出层</h3><p>这一层也比较简单，将中间层的输出再做一次全连接激活，然后跟中间层的输入相加做normalize输出</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BertOutput</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, config)</span>:</span></span><br><span class="line">        super(BertOutput, self).__init__()</span><br><span class="line">        self.dense = nn.Linear(config.intermediate_size, config.hidden_size)</span><br><span class="line">        self.LayerNorm = BertLayerNorm(config.hidden_size, eps=config.layer_norm_eps)</span><br><span class="line">        self.dropout = nn.Dropout(config.hidden_dropout_prob)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, hidden_states, input_tensor)</span>:</span></span><br><span class="line">        hidden_states = self.dense(hidden_states)</span><br><span class="line">        hidden_states = self.dropout(hidden_states)</span><br><span class="line">        hidden_states = self.LayerNorm(hidden_states + input_tensor)</span><br><span class="line">        <span class="keyword">return</span> hidden_states</span><br></pre></td></tr></table></figure>
+<h2 id="Pooler"><a href="#Pooler" class="headerlink" title="Pooler"></a>Pooler</h2><p>encoder的输出是 batch_size <em> seq_length </em> hidden_size的shape，这个seq_length实际上是变成的，而通常后面的层又不需要处理变长的结构，这个地方就需要做一个pooler,(有时候也可以用rnn这一系列的结构来处理，或者都拼成相同的长度). 最简单的 pooler方式，直接取第一个token。这个token肯定是存在的，不会因为长度的问题变得没有，实际上也可以取max pooling 或者 average pooling等等</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BertPooler</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, config)</span>:</span></span><br><span class="line">        super(BertPooler, self).__init__()</span><br><span class="line">        self.dense = nn.Linear(config.hidden_size, config.hidden_size)</span><br><span class="line">        self.activation = nn.Tanh()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, hidden_states)</span>:</span></span><br><span class="line">        <span class="comment"># We "pool" the model by simply taking the hidden state corresponding</span></span><br><span class="line">        <span class="comment"># to the first token.</span></span><br><span class="line">        first_token_tensor = hidden_states[:, <span class="number">0</span>]</span><br><span class="line">        pooled_output = self.dense(first_token_tensor)</span><br><span class="line">        pooled_output = self.activation(pooled_output)</span><br><span class="line">        <span class="keyword">return</span> pooled_output</span><br></pre></td></tr></table></figure>
+<p>很多下游任务都是套在这个pooling之后的结果上的，比如通常的分类就是在pooling之后再套一层全连接，预训练的时候的两个任务也都是接在这个 pooling的结果之后的。 需要相关的需要输出pooler前面的那一层</p>
+<h2 id="预训练任务"><a href="#预训练任务" class="headerlink" title="预训练任务"></a>预训练任务</h2><p>我们一般两个预训练任务，一个是语言模型，一个是预测下一个句子，这块实际上是可以根据要做的任务来进行修改的，可以选择更贴切的预训练任务或者增加更多的预训练任务。一般来说就是在 pooling后面再叠一部分就够了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BertPreTrainingHeads</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, config, bert_model_embedding_weights)</span>:</span></span><br><span class="line">        super(BertPreTrainingHeads, self).__init__()</span><br><span class="line">        self.predictions = BertLMPredictionHead(config, bert_model_embedding_weights)</span><br><span class="line">        self.seq_relationship = nn.Linear(config.hidden_size, <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, sequence_output, pooled_output)</span>:</span></span><br><span class="line">        prediction_scores = self.predictions(sequence_output)</span><br><span class="line">        seq_relationship_score = self.seq_relationship(pooled_output)</span><br><span class="line">        <span class="keyword">return</span> prediction_scores, seq_relationship_score</span><br></pre></td></tr></table></figure>
+<p>预训练数据的产生非常简单，根据任务来就行，原本的就是两个句子使用seq隔开，开头加cls，末尾加sep，然后以15%的概率选择需要mask的词作为语言模型的label，mask的词80%概率换成 mask，10%的概率换成随机，10%的概率不变。</p>
+<h2 id="下游任务"><a href="#下游任务" class="headerlink" title="下游任务"></a>下游任务</h2><p>比如分类，就是在pooling之后的向量上增加一个全连接的分类层就行来</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BertForSequenceClassification</span><span class="params">(BertPreTrainedModel)</span>:</span></span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, config, num_labels=<span class="number">2</span>, output_attentions=False)</span>:</span></span><br><span class="line">        super(BertForSequenceClassification, self).__init__(config)</span><br><span class="line">        self.output_attentions = output_attentions</span><br><span class="line">        self.num_labels = num_labels</span><br><span class="line">        self.bert = BertModel(config, output_attentions=output_attentions)</span><br><span class="line">        self.dropout = nn.Dropout(config.hidden_dropout_prob)</span><br><span class="line">        self.classifier = nn.Linear(config.hidden_size, num_labels)</span><br><span class="line">        self.apply(self.init_bert_weights)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, input_ids, token_type_ids=None, attention_mask=None, labels=None)</span>:</span></span><br><span class="line">        outputs = self.bert(input_ids, token_type_ids, attention_mask, output_all_encoded_layers=<span class="keyword">False</span>)</span><br><span class="line">        <span class="keyword">if</span> self.output_attentions:</span><br><span class="line">            all_attentions, _, pooled_output = outputs</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            _, pooled_output = outputs</span><br><span class="line">        pooled_output = self.dropout(pooled_output)</span><br><span class="line">        logits = self.classifier(pooled_output)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> labels <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</span><br><span class="line">            loss_fct = CrossEntropyLoss()</span><br><span class="line">            loss = loss_fct(logits.view(<span class="number">-1</span>, self.num_labels), labels.view(<span class="number">-1</span>))</span><br><span class="line">            <span class="keyword">return</span> loss</span><br><span class="line">        <span class="keyword">elif</span> self.output_attentions:</span><br><span class="line">            <span class="keyword">return</span> all_attentions, logits</span><br><span class="line">        <span class="keyword">return</span> logits</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/nlp/" rel="tag"># nlp</a>
+          
+            <a href="/tags/bert/" rel="tag"># bert</a>
+          
+            <a href="/tags/attention/" rel="tag"># attention</a>
+          
+            <a href="/tags/self-attention/" rel="tag"># self attention</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/31/lime/" rel="next" title="论文阅读-"Why Should I Trust You" Explaining the Prediction of Any Classifier">
+                <i class="fa fa-chevron-left"></i> 论文阅读-"Why Should I Trust You" Explaining the Prediction of Any Classifier
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://7q5fny.com1.z0.glb.clouddn.com/bloghead.jpg"
+                alt="Xie Jun" />
+            
+              <p class="site-author-name" itemprop="name">Xie Jun</p>
+              <p class="site-description motion-element" itemprop="description">一个随便写写的博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">92</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#读入一个已经训练好的bert"><span class="nav-number">1.</span> <span class="nav-text">读入一个已经训练好的bert</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#输入处理"><span class="nav-number">1.1.</span> <span class="nav-text">输入处理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#模型"><span class="nav-number">2.</span> <span class="nav-text">模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#embedding"><span class="nav-number">2.1.</span> <span class="nav-text">embedding</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#encoder"><span class="nav-number">2.2.</span> <span class="nav-text">encoder</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#attention"><span class="nav-number">2.2.1.</span> <span class="nav-text">attention</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#self-attention"><span class="nav-number">2.2.1.1.</span> <span class="nav-text">self attention</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#self-attention-output"><span class="nav-number">2.2.1.2.</span> <span class="nav-text">self attention output</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#中间层"><span class="nav-number">2.2.2.</span> <span class="nav-text">中间层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#输出层"><span class="nav-number">2.2.3.</span> <span class="nav-text">输出层</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pooler"><span class="nav-number">2.3.</span> <span class="nav-text">Pooler</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#预训练任务"><span class="nav-number">2.4.</span> <span class="nav-text">预训练任务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#下游任务"><span class="nav-number">2.5.</span> <span class="nav-text">下游任务</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Xie Jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

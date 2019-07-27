@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="oh7q5wMOdjRcmVFjX93pPiUFrQVKtcRZn8klDgVplII" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="机器学习,LIME,可解释性," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="什么是LIMELIME(Local Interprentable Model-agnostic Explanations)  对于单独的样本，根据局部信息来做的一种模型无关的模型解释 SP-LIME(Submodular Pick Lime) 一种选择更具有代表性的样本集合来观察模型可解释性的方法 模型可解释性通过对模">
+<meta name="keywords" content="机器学习,LIME,可解释性">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文阅读-&quot;Why Should I Trust You&quot; Explaining the Prediction of Any Classifier">
+<meta property="og:url" content="http://xiangruix.com/2018/07/31/lime/index.html">
+<meta property="og:site_name" content="Learning and Coding">
+<meta property="og:description" content="什么是LIMELIME(Local Interprentable Model-agnostic Explanations)  对于单独的样本，根据局部信息来做的一种模型无关的模型解释 SP-LIME(Submodular Pick Lime) 一种选择更具有代表性的样本集合来观察模型可解释性的方法 模型可解释性通过对模型解释，我们可以做到下面这些事  决定是否相信模型的单个预测结果，当我们需要根据">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://xiangruix.com/2018/07/31/lime/fig1.png">
+<meta property="og:image" content="http://xiangruix.com/2018/07/31/lime/fig2.png">
+<meta property="og:image" content="http://xiangruix.com/2018/07/31/lime/fig3.png">
+<meta property="og:image" content="http://xiangruix.com/2018/07/31/lime/fig4.png">
+<meta property="og:updated_time" content="2019-07-27T08:19:37.113Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="论文阅读-&quot;Why Should I Trust You&quot; Explaining the Prediction of Any Classifier">
+<meta name="twitter:description" content="什么是LIMELIME(Local Interprentable Model-agnostic Explanations)  对于单独的样本，根据局部信息来做的一种模型无关的模型解释 SP-LIME(Submodular Pick Lime) 一种选择更具有代表性的样本集合来观察模型可解释性的方法 模型可解释性通过对模型解释，我们可以做到下面这些事  决定是否相信模型的单个预测结果，当我们需要根据">
+<meta name="twitter:image" content="http://xiangruix.com/2018/07/31/lime/fig1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://xiangruix.com/2018/07/31/lime/"/>
+
+
+
+
+
+  <title>论文阅读-"Why Should I Trust You" Explaining the Prediction of Any Classifier | Learning and Coding</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?ea5bfefdcd245de6354e704415c17ae7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Learning and Coding</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'tP3YmrvjTZUH813-kAhg','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xiangruix.com/2018/07/31/lime/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Xie Jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://7q5fny.com1.z0.glb.clouddn.com/bloghead.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Learning and Coding">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">论文阅读-"Why Should I Trust You" Explaining the Prediction of Any Classifier</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-31T23:36:01+00:00">
+                2018-07-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/machine-learning/" itemprop="url" rel="index">
+                    <span itemprop="name">machine learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="什么是LIME"><a href="#什么是LIME" class="headerlink" title="什么是LIME"></a>什么是LIME</h2><p>LIME(Local Interprentable Model-agnostic Explanations) </p>
+<p>对于单独的样本，根据局部信息来做的一种模型无关的模型解释</p>
+<p>SP-LIME(Submodular Pick Lime)</p>
+<p>一种选择更具有代表性的样本集合来观察模型可解释性的方法</p>
+<h2 id="模型可解释性"><a href="#模型可解释性" class="headerlink" title="模型可解释性"></a>模型可解释性</h2><p>通过对模型解释，我们可以做到下面这些事</p>
+<ul>
+<li>决定是否相信模型的单个预测结果，当我们需要根据预测结果做决策的时候，这是很重要的</li>
+<li>选择模型，对于不同的模型或者参数，可以根据模型的解释性来确定选择使用哪一个，有时候并不一定是模型的评估指标越好，模型就越好</li>
+<li>改进模型，通过模型的解释，可以做一些特征工程，来提升模型的性能</li>
+<li>识别不可信的模型 基于模型的解释，判断模型是否真正有效</li>
+</ul>
+<p>模型的可解释性有利于我们更好的去相信模型和使用模型，相信模型主要是指以下两点</p>
+<ul>
+<li>相信模型单个样本的预测结果，解释模型为什么会将这个样本预测成某个类别或者某个值，对应着LIME</li>
+<li>相信模型本身，需要对模型本身做出解释，例如特征重要性排序这些都是在解释模型，文章中通过一种算法，选出最具代表性和多样性的样本来展示给模型使用者，方便使用者对模型进行理解，对应着 SP-LIME</li>
+</ul>
+<p>解释一个样本的预测结果: 指的是通过文本或者图片的方式，来定性的表示样本的组成成分和预测结果之间的关系，例如我们预测一个人患有肿瘤，那么样本中打喷嚏，头痛可能为结果提供了正向的支持，没有疲劳则对模型预测结果提供了负向的因素</p>
+<p><img src="/2018/07/31/lime/fig1.png" alt=""></p>
+<p>通过模型的评估指标(auc, acc, precision, recall 等)来判断模型是否可靠有不完全靠谱的，一下因素都可能导致 这些指标变得不可信</p>
+<ul>
+<li>数据泄露，训练集测试集中混入了些实际中拿不到的数据，比如混入了用户ID，刚好ID本身或者ID值的大小跟相关，但是实际中这个信息是能使用的</li>
+<li>数据分布不一致 比如说某个特征在训练集中80%正样本都包含，在测试集或者实际情况中正负样本包含该特征的比例是一致的。通过解释模型，我们人工可以观察到这个特征，通过一些先验知识就能判定模型的不合理性</li>
+</ul>
+<p>期待解释器具有以下性质</p>
+<ul>
+<li>解释是可以被人所理解的，人的理解力是有限的，对于线性模型，需要非零特征足够的少，对于树模型，需要树的层数尽可能的少，面对不同的人可能也需要使用不同的解释方式</li>
+<li>局部保真 在要解释的样本周围只是要保证真实性，因为整体的模型可能十分复杂，完全没法理解，所以给出的理解在局部需要保持一定的真实性</li>
+<li>模型无关 解释最好是跟模型无关的，这样就能解释任何模型</li>
+</ul>
+<h2 id="LIME"><a href="#LIME" class="headerlink" title="LIME"></a>LIME</h2><h3 id="可解释的数据表示"><a href="#可解释的数据表示" class="headerlink" title="可解释的数据表示"></a>可解释的数据表示</h3><p>用来解释的模型的输入数据和模型使用的特征是不完全一致的，例如通常NLP问题中实际模型读取的是词向量，解释模型的时候通常是用01来表示有某些词和没有某些词。在图片问题中，通常是将图片先用分割算法分割成小块，然后用01来表示各个小块的存在和不存在。最终解释是用这些输入数据的部分内容来表示的。</p>
+<p>用 $x \in R^d$ 来表示原始特征, $x^{\prime} \in \lbrace 0,1 \rbrace ^{d^\prime}$ 表示用来表达解释的数据表示。</p>
+<h3 id="可理解-保真-的取舍"><a href="#可理解-保真-的取舍" class="headerlink" title="可理解-保真 的取舍"></a>可理解-保真 的取舍</h3><p>我们G来表示可能用来的解释的模型，可以是线性模型，树模型或者一套简单的规则, $g \in G$来表示具体的某个解释模型，也就是说$g$是在  $x^{\prime} \in \lbrace 0,1 \rbrace ^{d^\prime}$  上面训练的一个模型。<br>为了模型的可解释性，模型不能太复杂，模型太复杂了人是无法看理解的，因此用 $\Omega(g)$来表示模型的复杂度，我们需要将模型的复杂度限定在一定的范围以内</p>
+<p>另外我们用来解释模型的 $g$ 应该要尽可能的和 $f$ 相近, 至少是在需要解释的样本$x$的周围保持真实性, 我们用来定义周围的方式是 $\pi_x(z)$, 其实就是表达样本$z$离样本$x$有多远, 越近, 那么应该权重越大</p>
+<p>因此我们对模型的解释就是</p>
+<p>$$<br>\xi(x) = \mathop {argmin}_{g\in G} L(f, g, \pi_x) + \Omega(g)<br>$$</p>
+<p>对样本$x$的解释就是要找到在$x$局部最相似，且复杂度尽量低的解释模型</p>
+<p><img src="/2018/07/31/lime/fig2.png" alt=""></p>
+<h3 id="局部采样"><a href="#局部采样" class="headerlink" title="局部采样"></a>局部采样</h3><p>在解释样本$x^\prime$的时候，我们通过对$x^\prime$的非零组成进行均匀的采样，可以得到一批数据集合 $z^\prime \in \lbrace 0, 1 \rbrace ^{d^\prime}$, 可以通过将$z^\prime$还原成$z$, 然后通过被解释的模型进行预测的到模型对$z$的预测值 $f(z)$, 然后就可以通过公式来进行优化，找到最合适的解释模型。</p>
+<h3 id="稀疏线性解释"><a href="#稀疏线性解释" class="headerlink" title="稀疏线性解释"></a>稀疏线性解释</h3><p>$G$ 使用线性模型来表示</p>
+<p>$g(z^\prime) = w_g g^\prime$</p>
+<p>$L$ 使用均方根误差来计算</p>
+<p>$\pi_x(z) = exp(-D(x, z)^2/\sigma^2)$  $D$ 是某种距离函数</p>
+<p>因此</p>
+<p>$$<br>L(f, g, \pi_x)=\sum_{z,z^\prime \in Z} \pi_x(z)(f(z) - g(z^\prime))^2<br>$$</p>
+<p>为了限制模型的复杂度，增加可解释性，这个地方解释模型的复杂度约束为</p>
+<p>$$<br>\Omega(g) = \infty \mathbb {1}([||w_g||_0 &gt; K])<br>$$</p>
+<p>也就是说当权重中非零元素的个数超过阈值的时候对于模型复杂的惩罚变得无穷大，不过由于这个 $\Omega$ 不好解, 实际当时是使用的 K-LASSO</p>
+<p>不论什么解释模型, 都会有一些缺点的，例如这种线性模型，当需要被解释的模型及其复杂，或者在局部也很非线性的时候，使用线性模型来解释就不太好了。另外如果输入本身没法拆成一部分一部分使用缺失或者存在来影响输出，也没办法使用这种方法来解释</p>
+<p><img src="/2018/07/31/lime/fig3.png" alt=""></p>
+<h2 id="SP-LIME"><a href="#SP-LIME" class="headerlink" title="SP-LIME"></a>SP-LIME</h2><p>上面提到的是对单个样本的解释，要想对于整个模型有所了解，就需要选出一系列可解释的样本，通过观察这些样本，来理解模型模型。由于人力是有限的，因此不可能选择非常多的样本来观察，假设我们只能最多观察 $B$ 这么多的样本，我们就应该挑选出最具有代表性的一些样本来观察。<br>论文提出了一种筛选样本的方式，被称作 SP-LIME</p>
+<p>对于一个样本的集合 $X(|x|=n)$, 我们可以通过LIME构造一个解释的矩阵 $W$ , ($W \in R^{n \times d^\prime}$) 对于每个组成$j$ ，使用 $I_j$ 来表示组成 $j$ 的全局重要性。期望如果能解释更多样本的 $I$ 就应该有更大的值。例如如果组成2比组成1能解释更多的样本，那么 $I_2 &gt; I_1$ 例如可以 定义为</p>
+<p>$$<br>I_j=\sqrt{\sum_{i=1}^n W_{ij}}<br>$$</p>
+<p>能解释的样本就是非零的，这儿计算的是能解释样本的个数。</p>
+<p>$$<br>c(V,W,I)=\sum_{j=1}^{d^\prime} \mathbb {1} [\exists i \in V: W_{ij} &gt;0]I_j<br>$$</p>
+<p>也就是说如果选出来的集合里存在样本在解释组成$j$上权重非0，(解释组成$j$能解释某个样本)，那么久把这个$I_j$累加起来，最后要找到集合$V$使得$c$最大</p>
+<p>$$<br>Pick(W, I) = \mathop argmax_{V,|V| \leq B} c(V,W,I)<br>$$</p>
+<p>实际中使用了贪心的算法来找到样本的集合，每次找增加了那个样本之后能带来能得到最大的$c$的样本加入集合中</p>
+<p><img src="/2018/07/31/lime/fig4.png" alt=""></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/机器学习/" rel="tag"># 机器学习</a>
+          
+            <a href="/tags/LIME/" rel="tag"># LIME</a>
+          
+            <a href="/tags/可解释性/" rel="tag"># 可解释性</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/11/back-propagation/" rel="next" title="反向传播">
+                <i class="fa fa-chevron-left"></i> 反向传播
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/27/bert/" rel="prev" title="bert">
+                bert <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://7q5fny.com1.z0.glb.clouddn.com/bloghead.jpg"
+                alt="Xie Jun" />
+            
+              <p class="site-author-name" itemprop="name">Xie Jun</p>
+              <p class="site-description motion-element" itemprop="description">一个随便写写的博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">92</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是LIME"><span class="nav-number">1.</span> <span class="nav-text">什么是LIME</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模型可解释性"><span class="nav-number">2.</span> <span class="nav-text">模型可解释性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LIME"><span class="nav-number">3.</span> <span class="nav-text">LIME</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#可解释的数据表示"><span class="nav-number">3.1.</span> <span class="nav-text">可解释的数据表示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#可理解-保真-的取舍"><span class="nav-number">3.2.</span> <span class="nav-text">可理解-保真 的取舍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#局部采样"><span class="nav-number">3.3.</span> <span class="nav-text">局部采样</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#稀疏线性解释"><span class="nav-number">3.4.</span> <span class="nav-text">稀疏线性解释</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SP-LIME"><span class="nav-number">4.</span> <span class="nav-text">SP-LIME</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Xie Jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

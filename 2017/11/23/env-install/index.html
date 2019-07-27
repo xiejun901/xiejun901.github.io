@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="oh7q5wMOdjRcmVFjX93pPiUFrQVKtcRZn8klDgVplII" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="install,environment,tensorflow,nvidia,cuda," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="记录一些软件的安装过程，帮助后续环境的重新安装之类的Nvidia 驱动以及cuda，cudnn的安装看网上说安装驱动的时候可能会出现循环重启，但是看一个人提供了不会出现这种问题的安装方式，就直接使用了，因此并没有感受到循环重启的问题 12345678910111213wget http://developer.down">
+<meta name="keywords" content="install,environment,tensorflow,nvidia,cuda">
+<meta property="og:type" content="article">
+<meta property="og:title" content="环境安装">
+<meta property="og:url" content="http://xiangruix.com/2017/11/23/env-install/index.html">
+<meta property="og:site_name" content="Learning and Coding">
+<meta property="og:description" content="记录一些软件的安装过程，帮助后续环境的重新安装之类的Nvidia 驱动以及cuda，cudnn的安装看网上说安装驱动的时候可能会出现循环重启，但是看一个人提供了不会出现这种问题的安装方式，就直接使用了，因此并没有感受到循环重启的问题 12345678910111213wget http://developer.download.nvidia.com/compute/cuda/repos/ubunt">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-07-27T08:19:37.113Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="环境安装">
+<meta name="twitter:description" content="记录一些软件的安装过程，帮助后续环境的重新安装之类的Nvidia 驱动以及cuda，cudnn的安装看网上说安装驱动的时候可能会出现循环重启，但是看一个人提供了不会出现这种问题的安装方式，就直接使用了，因此并没有感受到循环重启的问题 12345678910111213wget http://developer.download.nvidia.com/compute/cuda/repos/ubunt">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://xiangruix.com/2017/11/23/env-install/"/>
+
+
+
+
+
+  <title>环境安装 | Learning and Coding</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?ea5bfefdcd245de6354e704415c17ae7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Learning and Coding</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'tP3YmrvjTZUH813-kAhg','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xiangruix.com/2017/11/23/env-install/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Xie Jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://7q5fny.com1.z0.glb.clouddn.com/bloghead.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Learning and Coding">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">环境安装</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-23T00:23:09+00:00">
+                2017-11-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/other/" itemprop="url" rel="index">
+                    <span itemprop="name">other</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="记录一些软件的安装过程，帮助后续环境的重新安装之类的"><a href="#记录一些软件的安装过程，帮助后续环境的重新安装之类的" class="headerlink" title="记录一些软件的安装过程，帮助后续环境的重新安装之类的"></a>记录一些软件的安装过程，帮助后续环境的重新安装之类的</h1><h2 id="Nvidia-驱动以及cuda，cudnn的安装"><a href="#Nvidia-驱动以及cuda，cudnn的安装" class="headerlink" title="Nvidia 驱动以及cuda，cudnn的安装"></a>Nvidia 驱动以及cuda，cudnn的安装</h2><p>看网上说安装驱动的时候可能会出现循环重启，但是看一个人提供了不会出现这种问题的安装方式，就直接使用了，因此并没有感受到循环重启的问题</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-repo-ubuntu1604_8.0.44-1_amd64.deb</span><br><span class="line">sudo dpkg -i cuda-repo-ubuntu1604_8.0.44-1_amd64.deb</span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install cuda</span><br><span class="line"><span class="meta">#</span> 环境变量可以写入配置文件中</span><br><span class="line">export PATH=/usr/local/cuda-8.0/bin:PATH</span><br><span class="line">export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64:LD_LIBRARY_PATH</span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line">这儿有一点需要的是由于由于可能有多个版本，可以通过命令查看版本后安装指定的版本，多个版本安装了之后可以使用软链接进行管理</span><br><span class="line"></span><br><span class="line">```shell</span><br><span class="line">apt-cache madison &lt;&lt;package name&gt;&gt;</span><br></pre></td></tr></table></figure>
+<p>还得再安装cudnn才能使用tensorflow的，可以按照如下的方式安装</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CUDNN_TAR_FILE=&quot;cudnn-8.0-linux-x64-v6.0.tgz&quot;</span><br><span class="line">wget http://developer.download.nvidia.com/compute/redist/cudnn/v6.0/$&#123;CUDNN_TAR_FILE&#125;</span><br><span class="line">tar -xzvf $&#123;CUDNN_TAR_FILE&#125;</span><br><span class="line">sudo cp -P cuda/include/cudnn.h /usr/local/cuda-8.0/include</span><br><span class="line">sudo cp -P cuda/lib64/libcudnn* /usr/local/cuda-8.0/lib64/</span><br><span class="line">sudo chmod a+r /usr/local/cuda-8.0/lib64/libcudnn*</span><br></pre></td></tr></table></figure>
+<p>在找cudnn安装的时候发现一个脚本，集成了以上两步</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span>!/bin/bash</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> install CUDA Toolkit v8.0</span><br><span class="line"><span class="meta">#</span> instructions from https://developer.nvidia.com/cuda-downloads (linux -&gt; x86_64 -&gt; Ubuntu -&gt; 16.04 -&gt; deb (network))</span><br><span class="line">CUDA_REPO_PKG="cuda-repo-ubuntu1604_8.0.61-1_amd64.deb"</span><br><span class="line">wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/$&#123;CUDA_REPO_PKG&#125;</span><br><span class="line">sudo dpkg -i $&#123;CUDA_REPO_PKG&#125;</span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get -y install cuda</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> install cuDNN v6.0</span><br><span class="line">CUDNN_TAR_FILE="cudnn-8.0-linux-x64-v6.0.tgz"</span><br><span class="line">wget http://developer.download.nvidia.com/compute/redist/cudnn/v6.0/$&#123;CUDNN_TAR_FILE&#125;</span><br><span class="line">tar -xzvf $&#123;CUDNN_TAR_FILE&#125;</span><br><span class="line">sudo cp -P cuda/include/cudnn.h /usr/local/cuda-8.0/include</span><br><span class="line">sudo cp -P cuda/lib64/libcudnn* /usr/local/cuda-8.0/lib64/</span><br><span class="line">sudo chmod a+r /usr/local/cuda-8.0/lib64/libcudnn*</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> set environment variables</span><br><span class="line">export PATH=/usr/local/cuda-8.0/bin$&#123;PATH:+:$&#123;PATH&#125;&#125;</span><br><span class="line">export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64$&#123;LD_LIBRARY_PATH:+:$&#123;LD_LIBRARY_PATH&#125;&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="anaconda-的安装"><a href="#anaconda-的安装" class="headerlink" title="anaconda 的安装"></a>anaconda 的安装</h2><p>官网速度太慢，可以去清华的开源软件镜像站下载，很快。</p>
+<p><a href="https://mirrors.tuna.tsinghua.edu.cn/" target="_blank" rel="noopener">清华大学开源软件镜像站</a></p>
+<h2 id="tensorflow-安装"><a href="#tensorflow-安装" class="headerlink" title="tensorflow 安装"></a>tensorflow 安装</h2><p>安装好nvidia驱动之后直接安装官网的方式安装使用pip安装就行</p>
+<p>我用的anaconda安装</p>
+<p>tfBinaryURL 可以到这儿查看 <a href="https://www.tensorflow.org/install/install_linux#the_url_of_the_tensorflow_python_package" target="_blank" rel="noopener">URL of the TensorFlow Python package</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install --ignore-installed --upgrade tfBinaryURL</span><br></pre></td></tr></table></figure>
+<h2 id="hexo-的安装"><a href="#hexo-的安装" class="headerlink" title="hexo 的安装"></a>hexo 的安装</h2><p>进入官网，查看安装方法</p>
+<p>可能需要先安装npm, node.js, node.js 可以使用淘宝的源，会快一些  <a href="https://npm.taobao.org/mirrors/node/" target="_blank" rel="noopener">node.js淘宝</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> 安装node, 版本可以自己选择</span><br><span class="line">wget https://npm.taobao.org/mirrors/node/v9.2.0/node-v9.2.0-linux-x64.tar.gz</span><br><span class="line">tar -xvf node-v9.2.0-linux-x64.tar.gz</span><br><span class="line">sudo mv node-v9.2.0-linux-x64 /opt/</span><br><span class="line">sudo ln -s /opt/node-v9.2.0-linux-x64/bin/node /usr/local/bin/node</span><br><span class="line">sudo ln -s /opt/node-v9.2.0-linux-x64/bin/npm /usr/local/bin/npm</span><br><span class="line"><span class="meta">#</span> 如上安装啦npm之后这一步可以不用啦安装 npm 了</span><br><span class="line">sudo apt-get install npm</span><br><span class="line">sudo npm install hexo-cli -g</span><br><span class="line"><span class="meta">#</span> 进入到博客的目录</span><br><span class="line">cd PATH</span><br><span class="line">npm install</span><br><span class="line">hexo server</span><br></pre></td></tr></table></figure>
+<p>然后就启动了，可以使用了。</p>
+<h2 id="hexo-mathjax-安装和使用"><a href="#hexo-mathjax-安装和使用" class="headerlink" title="hexo mathjax 安装和使用"></a>hexo mathjax 安装和使用</h2><p>hexo 使用mathjax需要先更换markdown渲染插件，然后再在设置中设置使用mathjax</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm uninstall hexo-renderer-marked --save</span><br><span class="line">npm install hexo-renderer-pandoc --save</span><br></pre></td></tr></table></figure>
+<p>然后修改配置文件的一些转意设置<br>node_modules\kramed\lib\rules\inline.js 这个文件修改如下内容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//  escape: /^\\([\\`*&#123;&#125;\[\]()#$+\-.!_&gt;])/,</span><br><span class="line">  escape: /^\\([`*\[\]()#$+\-.!_&gt;])/,</span><br><span class="line"></span><br><span class="line">//  em: /^\b_((?:__|[\s\S])+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</span><br><span class="line">  em: /^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</span><br></pre></td></tr></table></figure>
+<p>打开配置开关</p>
+<p>进入主题的目录找到   themes/next/_config.yml 进行修改</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mathjax:</span><br><span class="line">  enable: true</span><br><span class="line">  per_page: true</span><br></pre></td></tr></table></figure>
+<p>如果per_page设置成了true, 那么需要在页面开头写下如下语句才能在本页启动mathjax渲染</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: index.html</span><br><span class="line">date: 2016-12-28 21:01:30</span><br><span class="line">tags:</span><br><span class="line">mathjax: true</span><br><span class="line">--</span><br></pre></td></tr></table></figure>
+<h2 id="cisco-anyconnect-服务端搭建"><a href="#cisco-anyconnect-服务端搭建" class="headerlink" title="cisco anyconnect 服务端搭建"></a>cisco anyconnect 服务端搭建</h2><p><a href="https://www.vultr.com/docs/setup-openconnect-vpn-server-for-cisco-anyconnect-on-ubuntu-14-04-x64" target="_blank" rel="noopener">ocserv 安装和配置</a> </p>
+<p>防丢防打不开，将上面的链接的内容转一份</p>
+<p>OpenConnect server, also known as ocserv, is a VPN server that communicates over SSL. By design, its goal is to become a secure, lightweight, and fast VPN server. OpenConnect server uses the OpenConnect SSL VPN protocol. At the time of writing, it also has experimental compatibility with clients that use the AnyConnect SSL VPN protocol.</p>
+<p>This article will show you how to install and setup ocserv on Ubuntu 14.04 x64.</p>
+<p>Installing ocserv</p>
+<p>Since Ubuntu 14.04 does not ship with ocserv, we will have to download the source code and compile it. The latest stable version of ocserv is 0.9.2.</p>
+<p>Download ocserv from the official site.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget ftp://ftp.infradead.org/pub/ocserv/ocserv-0.9.2.tar.xz</span><br><span class="line">tar -xf ocserv-0.9.2.tar.xz</span><br><span class="line">cd ocserv-0.9.2</span><br></pre></td></tr></table></figure>
+<p>Next, install the compile dependencies.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install build-essential pkg-config libgnutls28-dev libwrap0-dev libpam0g-dev libseccomp-dev libreadline-dev libnl-route-3-dev</span><br></pre></td></tr></table></figure>
+<p>Compile and install ocserv.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">./configure</span><br><span class="line">make</span><br><span class="line">make install</span><br><span class="line">Configuring ocserv</span><br></pre></td></tr></table></figure>
+<p>A sample config file is placed under the directory ocser-0.9.2/doc. We will use this file as a template. At first, we have to make our own CA cert and server cert.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd ~</span><br><span class="line">apt-get install gnutls-bin</span><br><span class="line">mkdir certificates</span><br><span class="line">cd certificates</span><br></pre></td></tr></table></figure>
+<p>We create a CA template file (ca.tmpl) with the content similar to the following. You can set your own “cn” and “organization”.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cn = &quot;VPN CA&quot; </span><br><span class="line">organization = &quot;Big Corp&quot; </span><br><span class="line">serial = 1 </span><br><span class="line">expiration_days = 3650</span><br><span class="line">ca </span><br><span class="line">signing_key </span><br><span class="line">cert_signing_key </span><br><span class="line">crl_signing_key</span><br></pre></td></tr></table></figure>
+<p>Then, generate a CA key and CA cert.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">certtool --generate-privkey --outfile ca-key.pem</span><br><span class="line">certtool --generate-self-signed --load-privkey ca-key.pem --template ca.tmpl --outfile ca-cert.pem</span><br></pre></td></tr></table></figure>
+<p>Next, create a local server certificate template file (server.tmpl) with the the content below. Please pay attention to the “cn” field, it must match the DNS name or IP address of your server.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cn = &quot;you domain name or ip&quot;</span><br><span class="line">organization = &quot;MyCompany&quot; </span><br><span class="line">expiration_days = 3650 </span><br><span class="line">signing_key </span><br><span class="line">encryption_key</span><br><span class="line">tls_www_server</span><br></pre></td></tr></table></figure>
+<p>Then, generate the server key and certificate.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">certtool --generate-privkey --outfile server-key.pem</span><br><span class="line">certtool --generate-certificate --load-privkey server-key.pem --load-ca-certificate ca-cert.pem --load-ca-privkey ca-key.pem --template server.tmpl --outfile server-cert.pem</span><br></pre></td></tr></table></figure>
+<p>Copy the key, certificate, and config file to the ocserv config directory.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mkdir /etc/ocserv</span><br><span class="line">cp server-cert.pem server-key.pem /etc/ocserv</span><br><span class="line">cd ~/ocserv-0.9.2/doc</span><br><span class="line">cp sample.config /etc/ocserv/config</span><br><span class="line">cd /etc/ocserv</span><br></pre></td></tr></table></figure>
+<p>Edit the config file under /etc/ocserv. Uncomment or modify the fields described below.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">auth = &quot;plain[/etc/ocserv/ocpasswd]&quot;</span><br><span class="line"></span><br><span class="line">try-mtu-discovery = true</span><br><span class="line"></span><br><span class="line">server-cert = /etc/ocserv/server-cert.pem</span><br><span class="line">server-key = /etc/ocserv/server-key.pem</span><br><span class="line"></span><br><span class="line">dns = 8.8.8.8</span><br><span class="line"></span><br><span class="line"># comment out all route fields</span><br><span class="line">#route = 10.10.10.0/255.255.255.0</span><br><span class="line">#route = 192.168.0.0/255.255.0.0</span><br><span class="line">#route = fef4:db8:1000:1001::/64</span><br><span class="line">#no-route = 192.168.5.0/255.255.255.0</span><br><span class="line"></span><br><span class="line">cisco-client-compat = true</span><br></pre></td></tr></table></figure>
+<p>Generate a user that will be used to login to ocserv.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ocpasswd -c /etc/ocserv/ocpasswd username</span><br></pre></td></tr></table></figure>
+<p>Enable NAT.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A POSTROUTING -j MASQUERADE</span><br></pre></td></tr></table></figure>
+<p>Enable IPv4 forwarding. Edit the file /etc/sysctl.conf.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net.ipv4.ip_forward=1</span><br></pre></td></tr></table></figure>
+<p>Apply this modification.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sysctl -p /etc/sysctl.conf</span><br></pre></td></tr></table></figure>
+<p>Start ocserv and connect using Cisco AnyConnect</p>
+<p>First, start ocserv.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ocserv -c /etc/ocserv/config</span><br></pre></td></tr></table></figure>
+<p>Then, install Cisco AnyConnect on any of your devices, such as iPhone, iPad, or an Android device. Since we used a self-signed server key and certificate, we have to uncheck the option which prevents insecure servers. This option is located in the settings of AnyConnect. At this point, we can setup a new connection with the domain name or IP address of our ocserv and the username/password that we created.</p>
+<p>Connect and enjoy!</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/install/" rel="tag"># install</a>
+          
+            <a href="/tags/environment/" rel="tag"># environment</a>
+          
+            <a href="/tags/tensorflow/" rel="tag"># tensorflow</a>
+          
+            <a href="/tags/nvidia/" rel="tag"># nvidia</a>
+          
+            <a href="/tags/cuda/" rel="tag"># cuda</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/05/spark-groupbykey-aggregatebykey/" rel="next" title="spark 中 groupByKey 和 aggregateByKey(reduceByKey) 差距的一次真实体验">
+                <i class="fa fa-chevron-left"></i> spark 中 groupByKey 和 aggregateByKey(reduceByKey) 差距的一次真实体验
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/30/xgboost-intro/" rel="prev" title="xgboost 学习笔记 - 原理简介">
+                xgboost 学习笔记 - 原理简介 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://7q5fny.com1.z0.glb.clouddn.com/bloghead.jpg"
+                alt="Xie Jun" />
+            
+              <p class="site-author-name" itemprop="name">Xie Jun</p>
+              <p class="site-description motion-element" itemprop="description">一个随便写写的博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">92</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#记录一些软件的安装过程，帮助后续环境的重新安装之类的"><span class="nav-number">1.</span> <span class="nav-text">记录一些软件的安装过程，帮助后续环境的重新安装之类的</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Nvidia-驱动以及cuda，cudnn的安装"><span class="nav-number">1.1.</span> <span class="nav-text">Nvidia 驱动以及cuda，cudnn的安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#anaconda-的安装"><span class="nav-number">1.2.</span> <span class="nav-text">anaconda 的安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tensorflow-安装"><span class="nav-number">1.3.</span> <span class="nav-text">tensorflow 安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hexo-的安装"><span class="nav-number">1.4.</span> <span class="nav-text">hexo 的安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hexo-mathjax-安装和使用"><span class="nav-number">1.5.</span> <span class="nav-text">hexo mathjax 安装和使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cisco-anyconnect-服务端搭建"><span class="nav-number">1.6.</span> <span class="nav-text">cisco anyconnect 服务端搭建</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Xie Jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

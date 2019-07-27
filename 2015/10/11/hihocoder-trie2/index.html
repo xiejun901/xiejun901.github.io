@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="oh7q5wMOdjRcmVFjX93pPiUFrQVKtcRZn8klDgVplII" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="C++,hihocoder,algorithm,trie图," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="输入每个输入文件有且仅有一组测试数据。 每个测试数据的第一行为一个整数N，表示河蟹词典的大小。 接下来的N行，每一行为一个由小写英文字母组成的河蟹词语。 接下来的一行，为一篇长度不超过M，由小写英文字母组成的文章。 对于60%的数据，所有河蟹词语的长度总和小于10, M&amp;lt;=10 对于80%的数据，所有河蟹">
+<meta name="keywords" content="C++,hihocoder,algorithm,trie图">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hihocoder算法练习之trie图">
+<meta property="og:url" content="http://xiangruix.com/2015/10/11/hihocoder-trie2/index.html">
+<meta property="og:site_name" content="Learning and Coding">
+<meta property="og:description" content="输入每个输入文件有且仅有一组测试数据。 每个测试数据的第一行为一个整数N，表示河蟹词典的大小。 接下来的N行，每一行为一个由小写英文字母组成的河蟹词语。 接下来的一行，为一篇长度不超过M，由小写英文字母组成的文章。 对于60%的数据，所有河蟹词语的长度总和小于10, M&amp;lt;=10 对于80%的数据，所有河蟹词语的长度总和小于10^3, M&amp;lt;=10^3 对于100%的数据，所有河蟹词语的长">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://xiejun901.qiniudn.com/hihocoder1036trie.jpg">
+<meta property="og:image" content="http://xiejun901.qiniudn.com/hihocoder1036trie2.jpg">
+<meta property="og:updated_time" content="2019-07-27T08:19:37.113Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="hihocoder算法练习之trie图">
+<meta name="twitter:description" content="输入每个输入文件有且仅有一组测试数据。 每个测试数据的第一行为一个整数N，表示河蟹词典的大小。 接下来的N行，每一行为一个由小写英文字母组成的河蟹词语。 接下来的一行，为一篇长度不超过M，由小写英文字母组成的文章。 对于60%的数据，所有河蟹词语的长度总和小于10, M&amp;lt;=10 对于80%的数据，所有河蟹词语的长度总和小于10^3, M&amp;lt;=10^3 对于100%的数据，所有河蟹词语的长">
+<meta name="twitter:image" content="http://xiejun901.qiniudn.com/hihocoder1036trie.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://xiangruix.com/2015/10/11/hihocoder-trie2/"/>
+
+
+
+
+
+  <title>hihocoder算法练习之trie图 | Learning and Coding</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?ea5bfefdcd245de6354e704415c17ae7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Learning and Coding</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'tP3YmrvjTZUH813-kAhg','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://xiangruix.com/2015/10/11/hihocoder-trie2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Xie Jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://7q5fny.com1.z0.glb.clouddn.com/bloghead.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Learning and Coding">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">hihocoder算法练习之trie图</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-10-11T19:21:06+00:00">
+                2015-10-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/hihocoder/" itemprop="url" rel="index">
+                    <span itemprop="name">hihocoder</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="输入"><a href="#输入" class="headerlink" title="输入"></a>输入</h2><p>每个输入文件有且仅有一组测试数据。</p>
+<p>每个测试数据的第一行为一个整数N，表示河蟹词典的大小。</p>
+<p>接下来的N行，每一行为一个由小写英文字母组成的河蟹词语。</p>
+<p>接下来的一行，为一篇长度不超过M，由小写英文字母组成的文章。</p>
+<p>对于60%的数据，所有河蟹词语的长度总和小于10, M&lt;=10</p>
+<p>对于80%的数据，所有河蟹词语的长度总和小于10^3, M&lt;=10^3</p>
+<p>对于100%的数据，所有河蟹词语的长度总和小于10^6, M&lt;=10^6, N&lt;=1000</p>
+<h2 id="输出"><a href="#输出" class="headerlink" title="输出"></a>输出</h2><p>对于每组测试数据，输出一行”YES”或者”NO”，表示文章中是否含有河蟹词语。</p>
+<h2 id="样例输入"><a href="#样例输入" class="headerlink" title="样例输入"></a>样例输入</h2><pre><code>6
+aaabc
+aaac
+abcc
+ac
+bcd
+cd
+aaaaaaaaaaabaaadaaac
+</code></pre><h2 id="样例输出"><a href="#样例输出" class="headerlink" title="样例输出"></a>样例输出</h2><pre><code>YES
+</code></pre><h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>对于一本词典，要找一篇文章中是否含有这本词典中的词语，如果依次枚举每个词典中的每个单词，然后与文章进行匹配，如果词典单词数量是N，每个单词长度是L，文章长度为M，复杂度是O(MLN)。若采用KMP算法进行匹配，那么需要进行的次数也是O(NM).如果将词典构成trie树，枚举文章每一个单词作为起点，然后去trie树中走，如果能从某条变走到终点结点，则说明文章中存在词典中的单词，这种方式复杂度是O(ML)。</p>
+<p>我们可以发现，采用trie树这种方式是可以优化的，如下图，构造了一本字典，含有的单词是ab,bc,aba,bab,bca</p>
+<p><img src="http://xiejun901.qiniudn.com/hihocoder1036trie.jpg" alt=""></p>
+<p>我们要查看abcbca是否在词典中，采用trie树来进行枚举会经历以下过程</p>
+<pre><code>枚举s[0]=a;0-&gt;1;1-&gt;3;3的c边不存在；回朔
+枚举s[1]=b;0-&gt;b-&gt;5;5的b边不存在；回朔
+枚举s[2]=c;0的c边不存在；回朔
+枚举s[3]=b;0-&gt;2-&gt;5-&gt;8;找到两个终点借点
+枚举s[4]=c;0的c边不存在；回朔
+枚举s[5]=a;0-&gt;1；字符串完，且1不为为终点结点。
+</code></pre><p>考虑字符串abcac,0-&gt;1-&gt;3,此时发现1的c结点不存在，按照以上方法，则需要回朔到根结点，然后对比bcac这个字符串，过程是0-&gt;1-&gt;3=&gt;0-&gt;2-&gt;5-&gt;8，但是1-&gt;3,b这条边已经走过了，所以最好是直接在0-&gt;1-&gt;3之后，直接跳到2结点，即：0-&gt;1-&gt;3(2)-&gt;5-&gt;8.所以，对于每一个结点，如果我们能求得它括号里边那个结点，就能大幅度优化这个算法了。括号里面那个结点，我们称之为后缀结点。</p>
+<p>对于按照 aba这样一条边走到的结点的后缀结点，应该是按照ba走到的结点，即对于s[0…n]走到的结点的后缀结点为按照s[1…n]走到的结点。对于上图有则有以下结论，next(i)表示i结点的后缀结点。</p>
+<pre><code>next(0)=0;
+next(1)=0;#&quot;a&quot;去掉第一个字符为空。
+next(2)=0;
+next(3)=2;#&quot;ab&quot;去掉第一个字符为&quot;b&quot;
+next(4)=1;#&quot;ba&quot;              &quot;a&quot;
+next(5)=?;
+</code></pre><p>在计算next(5)的时候我们发现，”bc”去掉第一个字符”c”,在原树中找不到，这种情况下，其实说明了以c开头的枚举都不能找到，那么我们直接跳到”bc”的后缀”c”再取后缀” “就行了，用结点8来举例：</p>
+<pre><code>&quot;bca&quot;的后缀&quot;ca&quot;,因为0的c边不存在所以直接取&quot;a&quot;， 即next(8)=1
+</code></pre><p>如果在”bca”过程中有终点结点，为了不漏掉，我们引入了“后缀结点为标记结点的结点也是标记结点”理解这一段可以参考一下<a href="http://hihocoder.com/problemset/problem/1036" target="_blank" rel="noopener">提示三：如何求解Trie树中每个结点的后缀结点</a> 里面有更详细的解释。（懒得画图，就不在这详细说明了。。。。。）举个例子说明一下是怎样把一颗trie树中的结点的后缀结点求出来，补充完整为空的结点构成trie图的：</p>
+<p><img src="http://xiejun901.qiniudn.com/hihocoder1036trie2.jpg" alt="trie2"></p>
+<p>ni,表示结点i，ni-&gt;son[a]表示结点i沿a边走的结点，ni-&gt;next表示结点i的后缀结点。</p>
+<pre><code>n0-&gt;next=n0;补全不存在的边：n0-&gt;son[d]=n0;
+n1-&gt;next=n0;补全不存在的边：n1-&gt;son[b]=n1-&gt;next-&gt;son[b]=n2;n1-&gt;son[d]=n1-&gt;next-&gt;son[d]=n0;
+n2-&gt;next=n0;补全不存在的边：n2-&gt;son[a]=n2-&gt;next-&gt;son[a]=n1;......
+n3-&gt;next=n0;补全不存在的边：n3-&gt;son[a]=n3-&gt;next-&gt;son[a]=n1;......
+n4-&gt;next=n4-&gt;p-&gt;next-&gt;son[a]=n1;补全不存在的边：......
+n5-&gt;next=n5-&gt;p-&gt;next-&gt;son[c]=n3;补全不存在的边：......
+......
+</code></pre><p>算法描述如下：</p>
+<pre><code>%
+%
+</code></pre><p>c语言实现函数如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">trieSolveNext</span><span class="params">(triePtr root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> i;</span><br><span class="line">	qList queue1;</span><br><span class="line">	triePtr node;</span><br><span class="line">	<span class="built_in">memset</span>(&amp;queue1, <span class="number">0</span>, <span class="keyword">sizeof</span>(queue1));</span><br><span class="line">	node = root;</span><br><span class="line">	queuePushback(&amp;queue1, node);</span><br><span class="line">	node-&gt;next = node;</span><br><span class="line">	<span class="keyword">while</span> (queue1.front != <span class="literal">NULL</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		node = queuePopfront(&amp;queue1);</span><br><span class="line">		<span class="keyword">if</span> (node-&gt;next-&gt;isTerminal == <span class="number">1</span>)</span><br><span class="line">			node-&gt;isTerminal = <span class="number">1</span>;</span><br><span class="line">		<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; N; i++)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">if</span> (node-&gt;son[i] != <span class="literal">NULL</span>)</span><br><span class="line">			&#123;</span><br><span class="line">				queuePushback(&amp;queue1, node-&gt;son[i]);</span><br><span class="line">				<span class="keyword">if</span> (node == root)</span><br><span class="line">					node-&gt;son[i]-&gt;next = node;</span><br><span class="line">				<span class="keyword">else</span></span><br><span class="line">					node-&gt;son[i]-&gt;next = node-&gt;next-&gt;son[i];</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">			&#123;</span><br><span class="line">				<span class="keyword">if</span> (node == root)</span><br><span class="line">					node-&gt;son[i] = node;</span><br><span class="line">				<span class="keyword">else</span></span><br><span class="line">					node-&gt;son[i] = node-&gt;next-&gt;son[i];</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在构建好trie图之后，只需要从根结点开始，沿着给出的文章的字符往下走，如果走到了标记结点，则表明文章中有字典给出的单词，如果到文章走完都没遇到标记结点，那么则说明无字典中的单词</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">searchTrie</span><span class="params">(triePtr node, <span class="keyword">char</span> *s)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">while</span> (*s)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> (node-&gt;isTerminal == <span class="number">1</span>)</span><br><span class="line">			<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">		node = node-&gt;son[*s - <span class="string">'a'</span>];</span><br><span class="line">		s++;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (node-&gt;isTerminal == <span class="number">1</span>)</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="整体代码"><a href="#整体代码" class="headerlink" title="整体代码"></a>整体代码</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> N 26</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">tnode</span>&#123;</span></span><br><span class="line">	<span class="keyword">int</span> isTerminal;</span><br><span class="line">	<span class="keyword">int</span> num;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">tnode</span> *<span class="title">p</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">tnode</span> * <span class="title">son</span>[<span class="title">N</span>];</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">tnode</span> *<span class="title">next</span>;</span></span><br><span class="line">&#125; trieNode;</span><br><span class="line"><span class="keyword">typedef</span> trieNode *triePtr;</span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">qnode</span>&#123;</span></span><br><span class="line">	triePtr key;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">qnode</span> * <span class="title">next</span>;</span></span><br><span class="line">&#125; qNode;</span><br><span class="line"><span class="keyword">typedef</span> qNode *qPtr;</span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">qlist</span>&#123;</span></span><br><span class="line">	qPtr front, back;</span><br><span class="line">&#125; qList;</span><br><span class="line"><span class="keyword">typedef</span> qList *qListPtr;</span><br><span class="line"><span class="function">triePtr <span class="title">trieInsert</span><span class="params">(triePtr node, <span class="keyword">char</span> * s)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">prefixCount</span><span class="params">(triePtr node, <span class="keyword">char</span> *s)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">queuePushback</span><span class="params">(qListPtr q, triePtr key)</span></span>;</span><br><span class="line"><span class="function">triePtr <span class="title">queuePopfront</span><span class="params">(qListPtr q)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">trieBfs</span><span class="params">(triePtr node)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">trieSolveNext</span><span class="params">(triePtr root)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">searchTrie</span><span class="params">(triePtr node, <span class="keyword">char</span> *s)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> m;</span><br><span class="line">	<span class="keyword">char</span> s[<span class="number">100</span>];</span><br><span class="line">	<span class="keyword">int</span> temp;</span><br><span class="line">	triePtr root = <span class="literal">NULL</span>;</span><br><span class="line">	root = (triePtr)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(trieNode));</span><br><span class="line">	<span class="built_in">memset</span>(root, <span class="number">0</span>, <span class="keyword">sizeof</span>(trieNode));</span><br><span class="line">	<span class="comment">//trieInsert(root, "aaabc");</span></span><br><span class="line">	<span class="comment">//trieInsert(root, "aaac");</span></span><br><span class="line">	<span class="comment">//trieInsert(root, "abcc");</span></span><br><span class="line">	<span class="comment">//trieInsert(root, "ac");</span></span><br><span class="line">	<span class="comment">//trieInsert(root, "bcd");</span></span><br><span class="line">	<span class="comment">//trieInsert(root, "cd");</span></span><br><span class="line">	<span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;m);</span><br><span class="line">	<span class="keyword">while</span> (m--)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">scanf</span>(<span class="string">"%s"</span>, s);</span><br><span class="line">		trieInsert(root, s);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">scanf</span>(<span class="string">"%s"</span>, s);</span><br><span class="line">	<span class="comment">//trieBfs(root);</span></span><br><span class="line">	trieSolveNext(root);</span><br><span class="line">	temp = searchTrie(root, s);</span><br><span class="line">	<span class="keyword">if</span> (temp == <span class="number">1</span>)</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"YES"</span>);</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"NO"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">triePtr <span class="title">trieInsert</span><span class="params">(triePtr node, <span class="keyword">char</span> * s)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	triePtr newNode;</span><br><span class="line">	<span class="comment">//	int i;</span></span><br><span class="line">	<span class="keyword">while</span> (*s)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> (node-&gt;son[*s - <span class="string">'a'</span>] == <span class="literal">NULL</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			newNode = (triePtr)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(trieNode));</span><br><span class="line">			<span class="built_in">memset</span>(newNode, <span class="number">0</span>, <span class="keyword">sizeof</span>(trieNode));</span><br><span class="line">			newNode-&gt;p = node;</span><br><span class="line">			node-&gt;son[*s - <span class="string">'a'</span>] = newNode;</span><br><span class="line">		&#125;</span><br><span class="line">		node = node-&gt;son[*s - <span class="string">'a'</span>];</span><br><span class="line">		node-&gt;num++;</span><br><span class="line">		s++;</span><br><span class="line">	&#125;</span><br><span class="line">	node-&gt;isTerminal = <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">return</span> node;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">prefixCount</span><span class="params">(triePtr node, <span class="keyword">char</span> *s)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">while</span> (*s)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> (node-&gt;son[*s - <span class="string">'a'</span>] == <span class="literal">NULL</span>)</span><br><span class="line">			<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">		node = node-&gt;son[*s - <span class="string">'a'</span>];</span><br><span class="line">		s++;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> node-&gt;num;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">queuePushback</span><span class="params">(qListPtr q, triePtr key)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	qPtr newPtr;</span><br><span class="line">	newPtr = (qPtr)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(qNode));</span><br><span class="line">	newPtr-&gt;key = key;</span><br><span class="line">	newPtr-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">	<span class="keyword">if</span> ((*q).front == <span class="literal">NULL</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		(*q).front = (*q).back = newPtr;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		(*q).back-&gt;next = newPtr;</span><br><span class="line">		(*q).back = newPtr;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">triePtr <span class="title">queuePopfront</span><span class="params">(qListPtr q)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	triePtr newPtr;</span><br><span class="line">	qPtr tempPtr;</span><br><span class="line">	newPtr = (*q).front-&gt;key;</span><br><span class="line">	tempPtr = (*q).front;</span><br><span class="line">	(*q).front = tempPtr-&gt;next;</span><br><span class="line">	<span class="built_in">free</span>(tempPtr);</span><br><span class="line">	<span class="keyword">return</span> newPtr;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">trieBfs</span><span class="params">(triePtr node)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> i;</span><br><span class="line">	qList queue1;</span><br><span class="line">	<span class="built_in">memset</span>(&amp;queue1, <span class="number">0</span>, <span class="keyword">sizeof</span>(queue1));</span><br><span class="line">	queuePushback(&amp;queue1, node);</span><br><span class="line">	<span class="keyword">while</span> (queue1.front != <span class="literal">NULL</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		node = queuePopfront(&amp;queue1);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"%p\n"</span>, node);</span><br><span class="line">		<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; N; i++)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">if</span> (node-&gt;son[i] != <span class="literal">NULL</span>)</span><br><span class="line">			&#123;</span><br><span class="line">				queuePushback(&amp;queue1, node-&gt;son[i]);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">trieSolveNext</span><span class="params">(triePtr root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> i;</span><br><span class="line">	qList queue1;</span><br><span class="line">	triePtr node;</span><br><span class="line">	<span class="built_in">memset</span>(&amp;queue1, <span class="number">0</span>, <span class="keyword">sizeof</span>(queue1));</span><br><span class="line">	node = root;</span><br><span class="line">	queuePushback(&amp;queue1, node);</span><br><span class="line">	node-&gt;next = node;</span><br><span class="line">	<span class="keyword">while</span> (queue1.front != <span class="literal">NULL</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		node = queuePopfront(&amp;queue1);</span><br><span class="line">		<span class="keyword">if</span> (node-&gt;next-&gt;isTerminal == <span class="number">1</span>)</span><br><span class="line">			node-&gt;isTerminal = <span class="number">1</span>;</span><br><span class="line">		<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; N; i++)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">if</span> (node-&gt;son[i] != <span class="literal">NULL</span>)</span><br><span class="line">			&#123;</span><br><span class="line">				queuePushback(&amp;queue1, node-&gt;son[i]);</span><br><span class="line">				<span class="keyword">if</span> (node == root)</span><br><span class="line">					node-&gt;son[i]-&gt;next = node;</span><br><span class="line">				<span class="keyword">else</span></span><br><span class="line">					node-&gt;son[i]-&gt;next = node-&gt;next-&gt;son[i];</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">			&#123;</span><br><span class="line">				<span class="keyword">if</span> (node == root)</span><br><span class="line">					node-&gt;son[i] = node;</span><br><span class="line">				<span class="keyword">else</span></span><br><span class="line">					node-&gt;son[i] = node-&gt;next-&gt;son[i];</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">searchTrie</span><span class="params">(triePtr node, <span class="keyword">char</span> *s)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">while</span> (*s)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> (node-&gt;isTerminal == <span class="number">1</span>)</span><br><span class="line">			<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">		node = node-&gt;son[*s - <span class="string">'a'</span>];</span><br><span class="line">		s++;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (node-&gt;isTerminal == <span class="number">1</span>)</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/C/" rel="tag"># C++</a>
+          
+            <a href="/tags/hihocoder/" rel="tag"># hihocoder</a>
+          
+            <a href="/tags/algorithm/" rel="tag"># algorithm</a>
+          
+            <a href="/tags/trie图/" rel="tag"># trie图</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/10/11/hihocoder-kmp/" rel="next" title="hihocoder算法练习之kmp算法">
+                <i class="fa fa-chevron-left"></i> hihocoder算法练习之kmp算法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/10/11/hihocoder-binarygraph/" rel="prev" title="hihocoder算法练习之二分图">
+                hihocoder算法练习之二分图 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://7q5fny.com1.z0.glb.clouddn.com/bloghead.jpg"
+                alt="Xie Jun" />
+            
+              <p class="site-author-name" itemprop="name">Xie Jun</p>
+              <p class="site-description motion-element" itemprop="description">一个随便写写的博客</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">92</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#输入"><span class="nav-number">1.</span> <span class="nav-text">输入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出"><span class="nav-number">2.</span> <span class="nav-text">输出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#样例输入"><span class="nav-number">3.</span> <span class="nav-text">样例输入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#样例输出"><span class="nav-number">4.</span> <span class="nav-text">样例输出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#说明"><span class="nav-number">5.</span> <span class="nav-text">说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#整体代码"><span class="nav-number">6.</span> <span class="nav-text">整体代码</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Xie Jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
