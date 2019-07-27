@@ -48,6 +48,7 @@ vocab_size: 词表的大小
 type_vocab_size: token的type，因为是两句话拼接起来的，用这个来区分是第一句话还是第二句话
 hidden_size: 隐层的大小，token的embedding，position的embedding，token_type的embedding
 
+以下是一整个bert的模型结构：
 
 ```python
 model.model.bert
@@ -368,7 +369,7 @@ print(f"经过一层encoder的shape {encoder0_output.shape}")
 
 输入 $x \in R^{n*h}$ 每一行是一个token对应的向量
 
-Q矩阵 $Q \in R ^{h*\hat{h}}$ ,  K矩阵 $K \in R ^{h*\hat{h}}$ ,  V矩阵 $V \in R ^{h*\hat{h}}$ 这块输出长度取的 ${\hat{h}}$ 是 h / num_attention_head, 目的是为了在经过多头multihead attention之后每个token对应向量的长度跟之前是一样的。
+$Q$ 矩阵 $Q \in R^{h \* \hat{h}}$ ,  $K$ 矩阵 $K \in R^{h \* \hat{h}}$ ,  $V$ 矩阵 $V \in R^{h*\hat{h}}$ 这块输出长度取的 $\hat{h}$ 是 h / num_attention_head, 目的是为了在经过多头multihead attention之后每个token对应向量的长度跟之前是一样的。
 
 然后通过计算 $q$ $k$ $v$
 
@@ -380,19 +381,19 @@ $v=Vx \in R^{n*\hat{h}}$  每行是一个token对应的向量
 
 然后计算attention score，即某一个位置对其他每个位置的分数
 
-$score = q*k^T  \in R^{n*n} $ 这个地方第一行是每个token对应的k和第一个token对应的q计算出来的score，$score$ 第一行的第一维需要取乘以第一个token对应的v，第二维度乘以第二个token对应的v，第三维乘以第三个token对应的v 写出来就是
+$score = q \* k^T  \in R^{n \* n} $ 这个地方第一行是每个token对应的k和第一个token对应的q计算出来的score，$score$ 第一行的第一维需要取乘以第一个token对应的v，第二维度乘以第二个token对应的v，第三维乘以第三个token对应的v 写出来就是
 $$
-z_{1,:} = s_{11}*v_{1,:} + s_{12}*v_{2,:} + s_{13}*v_{3,:} + s_{14}*v_{4,:}
+z_{1,:} = s_{11}  v_{1,:} + s_{12}  v_{2,:} + s_{13}  v_{3,:} + s_{14}  v_{4,:}
 $$
 
 $$
-z_{2,:} = s_{21}*v_{1,:} + s_{22}*v_{2,:} + s_{23}*v_{3,:} + s_{24}*v_{4,:}
+z_{2,:} = s_{21}  v_{1,:} + s_{22}  v_{2,:} + s_{23}  v_{3,:} + s_{24} v_{4,:}
 $$
 
 相当于第一个元素就是 
 
 $$
-z_{11} = s_{11}*v_{11} + s_{12}*v_{21} + s_{13}v_{31} + s_{14}v_{41}
+z_{11} = s_{11}  v_{11} + s_{12} v_{21} + s_{13}v_{31} + s_{14}v_{41}
 $$
 
 写成矩阵形式就是 $SCORE*V$
