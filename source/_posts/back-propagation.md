@@ -49,7 +49,7 @@ $$
 \frac{\partial z}{\partial x} = \frac{\partial z}{\partial y}  \frac{\partial y}{\partial x} = g'(x)f'(x) 
 $$
 
-反向传播则是将计算先抽象乘运算符和变量，构造成计算图，然后根据每个变量的值和运算符的求导运算来计算图中任意两个变量的偏导数。后边会详细介绍算法和做一个简单的实现
+为了提高代码的扩展性，反向传播通常是将计算先抽象成运算符和变量，构造成计算图，然后根据每个变量的值和运算符的求导运算来计算图中任意两个变量的偏导数。后边会详细介绍算法和做一个简单的实现
 
 ### 自动求导
 
@@ -64,7 +64,7 @@ $$
 
 ### 节点和运算符的表示
 
-需要定于最基本的两个数据结构变量节点和运算符。
+需要定义最基本的两个数据结构，变量节点和运算符。
 对于每个节点，我们需要保存产生此变量的运算符和此变量是由哪些节点计算而来，同时为了处理字面值的常量和节点的运算，使用了一个成员变量来表示这个常量。对于运算符，我们需要定义一个前向运算和反向传播运算。前向运算用来计算变量节点的值，反向传播运算用来求导
 
 ```python
@@ -187,7 +187,7 @@ class Executor(object):
 
 ### 常见运算符的实现
 
-在反响传播中，实际上求导都是最终的损失函数(标量)对中间变量求导，因此可以使用标量对向量的求导来理解
+在反向传播中，实际上求导都是最终的损失函数(标量)对中间变量求导，因此可以使用标量对向量的求导来进行推导
 
 在这儿求导的推导可以参考这篇文章 [矩阵求导术（上）](https://zhuanlan.zhihu.com/p/24709748) 文章中通过微分方程来推导标量对矩阵的求导。
 
@@ -240,7 +240,7 @@ class PlaceholderOp(Op):
 
 对于加法运算，输出对两个输入的导数就是输出本身
 
-![](add_diff.JPG)
+![](adddiff.png)
 
 ```python
 class AddOp(Op):
@@ -263,6 +263,8 @@ class AddOp(Op):
 ```
 
 #### 矩阵乘法
+
+![](matmuldiff.png)
 
 
 ```python
@@ -287,6 +289,7 @@ class MatMulOp(Op):
 
 #### 逐元素乘法
 
+![](muldiff.png)
 
 ```python
 class MulOp(Op):
@@ -311,6 +314,8 @@ class MulOp(Op):
 
 
 #### 逐元素函数
+
+![](fdiff.png)
 
 这儿以sigmoid为例
 
@@ -338,3 +343,61 @@ class SigmoidOp(Op):
 #### 其他
 
 其他的运算符的实现基本与上面一致，推导也差别不大。实现的源码在 [反向传播](https://github.com/xiejun901/ToyDL/blob/master/python/back_prop.py)
+
+### 使用反向传播实现基本的算法
+
+基于上面的反向传播的代码和一些基本的运算符，可以实现一个一个简单的二分类的mlp
+
+```
+def mlp():
+    label, feature = load_libsvm("data/agaricus.txt")
+
+    x = bp.Variable("x")
+    w1 = bp.Variable("w1")
+    b1 = bp.Variable("b1")
+    w2 = bp.Variable("w2")
+    b2 = bp.Variable("b2")
+    y = bp.Variable("y")
+
+    h1 = bp.relu_op(bp.matmul_op(x, w1) + b1)
+    y_pred = bp.matmul_op(h1, w2) + b2
+    prob = bp.sigmoid_op(y_pred)
+    single_loss = bp.sigmoid_cross_entropy_op(logit=y_pred, label = y)
+
+    w1_val = np.random.rand(126, 32)
+    b1_val = np.random.rand(1, 32)
+    w2_val = np.random.rand(32, 1)
+    b2_val = np.random.rand(1, 1)
+
+    ln = 0.001
+
+    excutor = bp.Executor()
+
+    for i in range(10000000):
+        index = i % len(feature)
+        if i % 1000 == 0:
+            loss_val, prob_val = excutor.forward([single_loss, prob], feed_dict={
+                x: feature,
+                w1: w1_val,
+                b1: b1_val,
+                w2: w2_val,
+                b2: b2_val,
+                y: label
+            })
+            print("step {}, loss={}, acc={}, ln={}".format(i, np.mean(loss_val), cal_acc(label, prob_val), ln))
+        if i % 500000 == 0:
+            ln = ln / 10
+        w1_grad, b1_grad, w2_grad, b2_grad = excutor.backward(single_loss, [w1, b1, w2, b2], feed_dict={
+            x: feature[index:index+1],
+            w1: w1_val,
+            b1: b1_val,
+            w2: w2_val,
+            b2: b2_val,
+            y: label[index:index+1]
+        })
+        w1_val = w1_val - ln * w1_grad
+        b1_val = b1_val - ln * b1_grad
+        w2_val = w2_val - ln * w2_grad
+        b2_val = b2_val - ln * b2_grad
+
+```
